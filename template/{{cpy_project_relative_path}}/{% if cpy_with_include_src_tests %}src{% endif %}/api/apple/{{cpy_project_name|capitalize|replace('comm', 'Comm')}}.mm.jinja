@@ -1,0 +1,28 @@
+//
+// {{ cpy_project_name|capitalize|replace('comm', 'Comm') }}.mm
+// api/apple
+//
+// Created by ccgo on {{ '%Y-%m-%d' | strftime }}.
+// Copyright {{ '%Y' | strftime }} ccgo Project Authors. All rights reserved.
+
+#import "{{ cpy_project_name|capitalize|replace('comm', 'Comm') }}.h"
+
+#include "{{cpy_project_name|lower}}/api/native/{{cpy_project_name|lower}}.h"
+
+//-----------------------------------------------------------------------------
+// {{ cpy_project_name|capitalize|replace('comm', 'Comm') }}
+//-----------------------------------------------------------------------------
+@implementation {{ cpy_project_name|capitalize|replace('comm', 'Comm') }}
+
+//-----------------------------------------------------------------------------
+//!  \name {{cpy_project_name|lower}}-{{cpy_project_name|lower}}.base
+//!  @{
+//-----------------------------------------------------------------------------
++ (void)setDebugLog:(BOOL)isDebugLog {
+  {{cpy_project_name|lower}}_SetDebugLog(isDebugLog);
+}
+
+//-----------------------------------------------------------------------------
+//!  @}
+//-----------------------------------------------------------------------------
+@end

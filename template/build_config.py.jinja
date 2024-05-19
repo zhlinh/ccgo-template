@@ -1,0 +1,35 @@
+#!/usr/bin/env python
+# -- coding: utf-8 --
+#
+# build_config.py
+# ccgo
+#
+# Copyright 2024 zhlinh and ccgo Project Authors. All rights reserved.
+# Use of this source code is governed by a MIT-style
+# license that can be found at
+#
+# https://opensource.org/license/MIT
+#
+# The above copyright notice and this permission
+# notice shall be included in all copies or
+# substantial portions of the Software.
+
+# ========================================================
+# Project Configurations
+# CONFIG_PROJECT_NAME:           项目名称，即产物的标识, i.e. "VPNCOMM"
+# CONFIG_PROJECT_RELATIVE_PATH: 自定义参数项目的子路径, i.e. "vpncomm"
+# CONFIG_GRADLE_TASK_NAME:       安卓的gradle任务名称, i.e. "archivevpncomm"
+# CONFIG_IOS_TASK_TAG:           iOS编译的TAG, i.e. "1"
+# ========================================================
+
+# FIXME: This is the place where each project needs to adjust
+# The Project Name
+CONFIG_PROJECT_NAME = {{ '"' ~ cpy_project_name | upper ~ '"' }}
+# The Project Relative Path                        
+CONFIG_PROJECT_RELATIVE_PATH = {{ '"' ~ cpy_project_relative_path ~ '"' }}
+# The Android Gradle Task Name, e.g. archiveProject
+CONFIG_GRADLE_TASK_NAME = "archiveProject"
+# The iOS Task Tag, e.g. 1
+CONFIG_IOS_TASK_TAG = "1"
+# The Document Pages Branch Name, e.g. "oa-pages"
+CONFIG_PAGES_BRANCH_NAME = "oa-pages"

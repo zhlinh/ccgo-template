@@ -1,0 +1,22 @@
+//
+// api_test.cc
+// api
+//
+// Created by ccgo on {{ '%Y-%m-%d' | strftime }}.
+// Copyright {{ '%Y' | strftime }} ccgo Project Authors. All rights reserved.
+
+#include "{{cpy_project_name|lower}}/api/native/{{cpy_project_name|lower}}.h"
+
+#include <string>
+
+#include "gtest/gtest.h"
+
+namespace {{cpy_project_name|lower}} {
+
+TEST(ApiTest, testDebuglog) {
+  {{cpy_project_name|lower}}_SetDebugLog(true);
+  // TODO: add test code here
+  ASSERT_TRUE(1 == 1);
+}
+
+}  // namespace {{cpy_project_name|lower}}
