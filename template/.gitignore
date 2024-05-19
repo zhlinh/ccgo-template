@@ -51,6 +51,8 @@ CMakeCache.txt
 ######################
 __pycache__
 *.pyc
+dist/
+*egg-info/
 
 ######################
 # android
