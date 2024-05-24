@@ -44,7 +44,7 @@ internal fun Project.configureSubNativeBuildPython() {
     }
 
     project.afterEvaluate {
-        // 使用named来获取的taskProvider需要引入com.android.build.gradle.internal.tasks.factory.dependsOn
+        // taskProvider get from named function needs to include com.android.build.gradle.internal.tasks.factory.dependsOn
         // cleanTheBinDir -> buildLibrariesForMain
         // -> mergeProdReleaseJniLibFolders -> assembleProdRelease
         val buildLibrariesForMain = tasks.named("buildLibrariesForMain")
@@ -88,14 +88,13 @@ internal fun Project.configureSubNativeBuildBase(
             println("The cmakeVersion:${cfgs.cmakeVersion}")
             println("-------------------------------------------")
             externalNativeBuild {
-                // 注意使用hidden后jni外部接口需要使用JNIEXPORT或者__attribute__ ((visibility ("default")))
                 cmake {
                     cppFlags("-fpic", "-frtti", "-fexceptions", "-Wall")
                     version = cfgs.cmakeVersion
-                    arguments("-GNinja") // 不加这一句的话assembleRelease时不会生成android_gradle_build.json文件
-                    arguments("-DANDROID_PLATFORM=android-${cfgs.minSdkVersion}") // 指定ndk的platform
-                    arguments("-DANDROID_TOOLCHAIN=clang") // 使用clang
-                    arguments("-DANDROID_STL=c++_shared") // APP可以使用share，注意需要主动引入该共享库，系统不自带
+                    arguments("-GNinja") // to generate android_gradle_build.json
+                    arguments("-DANDROID_PLATFORM=android-${cfgs.minSdkVersion}") // ndk platform
+                    arguments("-DANDROID_TOOLCHAIN=clang") // use clang
+                    arguments("-DANDROID_STL=c++_shared") // NOTE: c++_shared.so should be included in app
                 }
             }
             ndk {
@@ -130,7 +129,7 @@ internal fun Project.createBuildLibrariesTask(inputProjectName: String) {
                 cmakeAbiFilters = abiProperty.split(",")
             }
         }
-        // 此处是为了兼容不同大小写的path写法
+        // to get the path
         var path = System.getenv("PATH")
         if (path == null || path.isEmpty()) {
             path = System.getenv("Path")
@@ -163,7 +162,7 @@ internal fun Project.createBuildLibrariesTask(inputProjectName: String) {
         println("==============")
         println("envMap")
         println("==============")
-        // 将list分行打印
+        // print list
         envMap.forEach { (key, value) ->
             println("$key=$value")
         }

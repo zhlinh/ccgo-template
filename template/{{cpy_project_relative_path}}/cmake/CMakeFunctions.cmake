@@ -32,25 +32,25 @@ macro(exclude_unittest_files input_source_files)
 endmacro()
 
 # add_subdirectories_recursively()
-# 定义一个函数来递归添加子目录
+# define a function to add subdirectories recursively
 function(add_subdirectories_recursively out_dir_list root_dir)
     set(temp_dir_list "")
     set(dir_stack ${root_dir})
 
     while(dir_stack)
-        # 获取栈顶目录
+        # get the top directory
         list(GET dir_stack 0 cur_dir)
         list(REMOVE_AT dir_stack 0)
 
-        # 获取当前目录下的所有子目录
+        # get all subdirectories under the current directory
         file(GLOB subdirectories RELATIVE ${root_dir} ${cur_dir}/*)
 
-        # 遍历所有子目录
+        # loop through all subdirectories
         foreach(subdirectory ${subdirectories})
-            # 如果子目录是一个目录而不是文件
+            # if the subdirectory is a directory and not a file
             if(IS_DIRECTORY ${root_dir}/${subdirectory})
                 message(STATUS "Checking subdirectory: ${subdirectory}")
-                # 根据子目录名称和当前平台过滤掉不需要的子目录
+                # filter subdirectory by platform
                 string(REPLACE "/" ";" temp_items "${subdirectory}")
                 list(GET temp_items -1 base_subdirectory)
                 set(temp_subdirectory_valid FALSE)
@@ -86,7 +86,7 @@ function(add_subdirectories_recursively out_dir_list root_dir)
                 endif()
 
                 if (temp_subdirectory_valid)
-                    # 将子目录入栈
+                    # add the subdirectory to the stack
                     list(APPEND temp_dir_list ${subdirectory})
                     list(APPEND dir_stack ${cur_dir}/${subdirectory})
                 endif()
@@ -94,7 +94,7 @@ function(add_subdirectories_recursively out_dir_list root_dir)
         endforeach()
     endwhile()
 
-    # 注意设置PARENT_SCOPE，才可以返回给上层
+    # note that setting PARENT_SCOPE is necessary to return the value to the parent scope
     set(${out_dir_list} "${temp_dir_list}" PARENT_SCOPE)
 endfunction()
 
@@ -104,7 +104,7 @@ function(add_sub_layer_sources_recursively output_src_files input_source_dir)
     list(GET TEMP_SPLIT_ITEMS -1 SOURCE_DIR_NAME)
 
     set(temp_src_files "")
-    # 当前根目录
+    # the current root directory
     include_directories(${input_source_dir}/)
     file(GLOB SELF_TEMP_SRC_FILES
             ${input_source_dir}/*.cc
@@ -116,14 +116,14 @@ function(add_sub_layer_sources_recursively output_src_files input_source_dir)
     source_group(${SOURCE_DIR_NAME} FILES ${SELF_TEMP_SRC_FILES})
     list(APPEND temp_src_files ${SELF_TEMP_SRC_FILES})
 
-    # 获取当前目录下的所有子目录
+    # get all subdirectories under the current directory
     file(GLOB CHILDREN RELATIVE ${input_source_dir} */)
-    # 输出所有子目录名称
+    # output all subdirectories
     set(DIR_LIST "")
     add_subdirectories_recursively(DIR_LIST ${input_source_dir})
     message(STATUS "SUB_DIRECTORIES: [${DIR_LIST}] from [${input_source_dir}]")
 
-    # 遍历DIR_LIST
+    # loop DIR_LIST
     foreach(dir IN LISTS DIR_LIST)
         include_directories(${input_source_dir}/${dir}/)
         file(GLOB SELF_TEMP_SRC_FILES
@@ -136,7 +136,7 @@ function(add_sub_layer_sources_recursively output_src_files input_source_dir)
         source_group(${SOURCE_DIR_NAME}\\${dir} FILES ${SELF_TEMP_SRC_FILES})
         list(APPEND temp_src_files ${SELF_TEMP_SRC_FILES})
     endforeach()
-    # 过滤列表中的文件
+    # filter the files in the list
     set(temp_only_files "")
     foreach(temp_file ${temp_src_files})
         if(IS_DIRECTORY ${temp_file})
@@ -163,13 +163,13 @@ endfunction()
 
 # get_subdirectories()
 function(get_subdirectories output_dir_list dir_path)
-    # 获取子目录列表
+    # get all subdirectories under the current directory
     file(GLOB CHILDREN RELATIVE
             "${dir_path}/"
             ${dir_path}/*
             )
-    # 遍历子目录
     set(DIR_LIST "")
+    # loop CHILDREN
     foreach(child ${CHILDREN})
         set(TEMP_CHILD_PATH "${dir_path}/${child}")
         if(IS_DIRECTORY "${TEMP_CHILD_PATH}")
@@ -190,13 +190,13 @@ endfunction()
 
 # add_valid_subdirectories()
 function(add_valid_subdirectories output_dir_list dir_path)
-    # 获取子目录列表
+    # get the subdirectories
     file(GLOB CHILDREN RELATIVE
             "${dir_path}/"
             ${dir_path}/*
             )
-    # 遍历子目录并检查是否存在CMakeLists.txt文件
     set(DIR_LIST "")
+    # loop CHILDREN and check if there is a CMakeLists.txt file
     foreach(child ${CHILDREN})
         set(TEMP_CHILD_PATH "${dir_path}/${child}")
         if(IS_DIRECTORY "${TEMP_CHILD_PATH}")
@@ -222,13 +222,13 @@ endfunction()
 
 # get_third_party_lib_directories()
 function(get_third_party_lib_directories output_dir_list dir_path)
-    # 获取子目录列表
+    # get all subdirectories under the current directory
     file(GLOB CHILDREN RELATIVE
             "${dir_path}/"
             ${dir_path}/*
             )
-    # 遍历子目录并检查是否存在lib目录
     set(DIR_LIST "")
+    # loop CHILDREN and check if there is a lib directory
     foreach(child ${CHILDREN})
         set(TEMP_CHILD_PATH "${dir_path}/${child}")
         if(IS_DIRECTORY "${TEMP_CHILD_PATH}")
@@ -250,13 +250,13 @@ endfunction()
 
 # get_third_party_include_directories()
 function(get_third_party_include_directories output_dir_list dir_path)
-    # 获取子目录列表
+    # get all subdirectories under the current directory
     file(GLOB CHILDREN RELATIVE
             "${dir_path}/"
             ${dir_path}/*
             )
-    # 遍历子目录并检查是否存在include目录
     set(DIR_LIST "")
+    # loop CHILDREN and check if there is a include directory
     foreach(child ${CHILDREN})
         set(TEMP_CHILD_PATH "${dir_path}/${child}")
         if(IS_DIRECTORY "${TEMP_CHILD_PATH}")
@@ -276,13 +276,13 @@ endfunction()
 
 # get_third_party_src_directories()
 function(get_third_party_src_directories output_dir_list dir_path)
-    # 获取子目录列表
+    # get all subdirectories under the current directory
     file(GLOB CHILDREN RELATIVE
             "${dir_path}/"
             ${dir_path}/*
             )
-    # 遍历子目录并检查是否存在src目录
     set(DIR_LIST "")
+    # loop CHILDREN and check if there is a src directory
     foreach(child ${CHILDREN})
         set(TEMP_CHILD_PATH "${dir_path}/${child}")
         if(IS_DIRECTORY "${TEMP_CHILD_PATH}")
@@ -344,16 +344,16 @@ function(get_third_party_binary_files output_target_src_links output_target_link
     get_third_party_lib_directories(TEMP_THIRD_PARTY_LIB_DIRS ${PROJECT_SOURCE_DIR}/third_party/)
     foreach(item ${TEMP_THIRD_PARTY_LIB_DIRS})
         set(third_party_sub_dir ${PROJECT_SOURCE_DIR}/third_party/${item})
-        # 添加二进制的依赖
+        # add the binary files
         file(GLOB TEMP_COMM_FILES RELATIVE ${PROJECT_SOURCE_DIR} ${third_party_sub_dir}/lib/${TEMP_PLATFORM}/${TEMP_REG_SUFFIX})
-        # 排除.开头的文件
+        # exclude the files start with .
         list(FILTER TEMP_COMM_FILES EXCLUDE REGEX "^\\.")
         if(NOT TEMP_COMM_FILES STREQUAL "")
             foreach(file_path ${TEMP_COMM_FILES})
                 get_filename_component(file_ext ${file_path} LAST_EXT)
                 get_filename_component(file_name ${file_path} NAME_WE)
                 get_filename_component(file_dir ${file_path} DIRECTORY)
-                # 如果后缀是so, dylib或者dll，则添加动态库，否则以静态库的方式添加
+                # if the file is a shared library, add it as a shared library
                 if(file_path MATCHES ".*\\.so" OR file_path MATCHES ".*\\.dylib" OR file_path MATCHES ".*\\.dll")
                     add_library(${file_name}-lib SHARED IMPORTED)
                     set_target_properties(${file_name}-lib PROPERTIES IMPORTED_LOCATION ${PROJECT_SOURCE_DIR}/${file_path})
@@ -378,24 +378,24 @@ endfunction()
 
 # add_cc_library()
 #
-# CMake函数，增加子模块。
+# CMake function to add a C++ library target to the build.
 #
-# 参数:
-# NAME: 目标名称（见注意事项）
-# HDRS: 库的公共头文件列表
-# SRCS: 库的源代码文件列表
-# DIRS: 库的源代码文件目录列表，递归搜索c和cc文件，最多2层
-# DEPS: 库依赖的其他库的列表
-# COPTS: 私有编译选项列表
-# DEFINES: 公共定义列表
-# LINKOPTS: 链接选项列表
-# PUBLIC: 添加此选项以便将此库导出到"项目名"的文件夹中，，而非PUBLIC选项的将出现在"项目名/internal"文件夹中
-# TESTONLY: 加入此选项后，仅当GOOGLETEST_SUPPORT=ON或者时才会构建此目标
+# Parameters:
+# NAME: target name (see notes)
+# HDRS: the library's public header files
+# SRCS: the library's source files
+# DIRS: the library's source directories, recursively search for c and cc files, up to 2 levels
+# DEPS: the list of other libraries that this library depends on
+# COPTS: the list of private compile options
+# DEFINES: the list of public definitions
+# LINKOPTS: the list of link options
+# PUBLIC: add this option to export this library to the "project name" folder, instead of the "project name/internal" folder
+# TESTONLY: add this option to only build this target when GOOGLETEST_SUPPORT=ON or BENCHMARK_SUPPORT=ON
 #
-# 注意事项:
-# 默认情况下，
-# add_cc_library将始终创建一个名为xxx-${NAME}的库，并创建一个别名目标xxx::${NAME}。
-# 始终使用xxx::形式，以减少命名空间污染，其中xxx是项目名
+# Notes:
+# by default,
+# add_cc_library will always create a library named xxx-${NAME} and create an alias target xxx::${NAME}.
+# always use xxx:: form to reduce namespace pollution, where xxx is the project name
 #
 # add_cc_library(
 #   NAME
@@ -417,7 +417,7 @@ endfunction()
 #     "a/"
 #     "b/"
 #   DEPS
-#     xxx::awesome # 不是 "awesome"
+#     xxx::awesome # not "awesome"
 #   PUBLIC
 #   SHARED
 # )
@@ -432,14 +432,14 @@ endfunction()
 #
 function(add_cc_library)
     # cmake_parse_arguments(
-    #   <prefix>       # 这是定义的 CMake 前缀，用于设置解析后得到的参数变量名前缀
-    #   <options>      # 这是一个列表，用来定义所有支持的命令行参数选项，每个选项由以下三部分组成：
-    #                  #    1. 参数的前缀（必选）
-    #                  #    2. 参数的名称（可选）
-    #                  #    3. 参数的描述（可选）
-    #   <one_value_kw> # 这是一个关键字，用来指定只有一个值的参数的名称，默认为 "VALUE"
-    #   <multi_value_kw> # 这是一个关键字，用来指定多值参数的名称，默认为 "VALUES"
-    #   <...>          # 这是实际的命令行参数，每个参数都可以是一个值类型或多值类型的参数。
+    #   <prefix>       # this is the prefix defined for the CMake arguments, used to set the prefix of the parsed arguments
+    #   <options>      # this is a list that defines all supported command line argument options, each option consists of three parts:
+    #                  # 1. the option's name (required)
+    #                  # 2. the option's type (required)
+    #                  # 3. the option's description (optional)
+    #   <one_value_kw> # this is a keyword used to specify the name of a single value argument, the default is "VALUE"
+    #   <multi_value_kw> # this is a keyword used to specify the name of a multi-value argument, the default is "VALUES"
+    #   <...>          # this is the actual command line arguments, each argument can be either a single value type or a multi-value type argument.
     # )
     cmake_parse_arguments(CC_LIB
             "DISABLE_INSTALL;PUBLIC;TESTONLY;SHARED"
@@ -508,8 +508,8 @@ function(add_cc_library)
                         ${CC_LIB_SRCS} ${CC_LIB_HDRS}
                         )
             else()
-                # 将具有 __attribute__((visibility("default"))) 或 (dllimport) 的源文件设置为 PUBLIC
-                # 合并列表 A 和列表 B
+                # let the source code with __attribute__((visibility("default"))) or (dllimport) to be PUBLIC
+                # merge list A and list B
                 set(sources ${CC_LIB_SRCS})
                 list(APPEND sources ${CC_LIB_HDRS})
                 set(is_public_sources FALSE)
@@ -551,7 +551,7 @@ function(add_cc_library)
             message(FATAL_ERROR "Invalid build type: ${_build_type}")
         endif()
 
-        # 有的的情况无法推断出链接语言，此处直接指定
+        # if the language is not set, the linker language will be set to CXX
         set_property(TARGET ${_NAME} PROPERTY LINKER_LANGUAGE "CXX")
 
         target_include_directories(${_NAME} ${COMM_INTERNAL_INCLUDE_WARNING_GUARD}
@@ -571,7 +571,7 @@ function(add_cc_library)
             set_property(TARGET ${_NAME} PROPERTY FOLDER ${COMM_IDE_FOLDER}/internal)
         endif()
 
-        # install之后会丢失前缀，此处将其加回来
+        # install will lose the prefix, add it back here
         if(COMM_ENABLE_INSTALL)
             set_target_properties(${_NAME} PROPERTIES
                     OUTPUT_NAME "${_NAME}"
@@ -579,7 +579,7 @@ function(add_cc_library)
                     )
         endif()
     else()
-        # 仅头文件的lib
+        # header-only library
         add_library(${_NAME} INTERFACE)
         target_include_directories(${_NAME} ${COMM_INTERNAL_INCLUDE_WARNING_GUARD}
                 INTERFACE
@@ -613,23 +613,23 @@ endfunction()
 
 # add_cc_test()
 #
-# Cmake函数，增加测试的子模块
+# CMake function to add a C++ test target to the build.
 #
-# 参数:
-# NAME: 目标名称（见注意事项）
-# SRCS: 库的源代码文件列表
-# DIRS: 库的源代码文件目录列表，递归搜索c和cc文件，最多2层
-# DEPS: 库依赖的其他库的列表
-# COPTS: 私有编译选项列表
-# DEFINES: 公共定义列表
-# LINKOPTS: 链接选项列表
+# Parameters:
+# NAME: target name (see notes)
+# SRCS: the test's source files
+# DIRS: the test's source directories, recursively search for c and cc files, up to 2 levels
+# DEPS: the list of other libraries that this test depends on
+# COPTS: the list of private compile options
+# DEFINES: the list of public definitions
+# LINKOPTS: the list of link options
 #
-# 注意事项:
-# 默认情况下，
-# add_cc_test将始终创建一个名为xxx-${NAME}的库，并创建一个别名目标xxx::${NAME}。
-# 始终使用xxx::形式，以减少命名空间污染，其中xxx是项目名
+# Notes:
+# by default,
+# add_cc_test will always create a test named xxx-${NAME} and create an alias target xxx::${NAME}.
+# always use xxx:: form to reduce namespace pollution, where xxx is the project name
 #
-# 使用示例:
+# smaple:
 # add_cc_library(
 #   NAME
 #     awesome
@@ -702,7 +702,7 @@ function(add_cc_tests)
             PUBLIC ${CC_TEST_DEPS}
             PRIVATE ${CC_TEST_LINKOPTS}
             )
-    # IDE的目录结构设置
+    # Add all targets to a a folder in the IDE for organization.
     set_property(TARGET ${_NAME} PROPERTY FOLDER ${COMM_IDE_FOLDER}/tests)
 
     add_test(NAME ${_NAME} COMMAND ${_NAME})

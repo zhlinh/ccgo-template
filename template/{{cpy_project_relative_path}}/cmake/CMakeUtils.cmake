@@ -39,7 +39,7 @@ else()
     set(COMM_INTERNAL_INCLUDE_WARNING_GUARD "")
 endif()
 
-# add_subdirectory的子模块才INSTALL
+# only the submodules of add_subdirectory are installed
 if(NOT CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
     option(COMM_ENABLE_INSTALL "Enable install rule" OFF)
 else()
@@ -93,12 +93,13 @@ endif()
 
 # logcomm does not have source code, just use option
 option(LOGCOMM_SUPPORT "use logcomm provided logfile support" ON)
+# foundrycomm does not have source code, just use option
 option(FOUNDRYCOMM_SUPPORT "use foundrycomm provided base support" ON)
 
-# rapidjson仅头文件
+# rapidjson does not have source code, just use option
 option(RAPIDJSON_SUPPORT "use rapidjson provided json support" ON)
 
-# 此处遍历third_party目录下的所有子目录，如果子目录下存在src目录，则认为是一个有效的第三方库
+# this will loop all third_party sub dir, if the sub dir has src dir, then add option
 file(GLOB third_party_children RELATIVE
         "${CMAKE_SOURCE_DIR}/third_party/"
         ${CMAKE_SOURCE_DIR}/third_party/*
@@ -257,10 +258,10 @@ elseif(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 
     # generate pdb file
-    # /Z7：会生成包含调试信息的目标文件，但是不会生成程序数据库（.pdb）文件。这个选项可以用来在没有 Visual Studio 的情况下进行调试，但是会增加目标文件的大小。
-    # /Zi：会生成包含调试信息的程序数据库（.pdb）文件，以便在调试时使用。这个选项只在 Release 模式下添加，因为在 Debug 模式下，CMake 默认会添加 /Zi 选项。
-    # /Zd：会生成包含调试信息的目标文件，并将调试信息嵌入到目标文件中。这个选项可以用来在没有 Visual Studio 的情况下进行调试，但是会增加目标文件的大小。
-    # /ZI：这个选项类似于 /Zi，但是会在编译时生成一个预编译头文件（.pch）来加快编译速度。这个选项只在 Release 模式下添加，因为在 Debug 模式下，CMake 默认会添加 /ZI 选项。
+    # /Z7: will generate target file with debug info, but will not generate program database (.pdb) file. This option can be used for debugging without Visual Studio, but will increase the size of the target file.
+    # /Zi: will generate a program database (.pdb) file containing debug information for use during debugging. This option is only added in Release mode, because in Debug mode, CMake will add the /Zi option by default.
+    # /Zd: will generate target file with debug info and embed debug info into the target file. This option can be used for debugging without Visual Studio, but will increase the size of the target file.
+    # /ZI: This option is similar to /Zi, but will generate a precompiled header file (.pch) during compilation to speed up compilation. This option is only added in Release mode, because in Debug mode, CMake will add the /ZI option by default.
     if(BENCHMARK_SUPPORT OR BENCHMARK_SUPPORT)
         set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Z7")
         set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /Z7")
@@ -304,9 +305,9 @@ elseif(UNIX)
 
     # for error of .rodata can not be used when making a PIE object; recompile with -fPIC
     SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -no-pie")
-    # 判断是否使用 GNU 工具链
+    # when use GNU toolchain
     if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
-        # 添加链接选项
+        # add link option
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--no-undefined -Wl,--allow-multiple-definition")
     endif()
 endif()

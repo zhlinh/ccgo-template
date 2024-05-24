@@ -20,7 +20,6 @@ import org.gradle.kotlin.dsl.extra
  * Project config
  */
 class ProjectConfig(val project: Project) {
-    // 伴生对象
     companion object {
         private var projectConfig: ProjectConfig? = null
         fun getDefault(project: Project): ProjectConfig {
@@ -37,7 +36,7 @@ class ProjectConfig(val project: Project) {
     val versionName: String = project.libs.findVersion("commMainProject").get().toString()
     val isRelease: Boolean = project.libs.findVersion("commIsRelease").get().toString().toBoolean()
     val commGroupId: String = project.libs.findVersion("commGroupId").get().toString()
-    // 去除所有空格和换行
+    // remove blanks
     val commDependencies: String = project.libs.findVersion("commDependencies").get().toString().replace("\\s".toRegex(), "")
     val commDependenciesAsList: List<String> = commDependencies.split(",")
                                                 .filter { it.isNotBlank() && it != "EMPTY" && it.contains(":") }
@@ -68,7 +67,7 @@ class ProjectConfig(val project: Project) {
     val minSdkVersion: Int = project.libs.findVersion("minSdkVersion").get().toString().toInt()
     val appMinSdkVersion: Int = project.libs.findVersion("appMinSdkVersion").get().toString().toInt()
     val targetSdkVersion: Int = project.libs.findVersion("targetSdkVersion").get().toString().toInt()
-    // 去除所有空格和换行
+    // remove blanks
     val cmakeAbiFilters: String = project.libs.findVersion("cmakeAbiFilters").get().toString().replace("\\s".toRegex(), "")
     val cmakeAbiFiltersAsList: List<String> = cmakeAbiFilters.split(",")
                                                .filter { it.isNotBlank() &&  it != "EMPTY" }

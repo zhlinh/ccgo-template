@@ -9,14 +9,14 @@
 # notice shall be included in all copies or
 # substantial portions of the Software.
 
-# 判断${CMAKE_SOURCE_DIR}/CMakeConfig.local.cmake是否存在
+# check ${CMAKE_SOURCE_DIR}/CMakeConfig.local.cmake exists
 if(EXISTS ${CMAKE_SOURCE_DIR}/CMakeConfig.local.cmake)
-    # 存在则加载
+    # eixst then include it
     include(${CMAKE_SOURCE_DIR}/CMakeConfig.local.cmake)
 endif()
 
 if (NOT DEFINED CONFIG_COMM_CMAKE_CXX_STANDARD)
-    # 默认使用c++14
+    # use c++14 as default
     set(CONFIG_COMM_CMAKE_CXX_STANDARD 14 CACHE STRING "c++ standard")
 endif()
 message(STATUS "CONFIG_COMM_CMAKE_CXX_STANDARD: ${CONFIG_COMM_CMAKE_CXX_STANDARD}")

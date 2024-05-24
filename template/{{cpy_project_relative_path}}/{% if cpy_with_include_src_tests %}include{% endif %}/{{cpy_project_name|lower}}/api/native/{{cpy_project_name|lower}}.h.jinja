@@ -15,8 +15,8 @@ extern "C" {
 #endif
 
 #ifndef COMM_PUBLIC
-// 此处是为了非本项目使用时不定义COMM_PUBLIC
-// 否则Windows在查找时会添加__imp_前缀，导致找不到符号
+// this is for non-project use, no need to define COMM_PUBLIC
+// or windows will add __imp_ prefix when searching for symbols
 #  if defined(COMM_ENABLE_EXPORTS) && COMM_ENABLE_EXPORTS == 1
 #    if defined _WIN32 || defined __CYGWIN__
 #      ifdef BUILDING_DLL

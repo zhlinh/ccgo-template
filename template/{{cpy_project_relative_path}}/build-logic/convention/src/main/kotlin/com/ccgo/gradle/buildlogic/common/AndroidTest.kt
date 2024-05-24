@@ -28,7 +28,7 @@ internal fun Project.configureAndroidTest(commonExtension: CommonExtension<*, *,
         // for android test source set
         sourceSets {
             maybeCreate("androidTest").apply {
-                // 注意此处没有等号
+                // there is no '=' here
                 manifest.srcFile("src/androidTest/AndroidManifest.xml")
                 jniLibs.srcDirs(listOf("libs") + getThirdPartyXCommLibs())
             }
@@ -45,7 +45,7 @@ internal fun Project.configureAndroidTest(commonExtension: CommonExtension<*, *,
 }
 
 /**
- * 配置Android测试依赖
+ * config Android test dependencies
  */
 private fun Project.configureAndroidTestDependencies() {
     dependencies {

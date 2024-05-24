@@ -17,7 +17,7 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.getByType
 
 /**
- * application单元测试覆盖率插件
+ * application unit test coverage plugin
  */
 class AndroidApplicationJacocoConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {

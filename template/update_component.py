@@ -44,12 +44,11 @@ import shutil
 # ANDROID_HOME:              Android SDK Path
 # JAVA_HOME:                 Java Home Path
 # ANDROID_NDK_HOME:          Android NDK Path
-# CMAKE_HOME:                Cmake Home Pat径
+# CMAKE_HOME:                Cmake Home Path
 # ========================================================
 
-# 引入配置文件，即"CONFIG_"开头的全局变量
 # shellcheck disable=SC1091
-# 引入配置文件，即"CONFIG_"开头的全局变量
+# import all config parameters, which are start with "CONFIG_"
 from build_config import *
 
 script_path = os.path.dirname(os.path.abspath(__file__))
@@ -131,5 +130,5 @@ dst = f"'version', \"{ios_cur_ver}\""
 os.system(f"{sed_cmd} 's/{src}/{dst}/g' {BUILD_GRADLE_FILE}")
 
 os.system("git add --all")
-os.system(f"git commit -m \"ci({project_name}): 更新组件{project_name}版本为v{ios_cur_ver}\"")
+os.system(f"git commit -m \"ci({project_name}): update component {project_name} version to v{ios_cur_ver}\"")
 os.system("git push origin master")

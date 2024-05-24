@@ -26,9 +26,9 @@ include(${CMAKE_SOURCE_DIR}/cmake/CMakeExtraFlags.cmake)
 
 include_directories(./)
 
-# add_subdirectory的顺序按无依赖的在前面，即编译顺序，和链接顺序相反，链接的时候是无依赖的在后面
+# add_subdirectory's order is the same as the order of the directories in the file system
 if(THIRD_PARTY_OPTION)
-    # 生成third_party/CMakeLists.txt
+    # generate third_party/CMakeLists.txt
     configure_file(
             ${CMAKE_SOURCE_DIR}/cmake/template/ThirdParty.CMakeLists.txt.in
             ${CMAKE_SOURCE_DIR}/third_party/CMakeLists.txt
@@ -38,7 +38,7 @@ if(THIRD_PARTY_OPTION)
     add_subdirectory(third_party ${PROJECT_NAME}-third_party)
 endif()
 
-# 生成src/CMakeLists.txt
+# generate src/CMakeLists.txt
 configure_file(
         ${CMAKE_SOURCE_DIR}/cmake/template/Src.CMakeLists.txt.in
         ${CMAKE_SOURCE_DIR}/src/CMakeLists.txt
@@ -47,7 +47,7 @@ configure_file(
 )
 add_subdirectory(src ${PROJECT_NAME}-src)
 
-# 获取src中的子模块
+# get the subdirectories of src
 set(SRC_SUB_DIR_LIST "")
 get_subdirectories(SRC_SUB_DIR_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src")
 message(STATUS "SRC_SUB_DIR_LIST=${SRC_SUB_DIR_LIST}")
@@ -59,7 +59,7 @@ if(GOOGLETEST_SUPPORT)
     include_directories(${COMM_GTEST_SRC_DIR}/googletest/include)
     include_directories(${COMM_GTEST_SRC_DIR}/googlemock/include)
     include(${CMAKE_SOURCE_DIR}/cmake/external/googletest/DownloadGTest.cmake)
-    # 生成tests/CMakeLists.txt
+    # generate tests/CMakeLists.txt
     configure_file(
             ${CMAKE_SOURCE_DIR}/cmake/template/Tests.CMakeLists.txt.in
             ${CMAKE_SOURCE_DIR}/tests/CMakeLists.txt
@@ -69,7 +69,7 @@ if(GOOGLETEST_SUPPORT)
     add_subdirectory("tests" "${PROJECT_NAME}-tests")
 endif()
 if(BENCHMARK_SUPPORT)
-    # 生成benches/CMakeLists.txt
+    # generate benches/CMakeLists.txt
 #    configure_file(
 #            ${CMAKE_SOURCE_DIR}/cmake/template/Benches.CMakeLists.txt.in
 #            ${CMAKE_SOURCE_DIR}/benches/CMakeLists.txt
@@ -244,8 +244,8 @@ else()
         set_property(TARGET ${PROJECT_NAME} PROPERTY LINKER_LANGUAGE "CXX")
 
     elseif(APPLE)
-        # iOS的静态库已经编译并install
+        # the static library of iOS or macOS is already build and install
     elseif(MSVC)
-        # windows的静态库已经编译并install
+        # the static library of windows is already build and install
     endif()
 endif()

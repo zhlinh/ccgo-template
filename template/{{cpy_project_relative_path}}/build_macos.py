@@ -30,7 +30,7 @@ PROJECT_RELATIVE_PATH = PROJECT_NAME.lower()
 BUILD_OUT_PATH = 'cmake_build/macOS'
 INSTALL_PATH = BUILD_OUT_PATH + '/Darwin.out'
 
-# 不指定架构时，会是x86_64
+# if not target arch, it will be x86_64
 MACOS_BUILD_ARM_CMD = 'cmake ../.. -DCMAKE_BUILD_TYPE=Release -DENABLE_ARC=0 -DENABLE_BITCODE=0 -DCMAKE_OSX_ARCHITECTURES="arm64;arm64e"  %s && make -j8 && make install'
 
 MACOS_BUILD_X86_CMD = 'cmake ../.. -DCMAKE_BUILD_TYPE=Release -DENABLE_ARC=0 -DENABLE_BITCODE=0 -DCMAKE_OSX_ARCHITECTURES="x86_64" %s && make -j8 && make install'
@@ -78,14 +78,6 @@ def build_macos(target_option='', tag=''):
         return False
     if not libtool_libs(glob.glob(INSTALL_PATH + '/*.a'), libtool_simulator_dst_lib):
         return False
-
-    # CHANGE: 2021-06-03 logcomm将单独接入
-    #if len(target_option) <= 0:
-    #    cur_python_dir_path = os.path.dirname(os.path.realpath(__file__))
-    #    xlog_src_path = os.path.join(cur_python_dir_path, 'third_party/logcomm/ios')
-    #    libtool_xlog_dst_lib = INSTALL_PATH + '/xlog'
-    #    if not libtool_libs(glob.glob(xlog_src_path + '/*.a'), libtool_xlog_dst_lib):
-    #        return False
 
     # src libs to be libtool
     lipo_src_libs = []

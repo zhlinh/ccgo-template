@@ -17,13 +17,13 @@ import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.kotlin.dsl.getByType
 
 /**
- * 获取版本信息
+ * get version info
  */
 val Project.libs
     get(): VersionCatalog = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
 /**
- * 获取项目配置
+ * get project config
  */
 val Project.cfgs
     get() = ProjectConfig.getDefault(this)

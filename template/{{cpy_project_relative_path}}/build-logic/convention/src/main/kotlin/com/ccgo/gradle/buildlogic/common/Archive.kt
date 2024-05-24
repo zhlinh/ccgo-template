@@ -117,7 +117,7 @@ internal fun Project.configureSubArchive() {
         val rootCopyProjectAAR = rootProject.tasks.named("copyProjectAAR")
         rootCopyProjectAAR.dependsOn(copyProjectAAR)
         copyProjectAAR.dependsOn(genAAR)
-//        // 不能使用named来获取(获取到的会是Provider)，否则使用dependsOn的时候会报错
+        // can not use named, or dependsOn will occur error
         val assembleProdRelease = tasks.named(cfgs.mainProjectAssembleProdTaskName)
         genAAR.dependsOn(assembleProdRelease)
         assembleProdRelease.dependsOn(cleanTheBinDir)
@@ -155,7 +155,7 @@ fun Zip.zipFiles(project: Project) {
         include("obj/**")
         include("*.aar")
     }
-    // 去除.zip后缀
+    // remove .zip suffix
     into(project.cfgs.mainProjectArchiveZipName.substringBeforeLast("."))
     archiveFileName.set(project.cfgs.mainProjectArchiveZipName)
     destinationDirectory.set(File("${project.rootDir}/bin/"))

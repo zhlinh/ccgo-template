@@ -38,7 +38,7 @@ internal fun Project.configureNativePush() {
         }
     }
 
-    // 注意修改项目根路径下的local.properties的comm.load.pkg和comm.load.abi字段
+    // NOTE: local.properties should include comm.load.pkg and comm.load.abi
     tasks.register("pushSo") {
         val rmSo = tasks.getByName("rmSo")
         subprojects.find { it.name == "main_android_sdk" }?.let {
@@ -54,7 +54,7 @@ internal fun Project.configureNativePush() {
             val serialMap = getSerialMap() ?: return@doLast
             for(entry in serialMap.entries) {
                 execCommand("adb -s ${entry.key} shell settings put system system_ccgo_comm_loadlib 1")
-                // 授权存储卡权限
+                // to get write permission
                 for (pkg in commLoadPkg.split(',')) {
                     println("adb -s ${entry.key} shell pm grant $pkg android.permission.WRITE_EXTERNAL_STORAGE")
                     execCommand("adb -s ${entry.key} shell pm grant $pkg android.permission.WRITE_EXTERNAL_STORAGE")
@@ -125,18 +125,18 @@ internal fun pushAndroidDeviceFile(frosystem_ccgo_comm_loadlibme: String, toName
 internal fun getCurrentPackageName(): String {
     val serialMap = getSerialMap() ?: return ""
     for(entry in serialMap.entries) {
-        // 此处仅取第一个
+        // only change the first one
         return execCommand("adb -s ${entry.key} shell dumpsys window windows | grep mCurrentFocus | awk -F '[ /]' '{print \$5}'")
     }
     return ""
 }
 
-// 注意修改项目根路径下的local.properties的comm.load.abi和comm.load.abi字段
+// NOTE: local.properties should include comm.load.abi and comm.load.abi
 internal fun Project.getCommLoadAbi(): String {
     return getLocalProperties("comm.load.abi", "arm64-v8a")
 }
 
-// 注意修改项目根路径下的local.properties的comm.load.abi和comm.load.abi字段
+// NOTE: local.properties should inlucde comm.load.abi and comm.load.abi
 internal fun Project.getCommLoadPkg(): String {
     return getLocalProperties("comm.load.abi", getCurrentPackageName())
 }

@@ -53,7 +53,7 @@ internal fun App() {
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "跨平台模块测试",
+            text = "Cross-platform Module Sample",
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
@@ -63,7 +63,7 @@ internal fun App() {
         OutlinedTextField(
             value = inputText,
             onValueChange = { inputText = it },
-            label = { Text("输入") },
+            label = { Text("Input") },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Next
@@ -75,13 +75,13 @@ internal fun App() {
 
         Button(
             onClick = {
-                // TODO: 点击开始加速后的逻辑
-                channel.trySend("点击测试")
+                // TODO: add test logic here
+                channel.trySend("Click to Test")
 
             },
             modifier = Modifier.fillMaxWidth().height(56.dp)
         ) {
-            Text(text = "测试")
+            Text(text = "Test")
         }
     }
 

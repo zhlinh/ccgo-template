@@ -14,7 +14,7 @@
 #    define {{ cpy_project_name|upper }}_JNI_API_PREFIX Java_{{ cpy_project_group_id|replace('.', '_') }}_{{ cpy_project_name|lower }}_jni_{{ cpy_project_name|capitalize|replace('comm', 'Comm') }}Jni_
 #  endif
 
-// 这两个define是工具函数，用于实现连接两个宏
+// the following two macros are utility macros to concatenate two macros
 #  define _TOOLS_CONCAT(a, b) a##b
 #  define TOOLS_CONCAT(a, b) _TOOLS_CONCAT(a, b)
 

@@ -20,7 +20,7 @@ internal fun Project.configureDefaultConfig(commonExtension: CommonExtension<*, 
     extensions.configure<LibraryExtension> {
         defaultConfig {
             multiDexEnabled = true
-            // proguard文件打包进aar
+            // proguard config file to aar
             consumerProguardFiles( "proguard-rules.pro")
         }
     }

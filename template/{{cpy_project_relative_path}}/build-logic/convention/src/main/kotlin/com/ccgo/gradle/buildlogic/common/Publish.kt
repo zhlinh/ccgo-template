@@ -59,9 +59,9 @@ internal fun Project.configurePublish() {
         }
 
         val publishConfig = mapOf(
-            // main的始终使用release
+            // main always use release
             "main" to "bin/${cfgs.projectNameUppercase}_ANDROID_SDK-${cfgs.versionName}-release.aar",
-            // test的使用当前的aar打包配置
+            // test use current aar package config
             "test" to "bin/${cfgs.mainProjectArchiveAarName}"
         )
         publications {

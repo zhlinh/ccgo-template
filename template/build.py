@@ -217,7 +217,7 @@ class BuildTask():
 
 class TagBuildTask(BuildTask):
     def build(self):
-        # 打TAG
+        # TAG
         if CI_IS_RELEASE:
             print(f"======={CONFIG_PROJECT_NAME} build start add tag=======")
             run_cmd(f"git tag -a {tag} -F {LOCAL_PATH}/bin/{tag}",
@@ -232,7 +232,7 @@ class TagBuildTask(BuildTask):
 class AndroidBuildTask(BuildTask):
     def build(self):
         print("=======$CONFIG_PROJECT_NAME build [Android] start=======")
-        # 启动构建
+        # start build
         run_cmd(f"chmod +x {PROJECT_ROOT_PATH}/gradlew")
         os.chdir(PROJECT_ROOT_PATH)
         run_cmd(f"{PROJECT_ROOT_PATH}/gradlew clean")
@@ -620,9 +620,8 @@ def main():
     print(f"ANDROID_NDK_HOME:{os.environ.get('ANDROID_NDK_HOME')}")
     print(f"CMAKE_HOME:{os.environ.get('CMAKE_HOME')}")
 
-    # 从shell读取参数
+    # read parameters from shell
     if len(sys.argv) > 1:
-        # 从shell读取参数
         for item in sys.argv:
             if item in WITH_PREFIX_ALL_BUILD_ITEMS:
                 TARGET_WITH_PREFIX_ALL_BUILD_ITEMS.append(item)

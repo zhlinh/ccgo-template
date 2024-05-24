@@ -23,9 +23,9 @@ project(${TEMPLATE_SUB_LIB_NAME})
 
 set(TEMPLATE_SUB_DEPS "")
 
-# 遍历 map
+# loop map
 list(LENGTH CONFIG_COMM_DEPS_MAP deps_map_len)
-# 遍历列表并获取每个元素的下标
+# loop the list and get the index of each element
 foreach(index RANGE 0 ${deps_map_len})
     math(EXPR is_odd "${index} % 2")
     if(is_odd EQUAL 1)
@@ -36,16 +36,16 @@ foreach(index RANGE 0 ${deps_map_len})
     if(next_index GREATER_EQUAL ${deps_map_len})
         continue()
     endif()
-    # 获取当前元素的值
+    # get the value of current element
     list(GET CONFIG_COMM_DEPS_MAP ${index} key)
     list(GET CONFIG_COMM_DEPS_MAP ${next_index} value)
-    # 将每个键值对分割为键和值
+    # split each key-value pair into key and value
     string(REPLACE "," ";" list_value "${value}")
     if ("${MAIN_PROJECT_NAME}-${key}" STREQUAL ${TEMPLATE_SUB_LIB_NAME})
         foreach(item IN LISTS list_value)
-            # 添加前缀
+            # add prefix
             set(new_item "${MAIN_PROJECT_NAME}::${MAIN_PROJECT_NAME}-${item}")
-            # 将新元素添加到另一个列表
+            # add the new element to the list
             list(APPEND list_deps ${new_item})
         endforeach()
         set(TEMPLATE_SUB_DEPS ${list_deps})

@@ -25,38 +25,38 @@ PROJECT_NAME_LOWER = PROJECT_NAME.lower()
 ANDROID_MERGE_THIRD_PARTY_LIBS = []
 ANDROID_MERGE_EXCLUDE_LIBS = []
 
-# apple(iOS/macOS)导出的头文件
+# apple(iOS/macOS) export header files
 APPLE_BUILD_COPY_HEADER_FILES = {
     f"include/{PROJECT_NAME_LOWER}/base/verinfo.h": "base",
     {{ 'f"include/{PROJECT_NAME_LOWER}' ~ '/api/apple/' ~ cpy_project_name | capitalize ~ '.h"' }}: "api",
 }
 
-# iOS导出的头文件
+# iOS export header files
 IOS_BUILD_COPY_HEADER_FILES = ChainMap({
     {{ 'f"include/{PROJECT_NAME_LOWER}' ~ '/api/ios/' ~ cpy_project_name | capitalize ~ '.h"' }}: "api",
 }, APPLE_BUILD_COPY_HEADER_FILES)
 
-# macOS导出的头文件
+# macOS export header files
 MACOS_BUILD_COPY_HEADER_FILES = ChainMap({
     {{ 'f"include/{PROJECT_NAME_LOWER}' ~ '/api/macos/' ~ cpy_project_name | capitalize ~ '.h"' }}: "api",
 }, APPLE_BUILD_COPY_HEADER_FILES)
 
-# windows导出的头文件
+# windows export header files
 WINDOWS_BUILD_COPY_HEADER_FILES = {
     f"include/{PROJECT_NAME_LOWER}/base/verinfo.h": "base",
     {{ 'f"include/{PROJECT_NAME_LOWER}' ~ '/api/native/' ~ cpy_project_name | lower ~ '.h"' }}: "api",
 }
 
-# linux导出的头文件
+# linux export header files
 LINUX_BUILD_COPY_HEADER_FILES = WINDOWS_BUILD_COPY_HEADER_FILES
 
-# include的目录
+# include header files
 INCLUDE_BUILD_COPY_HEADER_FILERS = {
   "include/": ".",
 }
 
-# verinfo的生成路径
+# verinfo file path
 OUTPUT_VERINFO_PATH = f"include/{PROJECT_NAME_LOWER}/base/"
 
-# Android的项目路径
+# Android project path
 ANDROID_PROJECT_PATH = "android/main_android_sdk"
