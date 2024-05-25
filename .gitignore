@@ -28,6 +28,7 @@ buildNumber.properties
 local.properties
 .vscode/
 **/.vscode/
+**/.vs/
 **/.cache/
 
 ######################
