@@ -36,26 +36,44 @@ internal fun Project.configurePublish() {
     extensions.configure<PublishingExtension> {
         repositories {
             val mavenCount = getLocalProperties("comm.maven.count", "0").toInt()
+            var validMavenCount = 0
             if (mavenCount > 0) {
                 for (i in 0 until mavenCount) {
                     val url = getLocalProperties("comm.maven.url${i}", "")
                     val username = getLocalProperties("comm.maven.username${i}", "")
                     val password = getLocalProperties("comm.maven.password${i}", "")
-                    if (url.isNotEmpty()) {
-                        maven {
-                            this.url = uri(url)
-                            if (username.isNotEmpty() && password.isNotEmpty()) {
-                                credentials {
-                                    this.username = username
-                                    this.password = password
-                                }
+                    if (url.isEmpty()) {
+                        continue
+                    }
+                    validMavenCount++
+                    maven {
+                        this.url = uri(url)
+                        if (username.isNotEmpty() && password.isNotEmpty()) {
+                            credentials {
+                                this.username = username
+                                this.password = password
                             }
                         }
                     }
                 }
             } else {
-                println("【Error】failed to get comm.maven.count")
+                throw Exception("【Error】failed to get comm.maven.count, you need to add" +
+                        " at least one maven config in local.properties" +
+                         "\ncomm.maven.count=1" +
+                         "\ncomm.maven.url0=<URL>" +
+                         "\ncomm.maven.username0=<USERNAME>" +
+                         "\ncomm.maven.password0=<PASSWORD>"
+                )
             }
+        }
+        
+        if (validMavenCount == 0) {
+            throw Exception("【Error】failed to get valid maven repository, you need to add" +
+                    " at least one maven config in local.properties" +
+                    "\ncomm.maven.url0=<URL>" +
+                    "\ncomm.maven.username0=<USERNAME>" +
+                    "\ncomm.maven.password0=<PASSWORD>"
+            )
         }
 
         val publishConfig = mapOf(
