@@ -45,7 +45,8 @@ def build_docs(incremental, tag=''):
     print(f'==================build docs with tag: {tag}, install path: {INSTALL_PATH} ========================')
 
     # generate verinfo.h
-    gen_project_revision_file(PROJECT_NAME, OUTPUT_VERINFO_PATH, get_version_name(SCRIPT_PATH), tag)
+    gen_project_revision_file(PROJECT_NAME, OUTPUT_VERINFO_PATH, get_version_name(SCRIPT_PATH), tag,
+                              incremental=incremental)
 
     clean(BUILD_OUT_PATH, incremental)
     os.chdir(BUILD_OUT_PATH)

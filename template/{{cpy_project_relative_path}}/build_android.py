@@ -161,7 +161,8 @@ def main(incremental, build_archs, target_option='', tag=''):
     print(f"main tag {tag}")
 
     # generate verinfo.h
-    gen_project_revision_file(PROJECT_NAME, OUTPUT_VERINFO_PATH, get_version_name(SCRIPT_PATH), tag)
+    gen_project_revision_file(PROJECT_NAME, OUTPUT_VERINFO_PATH, get_version_name(SCRIPT_PATH), tag,
+                              incremental=incremental)
 
     for arch in build_archs:
         if not build_android(incremental, arch, target_option, tag):

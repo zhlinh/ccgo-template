@@ -42,7 +42,8 @@ THIRD_PARTY_MERGE_LIBS = ["pthread"]
 def build_windows(incremental, tag='', config='Release'):
     before_time = time.time()
     # generate verinfo.h
-    gen_project_revision_file(PROJECT_NAME, OUTPUT_VERINFO_PATH, get_version_name(SCRIPT_PATH), tag)
+    gen_project_revision_file(PROJECT_NAME, OUTPUT_VERINFO_PATH, get_version_name(SCRIPT_PATH), tag,
+                              incremental=incremental)
 
     clean(BUILD_OUT_PATH, incremental)
     os.chdir(BUILD_OUT_PATH)
@@ -105,7 +106,8 @@ def build_windows(incremental, tag='', config='Release'):
 def gen_win_project(tag='', config='Release'):
     before_time = time.time()
     # generate verinfo.h
-    gen_project_revision_file(PROJECT_NAME, OUTPUT_VERINFO_PATH, get_version_name(SCRIPT_PATH), tag)
+    gen_project_revision_file(PROJECT_NAME, OUTPUT_VERINFO_PATH, get_version_name(SCRIPT_PATH), tag,
+                              incremental=False)
 
     clean(BUILD_OUT_PATH, False)
     os.chdir(BUILD_OUT_PATH)

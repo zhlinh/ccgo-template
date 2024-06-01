@@ -360,7 +360,8 @@ def parse_as_git(path):
     return revision, path, url
 
 
-def gen_project_revision_file(project_name, origin_version_file_path, version_name, tag=''):
+def gen_project_revision_file(project_name, origin_version_file_path, version_name,
+                                tag='', incremental=False):
     print(f"version name {version_name}")
     cur_python_dir_path = os.path.dirname(os.path.realpath(__file__))
     version_file_path = os.path.join(cur_python_dir_path, origin_version_file_path)
@@ -368,7 +369,7 @@ def gen_project_revision_file(project_name, origin_version_file_path, version_na
     revision, path, url = parse_as_git(version_file_path)
 
     build_date = time.strftime("%Y-%m-%d", time.localtime(time.time()))
-    build_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
+    build_time = build_date if incremental else time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
     version_file_name = 'verinfo.h'
     contents = u'''//
 // {version_file_name}
@@ -523,6 +524,7 @@ def merge_files_ends_with(src_dir, suffix, out_file):
         for filename in file_list:
             with open(filename, "rb") as infile:
                 outfile.write(infile.read())
+
 
 def zip_files_ends_with(src_dir, suffix, out_file):
     # List of files to zip

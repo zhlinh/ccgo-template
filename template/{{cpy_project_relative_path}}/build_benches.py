@@ -40,6 +40,10 @@ def build_benchmark(incremental, tag=''):
     clean(BUILD_OUT_PATH, incremental)
     os.chdir(BUILD_OUT_PATH)
 
+    # generate verinfo.h
+    gen_project_revision_file(PROJECT_NAME, OUTPUT_VERINFO_PATH, get_version_name(SCRIPT_PATH), tag,
+                              incremental=incremental)
+
     ret = os.system(BENCHMARK_BUILD_CMD)
     os.chdir(SCRIPT_PATH)
     if ret != 0:
@@ -76,8 +80,6 @@ def run_benchmark(incremental, tag=''):
 
 def main(choose):
     print(f'==========Choose num: {choose}===========')
-    # generate verinfo.h
-    gen_project_revision_file(PROJECT_NAME, OUTPUT_VERINFO_PATH, get_version_name(SCRIPT_PATH), tag)
 
     result = True
     if choose == '1':

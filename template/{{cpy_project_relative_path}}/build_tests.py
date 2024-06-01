@@ -67,7 +67,8 @@ def build_googletest(incremental, tag=''):
     print(f'==================build_googletest with tag: {tag}, install path: {INSTALL_PATH} ========================')
 
     # generate verinfo.h
-    gen_project_revision_file(PROJECT_NAME, OUTPUT_VERINFO_PATH, get_version_name(SCRIPT_PATH), tag)
+    gen_project_revision_file(PROJECT_NAME, OUTPUT_VERINFO_PATH, get_version_name(SCRIPT_PATH), tag,
+                              incremental=incremental)
 
     clean(BUILD_OUT_PATH, incremental)
     os.chdir(BUILD_OUT_PATH)
@@ -121,7 +122,8 @@ def run_googletest(filter_rules=''):
 def gen_googletest_project(tag=''):
     print('==================gen_macos_project========================')
     # generate verinfo.h
-    gen_project_revision_file(PROJECT_NAME, OUTPUT_VERINFO_PATH, get_version_name(SCRIPT_PATH), tag)
+    gen_project_revision_file(PROJECT_NAME, OUTPUT_VERINFO_PATH, get_version_name(SCRIPT_PATH), tag,
+                              incremental=False)
 
     clean(BUILD_OUT_PATH)
     os.chdir(BUILD_OUT_PATH)
