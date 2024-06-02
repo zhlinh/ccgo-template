@@ -36,6 +36,7 @@ internal fun Project.configurePublish() {
     extensions.configure<PublishingExtension> {
         repositories {
             val mavenCount = getLocalProperties("comm.maven.count", "0").toInt()
+            val taskName = project.gradle.startParameter.taskNames.firstOrNull()
             var validMavenCount = 0
             if (mavenCount > 0) {
                 for (i in 0 until mavenCount) {
@@ -57,23 +58,21 @@ internal fun Project.configurePublish() {
                     }
                 }
             } else {
-                throw Exception("【Error】failed to get comm.maven.count, you need to add" +
-                        " at least one maven config in local.properties" +
-                         "\ncomm.maven.count=1" +
-                         "\ncomm.maven.url0=<URL>" +
-                         "\ncomm.maven.username0=<USERNAME>" +
-                         "\ncomm.maven.password0=<PASSWORD>"
-                )
+                // 获取当前运行的任务名
+                if (taskName != null && taskName.contains("publish")) {
+                    throw Exception( getErrorHint(hintCount = true) )
+                } else {
+                    println( getErrorHint(hintCount = false) )
+                }
             }
-        }
-        
-        if (validMavenCount == 0) {
-            throw Exception("【Error】failed to get valid maven repository, you need to add" +
-                    " at least one maven config in local.properties" +
-                    "\ncomm.maven.url0=<URL>" +
-                    "\ncomm.maven.username0=<USERNAME>" +
-                    "\ncomm.maven.password0=<PASSWORD>"
-            )
+            if (validMavenCount == 0) {
+                // 获取当前运行的任务名
+                if (taskName != null && taskName.contains("publish")) {
+                    throw Exception( getErrorHint(hintCount = false) )
+                } else {
+                    println( getErrorHint(hintCount = false) )
+                }
+            }
         }
 
         val publishConfig = mapOf(
@@ -118,4 +117,14 @@ internal fun Project.configurePublish() {
             }  // for
         }  // publications
     }  // PublishingExtension
+}
+
+private fun getErrorHint(hintCount: Boolean): String {
+    val hintCountStr = if (hintCount) "\ncomm.maven.count=1" else ""
+    return "【Error】[Publish-Configuration] failed to get comm.maven.count, you need to add" +
+            " at least one maven config in local.properties" +
+            hintCountStr +
+            "\ncomm.maven.url0=<MAVEN_URL>" +
+            "\ncomm.maven.username0=<USERNAME>" +
+            "\ncomm.maven.password0=<PASSWORD>"
 }
