@@ -9,24 +9,23 @@
 // notice shall be included in all copies or
 // substantial portions of the Software.
 
-import com.ccgo.gradle.buildlogic.common.configurePublish
+import com.android.build.gradle.LibraryExtension
+import com.ccgo.gradle.buildlogic.common.configureAndroidCompose
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.getByType
 
 /**
- * Publish plugin for Android projects.
+ * Compose plugin for Android library projects.
  */
-class AndroidPublishConventionPlugin : Plugin<Project> {
+class AndroidLibraryComposeConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
-            with(pluginManager) {
-                apply("org.jetbrains.kotlin.jvm")
-                apply("ccgo.android.lint")
-                apply("com.vanniktech.maven.publish")
-                apply("com.gradleup.nmcp")
-                apply("signing")
-            }
-            configurePublish()
+            pluginManager.apply("com.android.library")
+
+            val extension = extensions.getByType<LibraryExtension>()
+            configureAndroidCompose(extension)
         }
     }
+
 }

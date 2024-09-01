@@ -9,24 +9,22 @@
 // notice shall be included in all copies or
 // substantial portions of the Software.
 
-import com.ccgo.gradle.buildlogic.common.configurePublish
+import com.android.build.gradle.LibraryExtension
+import com.ccgo.gradle.buildlogic.common.configureSubNativeBuildPython
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.configure
 
 /**
- * Publish plugin for Android projects.
+ * Native Python plugin for Android library projects.
  */
-class AndroidPublishConventionPlugin : Plugin<Project> {
+class AndroidLibraryNativePythonConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             with(pluginManager) {
-                apply("org.jetbrains.kotlin.jvm")
-                apply("ccgo.android.lint")
-                apply("com.vanniktech.maven.publish")
-                apply("com.gradleup.nmcp")
-                apply("signing")
+                apply("ccgo.android.library")
             }
-            configurePublish()
+            configureSubNativeBuildPython()
         }
     }
 }

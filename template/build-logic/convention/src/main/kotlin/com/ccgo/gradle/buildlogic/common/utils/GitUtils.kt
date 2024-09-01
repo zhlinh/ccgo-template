@@ -9,7 +9,7 @@
 // notice shall be included in all copies or
 // substantial portions of the Software.
 
-package com.ccgo.gradle.buildlogic.common
+package com.ccgo.gradle.buildlogic.common.utils
 
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -50,4 +50,16 @@ internal fun getCurrentTag(release: Boolean, name: String, suffix: String): Stri
         return "v${name}"
     }
     return "v${name}-${suffix}"
+}
+
+internal fun getGitRepoUrl(): String {
+    return execCommand("git config --get remote.origin.url")
+}
+
+internal fun getGitRepoUserName(): String {
+    return execCommand("git config --get user.name")
+}
+
+internal fun getGitRepoUserEmail(): String {
+    return execCommand("git config --get user.email")
 }

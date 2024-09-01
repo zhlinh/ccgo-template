@@ -9,24 +9,21 @@
 // notice shall be included in all copies or
 // substantial portions of the Software.
 
-import com.ccgo.gradle.buildlogic.common.configurePublish
+import com.ccgo.gradle.buildlogic.common.configureKotlinJvm
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 /**
- * Publish plugin for Android projects.
+ * for jvm library project
  */
-class AndroidPublishConventionPlugin : Plugin<Project> {
+class JvmLibraryConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             with(pluginManager) {
                 apply("org.jetbrains.kotlin.jvm")
                 apply("ccgo.android.lint")
-                apply("com.vanniktech.maven.publish")
-                apply("com.gradleup.nmcp")
-                apply("signing")
             }
-            configurePublish()
+            configureKotlinJvm()
         }
     }
 }
