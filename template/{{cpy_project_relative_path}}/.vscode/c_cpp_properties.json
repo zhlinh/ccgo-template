@@ -1,0 +1,20 @@
+{
+    "configurations": [
+        {
+            "name": "${workspaceFolderBasename}",
+            // not use includePath, use compileCommands instead
+            // "includePath": [
+            //     "${workspaceFolder}/include",
+            //     "${workspaceFolder}/src",
+            //     "${workspaceFolder}/third_party/**/include"
+            // ],
+            "compileCommands": "${workspaceFolder}/build/compile_commands.json",
+            "defines": [],
+            "cStandard": "c11",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "linux-clang-x64",
+            "configurationProvider": "ms-vscode.cmake-tools"
+        }
+    ],
+    "version": 4
+}
