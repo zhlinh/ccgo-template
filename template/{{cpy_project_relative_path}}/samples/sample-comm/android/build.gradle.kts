@@ -18,11 +18,13 @@ dependencies {
 }
 
 android {
-    compileSdkVersion(33)
+    compileSdk = 34
+    buildToolsVersion = "34.0.0"
+    namespace = "com.mojet.app.sample"
     defaultConfig {
         applicationId = "com.mojet.app.sample.android"
-        minSdkVersion(24)
-        targetSdkVersion(33)
+        minSdk = 24
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0-SNAPSHOT"
     }

@@ -84,11 +84,13 @@ kotlin {
 
 
 android {
-    compileSdkVersion(33)
+    compileSdk = 34
+    buildToolsVersion = "34.0.0"
+    namespace = "com.mojet.app.sample"
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
-        minSdkVersion(24)
-        targetSdkVersion(33)
+        minSdk = 24
+        targetSdk = 34
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
