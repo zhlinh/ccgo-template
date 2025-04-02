@@ -51,13 +51,8 @@ if(NOT DEFINED COMM_IDE_FOLDER)
     set(COMM_IDE_FOLDER ${MAIN_PROJECT_NAME})
 endif()
 
-option(BUILD_CHANNEL_OVERSEA "build vpncomm channel oversea" OFF)
 # enable export
 add_definitions(-DCOMM_ENABLE_EXPORTS=1)
-
-if(BUILD_CHANNEL_OVERSEA)
-    add_definitions(-DCOMM_BUILD_CHANNEL_OVERSEA=1)
-endif()
 
 macro(add_third_party_option conf_name desc value)
   message(STATUS "add_third_party_option ${conf_name} '${desc}' ${value}")
@@ -120,9 +115,7 @@ add_third_party_option(GOOGLETEST_SUPPORT "use googletest provided cpp unittest 
 add_third_party_option(BENCHMARK_SUPPORT "use googletest provided benchmark support" OFF)
 
 # include ios api
-include_directories(${CMAKE_SOURCE_DIR}/include/${MAIN_PROJECT_NAME}/api/apple/)
 include_directories(${CMAKE_SOURCE_DIR}/include/${MAIN_PROJECT_NAME}/api/ios/)
-include_directories(${CMAKE_SOURCE_DIR}/include/${MAIN_PROJECT_NAME}/api/macos/)
 # include third party include dir
 set(COMM_THIRD_PARTY_INCLUDE_DIRS "")
 get_third_party_include_directories(COMM_THIRD_PARTY_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/third_party/)
@@ -170,25 +163,68 @@ if(ANDROID)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions")
 
     # Don't re-export libgcc symbols in every binary.
-    list(APPEND SELF_LINKER_FLAGS -Wl,--exclude-libs,libgcc.a)
+    set(SELF_LINKER_FLAGS "")
+    add_exclude_lib_link_option(SELF_LINKER_FLAGS libgcc.a)
     # arm32 currently uses a linker script in place of libgcc to ensure that
     # libunwind is linked in the correct order. --exclude-libs does not propagate to
     # the contents of the linker script and can't be specified within the linker
     # script. Hide both regardless of architecture to future-proof us in case we
     # move other architectures to a linker script (which we may want to do so we
     # automatically link libclangrt on other architectures).
-    list(APPEND SELF_LINKER_FLAGS -Wl,--exclude-libs,libgcc_real.a)
-    list(APPEND SELF_LINKER_FLAGS -Wl,--exclude-libs,libatomic.a)
+    add_exclude_lib_link_option(SELF_LINKER_FLAGS libgcc_real.a)
+    add_exclude_lib_link_option(SELF_LINKER_FLAGS libatomic.a)
     # STL specific flags.
+    message(STATUS "ANDROID_STL: ${ANDROID_STL}")
     if(ANDROID_STL MATCHES "^c\\+\\+_")
         if(ANDROID_ABI MATCHES "^armeabi")
-            list(APPEND SELF_LINKER_FLAGS "-Wl,--exclude-libs,libunwind.a")
+            add_exclude_lib_link_option(SELF_LINKER_FLAGS libunwind.a)
+        endif()
+        if(ANDROID_STL MATCHES "_static$")
+            add_exclude_lib_link_option(SELF_LINKER_FLAGS libc++_static.a)
         endif()
     endif()
 
+    message(STATUS "ANDROID SELF_LINKER_FLAGS: ${SELF_LINKER_FLAGS}")
     set(CMAKE_SHARED_LINKER_FLAGS "${SELF_LINKER_FLAGS} ${CMAKE_SHARED_LINKER_FLAGS}")
     set(CMAKE_MODULE_LINKER_FLAGS "${SELF_LINKER_FLAGS} ${CMAKE_MODULE_LINKER_FLAGS}")
     set(CMAKE_EXE_LINKER_FLAGS    "${SELF_LINKER_FLAGS} ${CMAKE_EXE_LINKER_FLAGS}")
+
+elseif(OHOS)
+        if (NOT PROTOBUF_SUPPORT)
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+        endif()
+
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++${CONFIG_COMM_CMAKE_CXX_STANDARD}")
+
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -DDEBUG")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions")
+
+        # Don't re-export libgcc symbols in every binary.
+        set(SELF_LINKER_FLAGS "")
+        add_exclude_lib_link_option(SELF_LINKER_FLAGS libgcc.a)
+        # arm32 currently uses a linker script in place of libgcc to ensure that
+        # libunwind is linked in the correct order. --exclude-libs does not propagate to
+        # the contents of the linker script and can't be specified within the linker
+        # script. Hide both regardless of architecture to future-proof us in case we
+        # move other architectures to a linker script (which we may want to do so we
+        # automatically link libclangrt on other architectures).
+        add_exclude_lib_link_option(SELF_LINKER_FLAGS libgcc_real.a)
+        add_exclude_lib_link_option(SELF_LINKER_FLAGS libatomic.a)
+        # STL specific flags.
+        message(STATUS "OHOS_STL: ${OHOS_STL}")
+        if(OHOS_STL MATCHES "^c\\+\\+_")
+            if(OHOS_STL MATCHES "^armeabi")
+                add_exclude_lib_link_option(SELF_LINKER_FLAGS libunwind.a)
+            endif()
+            if(OHOS_STL MATCHES "_static$")
+                add_exclude_lib_link_option(SELF_LINKER_FLAGS libc++_static.a)
+            endif()
+        endif()
+
+        message(STATUS "OHOS SELF_LINKER_FLAGS: ${SELF_LINKER_FLAGS}")
+        set(CMAKE_SHARED_LINKER_FLAGS "${SELF_LINKER_FLAGS} ${CMAKE_SHARED_LINKER_FLAGS}")
+        set(CMAKE_MODULE_LINKER_FLAGS "${SELF_LINKER_FLAGS} ${CMAKE_MODULE_LINKER_FLAGS}")
+        set(CMAKE_EXE_LINKER_FLAGS    "${SELF_LINKER_FLAGS} ${CMAKE_EXE_LINKER_FLAGS}")
 
 elseif(APPLE)
     # for gen xcode project file
@@ -207,26 +243,14 @@ elseif(APPLE)
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -O0")
 
     if (NOT DEFINED ENABLE_BITCODE)
-    # Unless specified, enable BITCODE support by default
+        # Unless specified, enable BITCODE support by default
         set(ENABLE_BITCODE TRUE CACHE BOOL "[DEFAULTS] Enabling BITCODE support by default.")
     endif()
+
     if (ENABLE_BITCODE)
         set(CMAKE_XCODE_ATTRIBUTE_ENABLE_BITCODE "YES")
     else()
         set(CMAKE_XCODE_ATTRIBUTE_ENABLE_BITCODE "NO")
-    endif()
-    
-    # Use ARC or not
-    if(NOT DEFINED ENABLE_ARC)
-        # Unless specified, enable ARC support by default
-        set(ENABLE_ARC TRUE CACHE BOOL "[DEFAULTS] Enabling ARC support by default.")
-    endif()
-    if(ENABLE_ARC)
-        set(CMAKE_OBJC_FLAGS "-fobjc-arc ${CMAKE_OBJC_FLAGS}" CACHE INTERNAL "Flags used by the compiler during all OBJC build types.")
-        set(CMAKE_XCODE_ATTRIBUTE_CLANG_ENABLE_OBJC_ARC "YES")
-    else()
-        set(CMAKE_OBJC_FLAGS "-fno-objc-arc ${CMAKE_OBJC_FLAGS}" CACHE INTERNAL "Flags used by the compiler during all OBJC build types.")
-        set(CMAKE_XCODE_ATTRIBUTE_CLANG_ENABLE_OBJC_ARC "NO")
     endif()
 
     set(CMAKE_XCODE_ATTRIBUTE_STRIP_STYLE "all")
@@ -287,6 +311,7 @@ elseif(MSVC)
     add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
     add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /FORCE:MULTIPLE")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /FORCE:MULTIPLE")
 
 elseif(UNIX)
     add_definitions(-D__linux__ -Dlinux -D__linux)

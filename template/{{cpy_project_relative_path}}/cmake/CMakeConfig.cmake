@@ -44,7 +44,3 @@ else()
     # for toolchain.ios.cmake and CMakeFunctions.cmake
     set(ENABLE_VISIBILITY 0)
 endif()
-
-
-
-
