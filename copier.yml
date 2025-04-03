@@ -58,7 +58,7 @@ cpy_git_base_host:
   type: str
   help: What is your git base host(e.g. github.com) ?
   default: "github.com"
-  validator: '{%- if not cpy_git_base_host %}git base host cannot be empty{%- endif %}'
+  validator: '{%- if cpy_git_base_host.count(".") < 1 %}git base host must be a valid domain (e.g. github.com){%- endif %}'
 
 cpy_git_repo_url:
   type: str
@@ -68,8 +68,8 @@ cpy_git_repo_url:
 
 cpy_document_url:
   type: str
-  help: What is your document url(e.g. https://{{ cpy_project_group_id.split('.')|last }}-{{ cpy_project_name|lower ~ '.pages.' ~ cpy_git_base_host }}) ?
-  default: "https://{{ cpy_project_group_id.split('.')|last }}-{{ cpy_project_name|lower ~ '.pages.' ~ cpy_git_base_host }}"
+  help: What is your document url(e.g. https://{{ cpy_project_group_id.split('.')|last }}-{{ cpy_project_name|lower ~ '.pages.' ~ cpy_git_base_host.split('.')[-2:] | join('.') }}) ?
+  default: "https://{{ cpy_project_group_id.split('.')|last }}-{{ cpy_project_name|lower ~ '.pages.' ~ cpy_git_base_host.split('.')[-2:] | join('.') }}"
 
 cpy_with_include_src_tests:
   type: bool
