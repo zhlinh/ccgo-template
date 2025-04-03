@@ -121,7 +121,7 @@ def build_ohos(incremental, arch, target_option, tag):
             shutil.copy(OHOS_STL_FILE[arch], symbol_path)
             shutil.copy(OHOS_STL_FILE[arch], lib_path)
 
-        # copy third_party/xxx/lib/android/yyy/*.so
+        # copy third_party/xxx/lib/ohos/yyy/*.so
         for f in os.listdir('third_party'):
             if f.endswith("comm") and (f not in OHOS_MERGE_THIRD_PARTY_LIBS):
                 # xxxcomm is not default to merge
@@ -170,7 +170,7 @@ def main(incremental, build_archs, target_option='', tag=''):
             has_error = True
             break
         success_archs.append(arch)
-    print('==================Android Build Done========================')
+    print('==================OHOS Build Done========================')
     print(f'Build All:{build_archs}')
     print(f'Build Success:{success_archs}')
     print(f'Build Failed:{list(set(build_archs) - set(success_archs))}')

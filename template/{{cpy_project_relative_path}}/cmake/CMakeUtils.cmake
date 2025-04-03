@@ -114,8 +114,10 @@ endif()
 add_third_party_option(GOOGLETEST_SUPPORT "use googletest provided cpp unittest support" OFF)
 add_third_party_option(BENCHMARK_SUPPORT "use googletest provided benchmark support" OFF)
 
-# include ios api
+# include api of ios, macos, apple
 include_directories(${CMAKE_SOURCE_DIR}/include/${MAIN_PROJECT_NAME}/api/ios/)
+include_directories(${CMAKE_SOURCE_DIR}/include/${MAIN_PROJECT_NAME}/api/macos/)
+include_directories(${CMAKE_SOURCE_DIR}/include/${MAIN_PROJECT_NAME}/api/apple/)
 # include third party include dir
 set(COMM_THIRD_PARTY_INCLUDE_DIRS "")
 get_third_party_include_directories(COMM_THIRD_PARTY_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/third_party/)

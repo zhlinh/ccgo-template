@@ -31,6 +31,8 @@ BUILD_OUT_PATH = 'cmake_build/macOS'
 INSTALL_PATH = BUILD_OUT_PATH + '/Darwin.out'
 
 # if not target arch, it will be x86_64
+MACOS_BUILD_OS_CMD = 'cmake ../.. -DCMAKE_BUILD_TYPE=Release -DENABLE_ARC=0 -DENABLE_BITCODE=0 %s && make -j8 && make install'
+
 MACOS_BUILD_ARM_CMD = 'cmake ../.. -DCMAKE_BUILD_TYPE=Release -DENABLE_ARC=0 -DENABLE_BITCODE=0 -DCMAKE_OSX_ARCHITECTURES="arm64;arm64e"  %s && make -j8 && make install'
 
 MACOS_BUILD_X86_CMD = 'cmake ../.. -DCMAKE_BUILD_TYPE=Release -DENABLE_ARC=0 -DENABLE_BITCODE=0 -DCMAKE_OSX_ARCHITECTURES="x86_64" %s && make -j8 && make install'

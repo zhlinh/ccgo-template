@@ -202,6 +202,8 @@ def clean(path, incremental=False):
 
 
 def copy_file(src, dst):
+    if not os.path.exists(src):
+        return
     if os.path.isfile(src):
         if dst.rfind("/") != -1 and not os.path.exists(dst[:dst.rfind("/")]):
             os.makedirs(dst[:dst.rfind("/")], exist_ok=True)
@@ -213,6 +215,8 @@ def copy_file(src, dst):
 
 def copy_file_mapping(header_file_mappings, header_files_src_base, header_files_dst_end):
     for (src, dst) in header_file_mappings.items():
+        if not os.path.exists(src):
+            continue
         copy_file(header_files_src_base + src,
                   header_files_dst_end + "/" + dst + '/' + src[src.rfind("/"):])
 
@@ -226,6 +230,8 @@ def make_static_framework(src_lib, dst_framework, header_file_mappings, header_f
 
     framework_path = dst_framework + '/Headers'
     for (src, dst) in header_file_mappings.items():
+        if not os.path.exists(src):
+            continue
         copy_file(header_files_src_base + src,
                   framework_path + "/" + dst + '/' + src[src.rfind("/"):])
 
@@ -449,8 +455,8 @@ def gen_project_revision_file(project_name, origin_version_file_path, version_na
 // {version_file_name}
 // {origin_version_file_path}
 //
--// Create by ccgo on {build_date}
--// Copyright {build_year} ccgo Project Authors. All rights reserved.
+// Create by ccgo on {build_date}
+// Copyright {build_year} ccgo Project Authors. All rights reserved.
 
 #ifndef {project_name}_BASE_VERINFO_H_
 #define {project_name}_BASE_VERINFO_H_

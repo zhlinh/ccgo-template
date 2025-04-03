@@ -106,8 +106,7 @@ def build_windows(incremental, tag='', config='Release'):
 def gen_win_project(tag='', config='Release'):
     before_time = time.time()
     # generate verinfo.h
-    gen_project_revision_file(PROJECT_NAME, OUTPUT_VERINFO_PATH, get_version_name(SCRIPT_PATH), tag,
-                              incremental=False)
+    gen_project_revision_file(PROJECT_NAME, OUTPUT_VERINFO_PATH, get_version_name(SCRIPT_PATH), tag)
 
     clean(BUILD_OUT_PATH, False)
     os.chdir(BUILD_OUT_PATH)

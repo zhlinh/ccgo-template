@@ -22,8 +22,15 @@ SCRIPT_PATH = os.path.split(os.path.realpath(__file__))[0]
 PROJECT_NAME = os.path.basename(SCRIPT_PATH).upper()
 PROJECT_NAME_LOWER = PROJECT_NAME.lower()
 
+# android merge third-party libs to output lib
 ANDROID_MERGE_THIRD_PARTY_LIBS = []
+# android exclude third-party libs to output lib
 ANDROID_MERGE_EXCLUDE_LIBS = []
+
+# ohos merge third-party libs to output lib
+OHOS_MERGE_THIRD_PARTY_LIBS = []
+# ohos exclude third-party libs to output lib
+OHOS_MERGE_EXCLUDE_LIBS = []
 
 # apple(iOS/macOS) export header files
 APPLE_BUILD_COPY_HEADER_FILES = {
@@ -60,3 +67,6 @@ OUTPUT_VERINFO_PATH = f"include/{PROJECT_NAME_LOWER}/base/"
 
 # Android project path
 ANDROID_PROJECT_PATH = "android/main_android_sdk"
+
+# ohos project path
+OHOS_PROJECT_PATH = 'ohos/main_ohos_sdk'

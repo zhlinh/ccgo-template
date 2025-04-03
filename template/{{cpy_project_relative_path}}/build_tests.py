@@ -122,8 +122,7 @@ def run_googletest(filter_rules=''):
 def gen_googletest_project(tag=''):
     print('==================gen_macos_project========================')
     # generate verinfo.h
-    gen_project_revision_file(PROJECT_NAME, OUTPUT_VERINFO_PATH, get_version_name(SCRIPT_PATH), tag,
-                              incremental=False)
+    gen_project_revision_file(PROJECT_NAME, OUTPUT_VERINFO_PATH, get_version_name(SCRIPT_PATH), tag)
 
     clean(BUILD_OUT_PATH)
     os.chdir(BUILD_OUT_PATH)
@@ -179,7 +178,7 @@ if __name__ == '__main__':
                 for i in range(2, len(sys.argv)):
                     cur_filter = sys.argv[i]
                     if not cur_filter.startswith("-"):
-                        if not cur_filter.endswith('*'):
+                        if ('.' not in cur_filter) and (not cur_filter.endswith('*')):
                             # add '*' at the end if not begins with '-'
                             cur_filter= cur_filter + '*'
                         gtest_filter_list.append(cur_filter)
