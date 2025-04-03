@@ -71,6 +71,11 @@ if(GOOGLETEST_SUPPORT)
     add_subdirectory("tests" "${PROJECT_NAME}-tests")
 endif()
 if(BENCHMARK_SUPPORT)
+    set(COMM_BENCHMARK_BUILD_DIR ${CMAKE_BINARY_DIR}/googlebenchmark-build)
+    set(COMM_BENCHMARK_DOWNLOAD_URL "https://github.com/google/benchmark/archive/v1.8.5.zip")
+    set(COMM_BENCHMARK_SRC_DIR ${CMAKE_BINARY_DIR}/googlebenchmark-src)
+    include_directories(${COMM_BENCHMARK_SRC_DIR}/include)
+    include(${CMAKE_SOURCE_DIR}/cmake/external/googlebenchmark/DownloadBenchmark.cmake)
     # generate benches/CMakeLists.txt
     configure_file(
             ${CMAKE_SOURCE_DIR}/cmake/template/Benches.CMakeLists.txt.in
@@ -152,8 +157,11 @@ if(GOOGLETEST_SUPPORT)
 
 elseif(BENCHMARK_SUPPORT)
     # 2. For Benchmark
-    file(GLOB SELF_TEMP_SRC_FILES RELATIVE ${PROJECT_SOURCE_DIR} benches/*.cc)
-    list(APPEND GOOGLETEST_SUPPORT_FILES ${SELF_TEMP_SRC_FILES})
+    file(GLOB_RECURSE SELF_TEMP_SRC_FILES
+        RELATIVE ${PROJECT_SOURCE_DIR}
+        "benches/*.cc"
+    )
+    list(APPEND BENCHMARK_SUPPORT_FILES ${SELF_TEMP_SRC_FILES})
     # add benches first
     list(APPEND TARGET_SRC_LINKS ${PROJECT_NAME}-benches)
     foreach(DIR IN LISTS SRC_SUB_DIR_LIST)
@@ -177,11 +185,11 @@ elseif(BENCHMARK_SUPPORT)
       set(OTHER_FRAMEWORKS "${OTHER_FRAMEWORKS} -framework Network -framework Security")
     endif()
 
-    foreach(file ${BENCHMARK_TARGET_FILES})
-        string(REPLACE ".cc" "" file_name ${file})
-        string(REPLACE "benches/" "" file_name ${file_name})
+    foreach(file ${BENCHMARK_SUPPORT_FILES})
+        get_filename_component(file_name ${file} NAME_WE)
+        set(file_name ${file_name}_googlebenchmark)
         message(STATUS "BENCHMARK_TARGET_FILES=${file_name}")
-        add_executable(${file_name} benches/${file_name}.cc)
+        add_executable(${file_name} ${file})
         target_link_libraries(
                 ${file_name}
                 ${TARGET_SRC_LINKS}

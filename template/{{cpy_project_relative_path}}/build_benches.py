@@ -36,6 +36,9 @@ BENCHMARK_BUILD_CMD = 'cmake ../.. -DCMAKE_BUILD_TYPE=Release -DBENCHMARK_SUPPOR
 def build_benchmark(incremental, tag=''):
     before_time = time.time()
     print('==================build_benchmark with tag %s========================' % tag)
+    # generate verinfo.h
+    gen_project_revision_file(PROJECT_NAME, OUTPUT_VERINFO_PATH, get_version_name(SCRIPT_PATH), tag,
+                              incremental=incremental)
 
     clean(BUILD_OUT_PATH, incremental)
     os.chdir(BUILD_OUT_PATH)
@@ -67,7 +70,7 @@ def run_benchmark(incremental, tag=''):
     for fpath, dirs, fs in os.walk(INSTALL_PATH):
         for file_name in fs:
             file = os.path.join(fpath, file_name)
-            if file.find('_benchmark') >= 0:
+            if file.find('_googlebenchmark') >= 0:
                 ret = os.system(file)
                 if ret != 0:
                     print('!!!!!!!!!!!run benchmark %s fail!!!!!!!!!!!!!!!' % file)
@@ -76,8 +79,6 @@ def run_benchmark(incremental, tag=''):
 
 def main(choose):
     print(f'==========Choose num: {choose}===========')
-    # generate verinfo.h
-    gen_project_revision_file(PROJECT_NAME, OUTPUT_VERINFO_PATH, get_version_name(SCRIPT_PATH), tag)
 
     result = True
     if choose == '1':
