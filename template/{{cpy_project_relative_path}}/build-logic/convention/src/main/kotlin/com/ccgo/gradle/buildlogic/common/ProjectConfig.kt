@@ -43,6 +43,9 @@ class ProjectConfig(val project: Project) {
     val versionName: String = project.libs.findVersion("commMainProject").get().toString()
     val isRelease: Boolean = project.libs.findVersion("commIsRelease").get().toString().toBoolean()
     val commGroupId: String = project.libs.findVersion("commGroupId").get().toString()
+    val commPublishChannelDesc: String = project.libs.findVersion("commPublishChannelDesc").get().toString()
+        .takeUnless { it == "EMPTY" }
+        ?: ""
     val commAndroidStl: String = project.libs.findVersion("commAndroidStl").get().toString()
     private val commAndroidStlIsStatic: Boolean = commAndroidStl.endsWith("_static")
     val androidStlSuffix = if (commAndroidStlIsStatic) "-stdembed" else ""
@@ -98,7 +101,13 @@ class ProjectConfig(val project: Project) {
     val taskPrintPrefixFilters = listOf("assemble", "bundle", "publish", "merge")
 
     fun getMainArchiveAarName(inputSuffix: String): String {
-        return "${projectNameUppercase}_ANDROID${androidStlSuffix.uppercase()}_SDK-${versionName}-${inputSuffix}.aar"
+        val combinedSuffix = arrayOf(commPublishChannelDesc.lowercase(), inputSuffix.lowercase())
+            .filter { it.isNotEmpty() }
+            .joinToString("-") {
+                it.removePrefix("-")
+            }
+        val appendChar = if (combinedSuffix.isNotEmpty()) "-" else ""
+        return "${projectNameUppercase}_ANDROID${androidStlSuffix.uppercase()}_SDK-${versionName}${appendChar}${combinedSuffix}.aar"
     }
 
     fun print() {

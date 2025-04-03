@@ -378,5 +378,11 @@ private fun Project.setSystemEnv() {
 }
 
 private fun Project.getProjectArtifactId() : String {
-    return "${cfgs.projectNameLowercase}${cfgs.androidStlSuffix.lowercase()}"
+    val combinedSuffix = arrayOf(cfgs.commPublishChannelDesc.lowercase(), cfgs.androidStlSuffix.lowercase())
+        .filter { it.isNotEmpty() }
+        .joinToString("-") {
+            it.removePrefix("-")
+        }
+    val appendChar = if (combinedSuffix.isNotEmpty()) "-" else ""
+    return "${cfgs.projectNameLowercase}${appendChar}${combinedSuffix}"
 }
