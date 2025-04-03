@@ -1,0 +1,12 @@
+/node_modules
+/oh_modules
+/.preview
+/build
+/.cxx
+/.test
+/.hvigor
+/.libs
+/.ohos
+/libs
+/obj
+/bin

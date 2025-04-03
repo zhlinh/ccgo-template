@@ -26,6 +26,11 @@ import subprocess
 import sys
 import re
 import zipfile
+from urllib.parse import urlparse
+if sys.version_info >= (3, 11, 0, "alpha", 7):
+    import tomllib
+else:
+    tomllib = None
 
 from build_config import *
 
@@ -197,9 +202,6 @@ def clean(path, incremental=False):
 
 
 def copy_file(src, dst):
-    if not os.path.exists(src):
-        # if src not exists, then return
-        return
     if os.path.isfile(src):
         if dst.rfind("/") != -1 and not os.path.exists(dst[:dst.rfind("/")]):
             os.makedirs(dst[:dst.rfind("/")], exist_ok=True)
@@ -252,23 +254,17 @@ def check_ndk_revision(revision):
     return False
 
 
-def check_ndk_env():
+def get_ndk_revision():
     try:
         ndk_path = os.environ['NDK_ROOT']
     except KeyError as identifier:
-        print("Error: ndk does not exist or you do not set it into NDK_ROOT.")
-        return False
-
-    if ndk_path is not None and ndk_path.strip():
-        print(f"ndk path:{ndk_path}")
+        return -1, "Error: ndk does not exist or you do not set it into NDK_ROOT."
 
     if not ndk_path:
-        print("Error: ndk does not exist or you do not set it into NDK_ROOT.")
-        return False
+        return -3, "Error: ndk does not exist or you do not set it into NDK_ROOT."
 
     if not os.path.isfile(os.path.join(ndk_path, "source.properties")):
-        print(f"Error: source.properties does not exist, make sure ndk's version=={get_ndk_desc()}")
-        return False
+        return -4, f"Error: source.properties does not exist, make sure ndk's version=={get_ndk_desc()}"
 
     ndk_revision = None
 
@@ -277,14 +273,21 @@ def check_ndk_env():
     while line:
         if line.startswith("Pkg.Revision") and len(line.split("=")) == 2:
             ndk_revision = line.split("=")[1].strip()
+            break
         line = f.readline()
 
     f.close()
 
     if not ndk_revision or len(ndk_revision) < 4:
-        print("Error: parse source.properties fail")
-        return False
+        return -5, "Error: parse source.properties fail"
+    return 0, ndk_revision
 
+
+def check_ndk_env():
+    err_code, ndk_revision = get_ndk_revision()
+    if err_code != 0:
+        print(ndk_revision)
+        return False
     if check_ndk_revision(ndk_revision[:4]):
         return True
 
@@ -297,6 +300,63 @@ def get_ndk_host_tag():
     if system_architecture_is64():
         system_str = system_str + '-x86_64'
     return system_str
+
+def get_ohos_native_target():
+    return "12"
+
+
+def get_ohos_native_desc():
+    return f"api-{get_ohos_native_target()}"
+
+
+def check_ohos_native_revision(revision):
+    if revision >= str(get_ohos_native_target()):
+        return True
+    return False
+
+
+def get_ohos_native_revision():
+    try:
+        ohos_sdk_path = os.environ['OHOS_SDK_HOME'] or os.environ['HOS_SDK_HOME']
+    except KeyError as identifier:
+        return -1, "Error: ohos sdk does not exist or you do not set it into OHOS_SDK_HOME."
+
+    if not ohos_sdk_path:
+        return -3, "Error: ohos not exist or you do not set it into OHOS_SDK_HOME."
+
+    native_version_file_path = os.path.join(ohos_sdk_path, "native", "oh-uni-package.json")
+    if not os.path.isfile(native_version_file_path):
+        return -4, f"Error: oh-uni-package.json does not exist, make sure ohos native's version=={get_ohos_native_desc()}"
+
+    ohos_native_revision = None
+
+    f = open(native_version_file_path)
+    line = f.readline()
+    while line:
+        line = line.strip()
+        if line.startswith("\"apiVersion\"") and len(line.split(":")) == 2:
+            ohos_native_revision = line.split(":")[1].strip().strip(",").strip("\"")
+            break
+        line = f.readline()
+
+    f.close()
+
+    if not ohos_native_revision or len(ohos_native_revision) < 2:
+        return -5, "Error: parse oh-uni-package.json fail"
+    return 0, ohos_native_revision
+
+
+def check_ohos_native_env():
+    err_code, ohos_native_revision = get_ohos_native_revision()
+    if err_code != 0:
+        print(ohos_native_revision)
+        return False
+    if check_ohos_native_revision(ohos_native_revision[:4]):
+        return True
+
+    print(f"Error: make sure ohos native's version == {get_ohos_native_desc()}, current is {ohos_native_revision[:4]}")
+    return False
+
 
 
 html_css = '''
@@ -360,13 +420,27 @@ def parse_as_git(path):
     return revision, path, url
 
 
+def normalize_git_url(url):
+    if url.startswith('git@'):
+        url = "/" + url.split(":")[-1]
+    url_obj = urlparse(url)
+    url = url_obj.path
+    # the username of '/username/xxx' only pick the first 2 chars
+    url = re.sub(r'/([^/]{2})[^/]*/', r'/\1***/', url)
+    return url
+
+
 def gen_project_revision_file(project_name, origin_version_file_path, version_name,
-                                tag='', incremental=False):
+                              tag='', incremental=False):
     print(f"version name {version_name}")
+    err_code, ndk_revision = get_ndk_revision()
+    if err_code != 0:
+        ndk_revision = ""
     cur_python_dir_path = os.path.dirname(os.path.realpath(__file__))
     version_file_path = os.path.join(cur_python_dir_path, origin_version_file_path)
     os.makedirs(version_file_path, exist_ok=True)
     revision, path, url = parse_as_git(version_file_path)
+    url = normalize_git_url(url)
 
     build_date = time.strftime("%Y-%m-%d", time.localtime(time.time()))
     build_time = build_date if incremental else time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
@@ -375,8 +449,8 @@ def gen_project_revision_file(project_name, origin_version_file_path, version_na
 // {version_file_name}
 // {origin_version_file_path}
 //
-// Create by ccgo on {build_date}
-// Copyright {build_year} ccgo Project Authors. All rights reserved.
+-// Create by ccgo on {build_date}
+-// Copyright {build_year} ccgo Project Authors. All rights reserved.
 
 #ifndef {project_name}_BASE_VERINFO_H_
 #define {project_name}_BASE_VERINFO_H_
@@ -387,6 +461,9 @@ def gen_project_revision_file(project_name, origin_version_file_path, version_na
 #define CCGO_{project_name}_URL "{url}"
 #define CCGO_{project_name}_BUILD_TIME "{build_time}"
 #define CCGO_{project_name}_TAG "{tag}"
+#define CCGO_{project_name}_ANDROID_STL "{android_stl}"
+#define CCGO_{project_name}_ANDROID_NDK_VERSION "{android_ndk_version}"
+#define CCGO_{project_name}_ANDROID_MIN_SDK_VERSION "{android_min_sdk_version}"
 
 #endif  // {project_name}_BASE_VERINFO_H_
 '''.format(version_file_name=version_file_name,
@@ -399,11 +476,22 @@ def gen_project_revision_file(project_name, origin_version_file_path, version_na
            path=path,
            url=url,
            build_time=build_time,
-           tag=tag)
-
-    with io.open(os.path.join(version_file_path, version_file_name), 'w', encoding='utf-8') as f:
-        f.write(contents)
-        f.flush()
+           tag=tag,
+           android_stl=get_android_stl(cur_python_dir_path),
+           android_ndk_version=ndk_revision,
+           android_min_sdk_version=get_android_min_sdk_version(cur_python_dir_path),
+    )
+    file_path = os.path.join(version_file_path, version_file_name)
+    file_content = ""
+    if os.path.exists(file_path):
+        with open(file_path, 'r', encoding='utf-8') as f:
+            file_content = f.read()
+    if file_content != contents:
+        with open(file_path, 'w', encoding='utf-8') as f:
+            f.write(contents)
+            f.flush()
+    else:
+        print(f"[SKIP]verinfo file {file_path} is not changed")
 
     version_data = {
         'PublicComponent': {
@@ -451,17 +539,72 @@ def get_version_file_path(project_path):
     return f"{project_path}/gradle/libs.versions.toml"
 
 
+def get_value_from_toml_pure(toml_path, key, not_found_value=None):
+    with open(toml_path, "r") as f:
+        content = f.read()
+    if "." not in key:
+        key = "versions." + key
+    keys = key.split('.')
+    current_section = None
+    for line in content.splitlines():
+        line = line.strip()
+        if line.startswith("[") and line.endswith("]"):
+            current_section = line[1:-1]
+        elif '=' in line:
+            k, v = line.split('=', 1)
+            k = k.strip()
+            v = v.strip().strip('"')
+            if (not current_section) or (len(keys) == 1) or (current_section == keys[0]):
+                if len(keys) == 1 and k == keys[0]:
+                    return v
+                elif k == keys[1]:
+                    return v
+    return not_found_value
+
+
+def get_value_from_toml_by_lib(toml_path, key, not_found_value=None):
+    # must open in rb mode
+    with open(toml_path, "rb") as f:
+        data = tomllib.load(f)
+    if "." not in key:
+        key = "versions." + key
+    keys = key.split(".")
+    for k in keys:
+        data = data[k]
+    return data
+
+
+def get_value_from_toml(toml_path, key, not_found_value=None):
+    if tomllib is not None:
+        return get_value_from_toml_by_lib(toml_path, key, not_found_value)
+    return get_value_from_toml_pure(toml_path, key, not_found_value)
+
+
+def get_version_file_value(project_path, key):
+    return get_value_from_toml(get_version_file_path(project_path), key)
+
 def get_version_name(project_path):
-    version_name = ""
     # get from gradle/libs.versions.toml file
     # commMainProject = "x.x.x"
-    with io.open(get_version_file_path(project_path), "r", encoding='UTF-8') as f:
-        for line in f:
-            match = re.search(r'commMainProject.*"(\d+\.\d+\.\d+)"', line)
-            if match:
-                version_name = match.group(1)
-                break
-    return version_name
+    return get_version_file_value(project_path, "commMainProject")
+
+
+def get_android_stl(project_path):
+    return get_version_file_value(project_path, "commAndroidStl")
+
+
+def get_android_min_sdk_version(project_path):
+    return get_version_file_value(project_path, "minSdkVersion")
+
+
+def get_ohos_min_sdk_version(project_path):
+    # api 10
+    return '10'
+
+
+def get_ohos_stl(project_path):
+    # same as android
+    return get_version_file_value(project_path, "commAndroidStl")
 
 
 def check_vs_env():
