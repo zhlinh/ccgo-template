@@ -41,7 +41,7 @@ cpy_project_dependencies:
     type: str
     help: What is your project dependencies(e.g. com.ccgo.sample:sample:1.0.0,com.ccgo.lib:lib:2.0.0) ?
     default: EMPTY
-    
+
 cpy_user_name:
   type: str
   help: What is your git user name(e.g {{ git_user_name() }}) ?
@@ -54,16 +54,22 @@ cpy_user_email:
   default: "{{ git_user_email() }}"
   validator: '{%- if not cpy_user_email %}user email cannot be empty{%- endif %}'
 
+cpy_git_base_host:
+  type: str
+  help: What is your git base host(e.g. github.com) ?
+  default: "github.com"
+  validator: '{%- if not cpy_git_base_host %}git base host cannot be empty{%- endif %}'
+
 cpy_git_repo_url:
   type: str
-  help: What is your git repository url(e.g. {{ 'git@github.com:' ~ cpy_user_name ~ '/' ~ cpy_project_group_id.split('.')|last ~ '-' ~ cpy_project_name|lower ~ '.git' }}) ?
-  default: "{{ 'git@github.com:' ~ cpy_user_name ~ '/' ~ cpy_project_group_id.split('.')|last ~ '-' ~ cpy_project_name|lower ~ '.git' }}"
+  help: What is your git repository url(e.g. {{ 'git@' ~ cpy_git_base_host ~ ':' ~ cpy_user_name ~ '/' ~ cpy_project_group_id.split('.')|last ~ '-' ~ cpy_project_name|lower ~ '.git' }}) ?
+  default: "{{ 'git@' ~ cpy_git_base_host ~ ':' ~ cpy_user_name ~ '/' ~ cpy_project_group_id.split('.')|last ~ '-' ~ cpy_project_name|lower ~ '.git' }}"
   validator: '{%- if not cpy_git_repo_url %}git repo url cannot be empty{%- endif %}'
-    
+
 cpy_document_url:
   type: str
-  help: What is your document url(e.g. https://{{ cpy_project_group_id.split('.')|last }}-{{ cpy_project_name|lower }}.pages.github.com) ?
-  default: "https://{{ cpy_project_group_id.split('.')|last }}-{{ cpy_project_name|lower }}.pages.github.com"
+  help: What is your document url(e.g. https://{{ cpy_project_group_id.split('.')|last }}-{{ cpy_project_name|lower ~ '.pages.' ~ cpy_git_base_host }}) ?
+  default: "https://{{ cpy_project_group_id.split('.')|last }}-{{ cpy_project_name|lower ~ '.pages.' ~ cpy_git_base_host }}"
 
 cpy_with_include_src_tests:
   type: bool
@@ -82,13 +88,13 @@ _message_after_copy: |
        $ cd {{ _copier_conf.dst_path }}
 
     2. Read "README.md" and start coding.
-    
+
     3. Enable lint check:
-    
+
        $ cd {{ cpy_project_relative_path }}
        $ git submodule update --init --recursive
        $ lint/install.sh cpp
-    
+
     4. If you want to update the project, run the following command:
 
        $ copier update
@@ -102,14 +108,14 @@ _message_before_copy: |
     You'll be asked a series of questions whose answers will be used to
     generate a tailored project for you.
     ===============================
-    
+
 _message_after_update: |
     ===============================
     Your project "{{ cpy_project_name }}" has been updated by CCGO template successfully!
     In case there are any conflicts, please resolve them. Then,
     you're done.
     ===============================
-    
+
 _skip_if_exists:
 - "{{ _subdirectory }}/CHANGELOG.md"
 - "{{ _subdirectory }}/build_config.py"
@@ -126,7 +132,7 @@ _skip_if_exists:
 - "{{ _subdirectory }}/{{ cpy_project_relative_path }}/CMakeConfig.local.cmake"
 - "{{ _subdirectory }}/{{ cpy_project_relative_path }}/local.properties"
 - "{{ _subdirectory }}/{{ cpy_project_relative_path }}/CNAME"
-    
+
 _exclude:
 - copier_extensions.py
 - copier.yml
@@ -138,7 +144,7 @@ _exclude:
 - "*.py[co]"
 - "*~"
 - .DS_Store
-    
+
 # unsafe, need to use with copier source_url dst_path --trust
 _tasks:
   - |
@@ -147,5 +153,5 @@ _tasks:
       git init --initial-branch=master
       git remote add origin {{ cpy_git_repo_url }}
       git add .
-      git commit -m "feat: Initial commit"  
+      git commit -m "feat: Initial commit"
     fi

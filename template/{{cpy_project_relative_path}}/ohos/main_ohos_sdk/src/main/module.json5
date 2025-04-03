@@ -1,6 +1,6 @@
 {
   "module": {
-    "name": "'' ~ cpy_project_name | lower",
+    "name": "{{ ~ cpy_project_name | lower }}",
     "description": "",
     "type": "har",
     "deviceTypes": [
