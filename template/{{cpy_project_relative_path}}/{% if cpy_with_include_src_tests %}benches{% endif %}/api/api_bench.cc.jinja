@@ -42,7 +42,7 @@ static void BM_Method1(benchmark::State& state) {
     benchmark::DoNotOptimize(result);
   }
 }
-BENCHMARK(BM_Method1);
+BENCHMARK(BM_Method1)->Iterations(1000);
 
 // Benchmark for Method 2
 static void BM_Method2(benchmark::State& state) {
@@ -56,8 +56,6 @@ static void BM_Method2(benchmark::State& state) {
     benchmark::DoNotOptimize(result);
   }
 }
-BENCHMARK(BM_Method2);
-
-BENCHMARK_MAIN();
+BENCHMARK(BM_Method2)->Iterations(1000);
 
 }  // namespace {{cpy_project_name|lower}}

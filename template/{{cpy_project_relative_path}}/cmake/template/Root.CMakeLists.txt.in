@@ -157,7 +157,10 @@ if(GOOGLETEST_SUPPORT)
 
 elseif(BENCHMARK_SUPPORT)
     # 2. For Benchmark
-    file(GLOB_RECURSE SELF_TEMP_SRC_FILES
+    set(BENCHMARK_NAME "${PROJECT_NAME}_benchmark")
+
+    set(CMAKE_PROJECT_NAME ${BENCHMARK_NAME})
+    file(GLOB SELF_TEMP_SRC_FILES
         RELATIVE ${PROJECT_SOURCE_DIR}
         "benches/*.cc"
     )
@@ -185,28 +188,23 @@ elseif(BENCHMARK_SUPPORT)
       set(OTHER_FRAMEWORKS "${OTHER_FRAMEWORKS} -framework Network -framework Security")
     endif()
 
-    foreach(file ${BENCHMARK_SUPPORT_FILES})
-        get_filename_component(file_name ${file} NAME_WE)
-        set(file_name ${file_name}_googlebenchmark)
-        message(STATUS "BENCHMARK_TARGET_FILES=${file_name}")
-        add_executable(${file_name} ${file})
-        target_link_libraries(
-                ${file_name}
-                ${TARGET_SRC_LINKS}
-                benchmark_main
-                ${ZLIB_LIBRARY}
-                ${MINIZIP_LIBRARY}
-                ${OTHER_FRAMEWORKS}
-        )
-        if (NOT ${TEMP_TARGET_LINK_FLAGS} STREQUAL "")
-          set_target_properties(${file_name} PROPERTIES LINK_FLAGS ${TEMP_TARGET_LINK_FLAGS})
-        endif()
-        if (MSVC)
-          # windows set COMM_PUBLIC to none
-          target_compile_definitions(${file_name} PRIVATE -DCOMM_ENABLE_EXPORTS=0)
-        endif()
-        install(TARGETS ${file_name} RUNTIME DESTINATION ${SELF_LIBS_OUT})
-    endforeach()
+    add_executable(${BENCHMARK_NAME} ${file})
+    target_link_libraries(
+            ${BENCHMARK_NAME}
+            ${TARGET_SRC_LINKS}
+            benchmark_main
+            ${ZLIB_LIBRARY}
+            ${MINIZIP_LIBRARY}
+            ${OTHER_FRAMEWORKS}
+    )
+    if (NOT ${TEMP_TARGET_LINK_FLAGS} STREQUAL "")
+      set_target_properties(${BENCHMARK_NAME} PROPERTIES LINK_FLAGS ${TEMP_TARGET_LINK_FLAGS})
+    endif()
+    if (MSVC)
+      # windows set COMM_PUBLIC to none
+      target_compile_definitions(${BENCHMARK_NAME} PRIVATE -DCOMM_ENABLE_EXPORTS=0)
+    endif()
+    install(TARGETS ${BENCHMARK_NAME} RUNTIME DESTINATION ${SELF_LIBS_OUT})
 
 else()
     # 3. For Source Code Project
