@@ -191,7 +191,7 @@ if __name__ == '__main__':
             break
         else:
             num = str(input(
-                f'Enter menu:(or usage: python build_tests.py <tag> <benchmark_filters separated by space>)'
+                f'Enter menu:(or usage: python3 {os.path.basename(__file__)} <tag> <benchmark_filters separated by space>)'
                 f'\n1. Clean && Build {PROJECT_NAME_LOWER} googlebenchmark'
                 f'\n2. Gen {PROJECT_NAME_LOWER} googlebenchmark Project'
                 f'\n3. Build && Run {PROJECT_NAME_LOWER} googlebenchmark'

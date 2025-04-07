@@ -191,7 +191,7 @@ if __name__ == '__main__':
             break
         else:
             num = str(input(
-                f'Enter menu:(or usage: python build_tests.py <tag> <gtest_filters separated by space>)'
+                f'Enter menu:(or usage: python3 {os.path.basename(__file__)} <tag> <gtest_filters separated by space>)'
                 f'\n1. Clean && Build {PROJECT_NAME_LOWER} googletest'
                 f'\n2. Gen {PROJECT_NAME_LOWER} googletest Project'
                 f'\n3. Build && Run {PROJECT_NAME_LOWER} googletest'

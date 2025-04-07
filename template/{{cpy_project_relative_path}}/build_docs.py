@@ -107,7 +107,10 @@ if __name__ == '__main__':
             break
         else:
             num = str(input(
-                f'Enter menu:\n1. Clean && build {PROJECT_NAME_LOWER} docs\n2. Run docs\n3. Exit\n'))
+                'Enter menu:'
+                + f'\n1. Clean && build {PROJECT_NAME_LOWER} docs'
+                + f'\n2. Run docs'
+                + f'\n3. Exit'))
             main(num)
             break
 
