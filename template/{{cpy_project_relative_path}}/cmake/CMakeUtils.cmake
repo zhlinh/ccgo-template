@@ -112,7 +112,7 @@ if(EXISTS ${CMAKE_SOURCE_DIR}/third_party/zlib/src/)
     add_third_party_option(ZLIB_SUPPORT "use zlib minizip support" ON)
 endif()
 add_third_party_option(GOOGLETEST_SUPPORT "use googletest provided cpp unittest support" OFF)
-add_third_party_option(BENCHMARK_SUPPORT "use googletest provided benchmark support" OFF)
+add_third_party_option(BENCHMARK_SUPPORT "use googlebenchmark provided benchmark support" OFF)
 
 # include api of ios, macos, apple
 include_directories(${CMAKE_SOURCE_DIR}/include/${MAIN_PROJECT_NAME}/api/ios/)

@@ -55,12 +55,18 @@ get_subdirectories(SRC_SUB_DIR_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src")
 message(STATUS "SRC_SUB_DIR_LIST=${SRC_SUB_DIR_LIST}")
 
 if(GOOGLETEST_SUPPORT)
-    set(COMM_GTEST_BUILD_DIR ${CMAKE_BINARY_DIR}/googletest-build)
-    set(COMM_GTEST_DOWNLOAD_URL "https://github.com/google/googletest/archive/v1.16.x.zip")
-    set(COMM_GTEST_SRC_DIR ${CMAKE_BINARY_DIR}/googletest-src)
-    include_directories(${COMM_GTEST_SRC_DIR}/googletest/include)
-    include_directories(${COMM_GTEST_SRC_DIR}/googlemock/include)
-    include(${CMAKE_SOURCE_DIR}/cmake/external/googletest/DownloadGTest.cmake)
+    add_cc_external(
+        NAME                      googletest
+        DOWNLOAD_URL              "https://github.com/google/googletest/archive/v1.16.x.zip"
+        SOURCE_DIR                "${CMAKE_BINARY_DIR}/googletest-src"
+        BUILD_DIR                 "${CMAKE_BINARY_DIR}/googletest-build"
+        INCLUDES                  "googletest/include googlemock/include"
+        EXTRA_CONFIGURE_COMMANDS  "-Dgtest_force_shared_crt=ON"
+        EXTRA_BUILD_COMMANDS      ""
+        SHARED
+    )
+    #include_directories(${COMM_GTEST_SRC_DIR}/googletest/include)
+    #include_directories(${COMM_GTEST_SRC_DIR}/googlemock/include)
     # generate tests/CMakeLists.txt
     configure_file(
             ${CMAKE_SOURCE_DIR}/cmake/template/Tests.CMakeLists.txt.in
@@ -71,11 +77,15 @@ if(GOOGLETEST_SUPPORT)
     add_subdirectory("tests" "${PROJECT_NAME}-tests")
 endif()
 if(BENCHMARK_SUPPORT)
-    set(COMM_BENCHMARK_BUILD_DIR ${CMAKE_BINARY_DIR}/googlebenchmark-build)
-    set(COMM_BENCHMARK_DOWNLOAD_URL "https://github.com/google/benchmark/archive/v1.8.5.zip")
-    set(COMM_BENCHMARK_SRC_DIR ${CMAKE_BINARY_DIR}/googlebenchmark-src)
-    include_directories(${COMM_BENCHMARK_SRC_DIR}/include)
-    include(${CMAKE_SOURCE_DIR}/cmake/external/googlebenchmark/DownloadBenchmark.cmake)
+    add_cc_external(
+        NAME                      googlebenchmark
+        DOWNLOAD_URL              "https://github.com/google/benchmark/archive/v1.8.5.zip"
+        SOURCE_DIR                "${CMAKE_BINARY_DIR}/googlebenchmark-src"
+        BUILD_DIR                 "${CMAKE_BINARY_DIR}/googlebenchmark-build"
+        EXTRA_CONFIGURE_COMMANDS  "-DBENCHMARK_ENABLE_GTEST_TESTS=OFF"
+        EXTRA_BUILD_COMMANDS      ""
+        SHARED
+    )
     # generate benches/CMakeLists.txt
     configure_file(
             ${CMAKE_SOURCE_DIR}/cmake/template/Benches.CMakeLists.txt.in

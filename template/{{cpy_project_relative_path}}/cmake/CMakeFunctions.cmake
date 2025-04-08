@@ -407,6 +407,7 @@ endfunction()
 # add_cc_library will always create a library named xxx-${NAME} and create an alias target xxx::${NAME}.
 # always use xxx:: form to reduce namespace pollution, where xxx is the project name
 #
+# Sample:
 # add_cc_library(
 #   NAME
 #     awesome
@@ -640,7 +641,7 @@ endfunction()
 # add_cc_test will always create a test named xxx-${NAME} and create an alias target xxx::${NAME}.
 # always use xxx:: form to reduce namespace pollution, where xxx is the project name
 #
-# smaple:
+# Sample:
 # add_cc_library(
 #   NAME
 #     awesome
@@ -724,4 +725,75 @@ function(add_exclude_lib_link_option FLAGS_LIST LIBRARY_NAME)
     if(LIBRARY)
         list(APPEND ${FLAGS_LIST} "-Wl,--exclude-libs,${LIBRARY_NAME}")
     endif()
+endfunction()
+
+# build_cc_external_project()
+#
+# CMake function to build an external project using CMake.
+#
+# Parameters:
+# NAME: The name of the project.
+# DOWNLOAD_URL: The URL to download the project from.
+# SOURCE_DIR: The directory where the source code will be downloaded.
+# BUILD_DIR: The directory where the project will be built.
+# INCLUDES: The include directories for the project.
+# EXTRA_CONFIGURE_COMMANDS: Extra commands to run during the configuration phase.
+# EXTRA_BUILD_COMMANDS: Extra commands to run during the build phase.
+# SHARED: Whether to enable shared libraries.
+#
+# Notes:
+# This function will create a CMakeLists.txt file in the specified ${NAME}-entry directory
+# and run CMake to configure and build the project.
+#
+# Sample:
+# add_cc_external(
+#   NAME
+#     awesome
+#   DOWNLOAD_URL
+#     https://xxx.com/awesome.zip
+#   SOURCE_DIR
+#     ${CMAKE_BINARY_DIR}/awesome-src
+#   BUILD_DIR
+#     ${CMAKE_BINARY_DIR}/awesome-build
+#   INCLUDES
+#     ${CMAKE_BINARY_DIR}/awesome-src/include
+#   EXTRA_CONFIGURE_COMMANDS
+#     "-DOPTION1=ON"
+#     "-DOPTION2=OFF"
+#   EXTRA_BUILD_COMMANDS
+#     "make -j4"
+#   SHARED
+# )
+function(add_cc_external)
+    # save the current environment state
+    cmake_parse_arguments(CC_EXTERNAL
+            "SHARED"
+            "NAME"
+            "DOWNLOAD_URL;SOURCE_DIR;BUILD_DIR;INCLUDES;EXTRA_CONFIGURE_COMMANDS;EXTRA_BUILD_COMMANDS"
+            ${ARGN}
+    )
+    set(COMM_EXTERNAL_ENTRY_DIR ${CMAKE_BINARY_DIR}/${CC_EXTERNAL_NAME}-entry/)
+    message(STATUS "CC_EXTERNAL_NAME: ${CC_EXTERNAL_NAME}, SHARED: ${CC_EXTERNAL_SHARED}")
+    message(STATUS "CC_EXTERNAL_DOWNLOAD_URL: ${CC_EXTERNAL_DOWNLOAD_URL}")
+    message(STATUS "CC_EXTERNAL_INCLUDES: ${CC_EXTERNAL_INCLUDES}")
+    message(STATUS "CC_EXTERNAL_EXTRA_CONFIGURE_COMMANDS: ${CC_EXTERNAL_EXTRA_CONFIGURE_COMMANDS}")
+    if (CC_EXTERNAL_SHARED)
+        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+    endif()
+    # set values
+    set(COMM_EXTERNAL_NAME ${CC_EXTERNAL_NAME})
+    set(COMM_EXTERNAL_DOWNLOAD_URL ${CC_EXTERNAL_DOWNLOAD_URL})
+    set(COMM_EXTERNAL_SOURCE_DIR ${CC_EXTERNAL_SOURCE_DIR})
+    set(COMM_EXTERNAL_BUILD_DIR ${CC_EXTERNAL_BUILD_DIR})
+    set(COMM_EXTERNAL_INCLUDES ${CC_EXTERNAL_INCLUDES})
+    set(COMM_EXTERNAL_EXTRA_CONFIGURE_COMMANDS ${CC_EXTERNAL_EXTRA_CONFIGURE_COMMANDS})
+    set(COMM_EXTERNAL_BUILD_COMMANDS ${CC_EXTERNAL_EXTRA_BUILD_COMMANDS})
+    configure_file(
+            ${CMAKE_SOURCE_DIR}/cmake/template/External.CMakeLists.txt.in
+            ${COMM_EXTERNAL_ENTRY_DIR}/CMakeLists.txt
+            NEWLINE_STYLE LF
+            @ONLY
+    )
+    # include entry cmake
+    include(${COMM_EXTERNAL_ENTRY_DIR}/CMakeLists.txt)
 endfunction()
