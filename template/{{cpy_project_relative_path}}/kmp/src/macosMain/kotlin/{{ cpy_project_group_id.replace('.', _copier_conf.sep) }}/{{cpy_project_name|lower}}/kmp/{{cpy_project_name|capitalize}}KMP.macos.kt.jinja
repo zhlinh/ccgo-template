@@ -1,0 +1,28 @@
+package {{cpy_project_group_id}}.{{cpy_project_name|lower}}.kmp
+
+import kotlinx.cinterop.*
+import platform.Foundation.*
+import {{cpy_project_name|lower}}.*
+
+/**
+ * macOS implementation of {{cpy_project_name|capitalize}}KMP
+ *
+ * This implementation uses Kotlin/Native cinterop to bridge to the native C++ library
+ * through C API functions.
+ */
+@OptIn(ExperimentalForeignApi::class)
+actual class {{cpy_project_name|capitalize}}KMP actual constructor() {
+    actual fun setDebugLog(enable: Boolean) {
+        {{cpy_project_name|lower}}_set_debug_log(enable)
+    }
+
+    actual fun getVersion(): String {
+        return {{cpy_project_name|lower}}_get_version()?.toKString() ?: "Unknown"
+    }
+
+    actual fun getPlatformName(): String {
+        val processInfo = NSProcessInfo.processInfo
+        val osVersion = processInfo.operatingSystemVersionString
+        return "macOS $osVersion"
+    }
+}

@@ -1,0 +1,28 @@
+//
+// {{cpy_project_name|lower}}_jni.cpp
+// api/android
+//
+// Created by ccgo on {{ '%Y-%m-%d' | strftime }}.
+// Copyright {{ '%Y' | strftime }} ccgo Project Authors. All rights reserved.
+
+#ifdef __ANDROID__
+
+#  include "{{cpy_project_name|lower}}/api/android/{{cpy_project_name|lower}}_jni.h"
+#  include "{{cpy_project_name|lower}}/api/native/{{cpy_project_name|lower}}.h"
+
+#  include <cstdint>
+#  include <memory>
+
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
+  (void)reserved;
+
+  return JNI_VERSION_1_6;
+}
+
+JNIEXPORT void JNICALL {{ cpy_project_name|upper }}_JNI_API_DEF(setDebugLog)(JNIEnv *env, jclass cls, jboolean is_debug_log) {
+  (void)env;
+  (void)cls;
+  {{cpy_project_name|lower}}_SetDebugLog(is_debug_log);
+}
+
+#endif  // __ANDROID__

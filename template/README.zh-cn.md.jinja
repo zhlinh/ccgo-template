@@ -1,0 +1,589 @@
+# {{ cpy_project_name|lower }}
+
+> {{ cpy_project_name|lower }} 跨平台 C++ 库，支持 Android、iOS、macOS、Windows、Linux 和 OpenHarmony。
+
+- [{{ cpy_project_name|lower }} - 仓库]( {{ cpy_git_repo_url | git_to_https }} )
+
+- {{ cpy_project_name|lower }} README
+
+  - [English]( {{ cpy_git_repo_url | git_to_https }}/blob/master/README.md )
+  - [简体中文]( {{ cpy_git_repo_url | git_to_https }}/blob/master/README.zh-cn.md )
+
+- {{ cpy_project_name|lower }} 文档
+
+  - [English]( {{ cpy_document_url }}/ )
+  - [简体中文]( {{ cpy_document_url }}/zh-cn/index.html )
+
+## 1. 发布版本
+
+发布版本见 [releases]({{ cpy_git_repo_url | git_to_https }}/-/releases)，版本变更记录见 [changelog]({{ cpy_git_repo_url | git_to_https }}/blob/master/CHANGELOG.md)
+
+### 版本命名规则
+
+- **Android SDK**: `{{ cpy_project_name|upper }}_ANDROID_SDK-{版本号}-{发布类型}.aar`
+- **iOS Framework**: `{{ cpy_project_name|upper }}_IOS_FRAMEWORK-{版本号}-{发布类型}.zip`
+- **macOS Framework**: `{{ cpy_project_name|upper }}_MACOS_FRAMEWORK-{版本号}-{发布类型}.zip`
+- **Windows 库**: `{{ cpy_project_name|upper }}_WINDOWS_SDK-{版本号}-{发布类型}.zip`
+- **Linux 库**: `{{ cpy_project_name|upper }}_LINUX_SDK-{版本号}-{发布类型}.zip`
+- **OpenHarmony HAR**: `{{ cpy_project_name|upper }}_OHOS_SDK-{版本号}-{发布类型}.har`
+
+### 版本后缀
+
+- **正式版本**: 打 TAG `v{版本号}` (如 `v1.2.3`)，后缀为 `release`
+- **Beta 版本**: 后缀格式 `beta.{提交数}`，其中 `{提交数}` 是从上一个 TAG 开始的提交次数 (如 `beta.23`)
+- **Dirty beta**: 本地有未提交修改时，后缀格式 `beta.{提交数}-dirty` (如 `beta.23-dirty`)
+
+## 2. 安装
+
+### 2.1 前置条件
+
+安装 CCGO 构建工具：
+
+```bash
+pip install ccgo
+```
+
+开发模式安装（可编辑模式）：
+
+```bash
+cd ccgo
+pip install -e .
+```
+
+### 2.2 平台特定要求
+
+#### Android
+- Android NDK r25c 或更高版本
+- 设置 `ANDROID_HOME` 和 `ANDROID_NDK_HOME` 环境变量
+- Java 11 或更高版本
+
+#### iOS / macOS
+- Xcode 14.0 或更高版本
+- Xcode Command Line Tools
+
+#### Windows
+- Visual Studio 2015 或更高版本
+- CMake 3.10 或更高版本
+
+#### Linux
+- GCC 7.0 或更高版本
+- CMake 3.10 或更高版本
+
+#### OpenHarmony (OHOS)
+- OHOS SDK API 12 或更高版本
+- 设置 `OHOS_SDK_HOME` 环境变量
+- hvigor 和 ohpm CLI 工具
+
+## 3. 编译构建
+
+所有构建命令应从 `{{ cpy_project_relative_path }}/` 目录（内层项目目录）运行。
+
+### 3.1 Android
+
+构建支持多架构的 Android AAR 包：
+
+```bash
+cd {{ cpy_project_relative_path }}
+
+# 构建所有架构 (armeabi-v7a, arm64-v8a, x86_64)
+ccgo build android
+
+# 构建指定架构
+ccgo build android --arch arm64-v8a,x86_64
+
+# 生成 Android Studio 项目
+ccgo build android --ide-project
+```
+
+**输出文件**:
+- AAR 文件: `bin/android/{{ cpy_project_name|upper }}_ANDROID_SDK-{版本号}-{发布类型}.aar`
+- 归档包（含未 strip 的 .so）: `bin/android/(ARCHIVE)_{{ cpy_project_name|upper }}_ANDROID_SDK-{版本号}-{发布类型}.zip`
+- 构建元数据: `bin/android/build_info.json`
+
+### 3.2 iOS
+
+构建支持真机和模拟器的 iOS XCFramework：
+
+```bash
+cd {{ cpy_project_relative_path }}
+
+# 构建 XCFramework (真机 + 模拟器)
+ccgo build ios
+
+# 生成 Xcode 项目
+ccgo build ios --ide-project
+```
+
+**输出文件**:
+- XCFramework: `bin/ios/{{ cpy_project_name|upper }}_IOS_FRAMEWORK-{版本号}-{发布类型}.xcframework/`
+- 归档包: `bin/ios/(ARCHIVE)_{{ cpy_project_name|upper }}_IOS_FRAMEWORK-{版本号}-{发布类型}.zip`
+- 构建元数据: `bin/ios/build_info.json`
+
+### 3.3 macOS
+
+构建 macOS Framework：
+
+```bash
+cd {{ cpy_project_relative_path }}
+
+# 构建通用 macOS framework (x86_64 + arm64)
+ccgo build macos
+
+# 生成 Xcode 项目
+ccgo build macos --ide-project
+```
+
+**输出文件**:
+- Framework: `bin/macos/{{ cpy_project_name|upper }}_MACOS_FRAMEWORK-{版本号}-{发布类型}.framework/`
+- 归档包: `bin/macos/(ARCHIVE)_{{ cpy_project_name|upper }}_MACOS_FRAMEWORK-{版本号}-{发布类型}.zip`
+- 构建元数据: `bin/macos/build_info.json`
+
+### 3.4 Windows
+
+构建 Windows 静态库：
+
+```bash
+cd {{ cpy_project_relative_path }}
+
+# 构建 Release 配置
+ccgo build windows
+
+# 构建 Debug 配置
+ccgo build windows --config Debug
+
+# 生成 Visual Studio 项目
+ccgo build windows --ide-project
+```
+
+**输出文件**:
+- 库目录: `bin/windows/{{ cpy_project_name|upper }}_WINDOWS_SDK-{版本号}-{发布类型}.dir/`
+- 归档包: `bin/windows/(ARCHIVE)_{{ cpy_project_name|upper }}_WINDOWS_SDK-{版本号}-{发布类型}.zip`
+- 构建元数据: `bin/windows/build_info.json`
+
+### 3.5 Linux
+
+构建 Linux 静态库：
+
+```bash
+cd {{ cpy_project_relative_path }}
+
+# 构建静态库
+ccgo build linux
+
+# 生成 CodeLite 项目
+ccgo build linux --ide-project
+```
+
+**输出文件**:
+- 库目录: `bin/linux/{{ cpy_project_name|upper }}_LINUX_SDK-{版本号}-{发布类型}.dir/`
+- 归档包: `bin/linux/(ARCHIVE)_{{ cpy_project_name|upper }}_LINUX_SDK-{版本号}-{发布类型}.zip`
+- 构建元数据: `bin/linux/build_info.json`
+
+### 3.6 OpenHarmony (OHOS)
+
+构建 OpenHarmony HAR 包：
+
+```bash
+cd {{ cpy_project_relative_path }}
+
+# 构建所有架构 (armeabi-v7a, arm64-v8a, x86_64)
+ccgo build ohos
+
+# 构建指定架构
+ccgo build ohos --arch arm64-v8a
+```
+
+**输出文件**:
+- HAR 文件: `bin/ohos/{{ cpy_project_name|upper }}_OHOS_SDK-{版本号}-{发布类型}.har`
+- 归档包: `bin/ohos/(ARCHIVE)_{{ cpy_project_name|upper }}_OHOS_SDK-{版本号}-{发布类型}.zip`
+- 构建元数据: `bin/ohos/build_info.json`
+
+## 4. 测试与性能分析
+
+### 4.1 单元测试 (GoogleTest)
+
+使用 GoogleTest 框架运行单元测试：
+
+```bash
+cd {{ cpy_project_relative_path }}
+
+# 编译并运行所有测试
+ccgo test
+
+# 使用过滤器运行特定测试
+ccgo test --filter "UtilsTest*"
+
+# 仅编译（不运行）
+ccgo test --build-only
+
+# 仅运行（假设已编译）
+ccgo test --run-only
+
+# 生成 IDE 项目
+ccgo test --ide-project
+
+# 传递额外的 GoogleTest 参数
+ccgo test --gtest-args="--gtest_repeat=3 --gtest_shuffle"
+```
+
+**输出目录**: `cmake_build/Tests/`
+
+### 4.2 性能测试 (Google Benchmark)
+
+运行性能基准测试：
+
+```bash
+cd {{ cpy_project_relative_path }}
+
+# 编译并运行所有基准测试
+ccgo bench
+
+# 使用过滤器运行特定基准测试
+ccgo bench --filter "StringBench*"
+
+# 仅编译
+ccgo bench --build-only
+
+# 仅运行
+ccgo bench --run-only
+
+# 生成 IDE 项目
+ccgo bench --ide-project
+
+# 指定输出格式 (console, json, csv)
+ccgo bench --format json
+
+# 传递额外的 benchmark 参数
+ccgo bench --benchmark-args="--benchmark_repetitions=3"
+```
+
+**输出目录**: `cmake_build/Benches/`
+
+## 5. 文档
+
+### 5.1 构建文档
+
+生成 Doxygen 文档：
+
+```bash
+cd {{ cpy_project_relative_path }}
+
+# 构建文档
+ccgo doc
+
+# 构建并在本地 8000 端口提供服务
+ccgo doc --serve
+
+# 使用自定义端口
+ccgo doc --serve --port 8080
+```
+
+**输出文件**: `cmake_build/Docs/{系统名称}.out/_html/index.html`
+
+### 5.2 发布文档
+
+发布文档到 GitHub Pages：
+
+```bash
+# 发布到默认分支（来自 CCGO.toml）
+ccgo publish doc
+
+# 发布到指定分支
+ccgo publish doc --branch gh-pages
+
+# 强制推送（覆盖现有内容）
+ccgo publish doc --force
+
+# 发布后打开文档 URL
+ccgo publish doc --open
+```
+
+## 6. 发布
+
+### 6.1 Android (Maven)
+
+发布 Android AAR 到 Maven 仓库：
+
+```bash
+cd {{ cpy_project_relative_path }}
+ccgo publish android
+```
+
+需要在 `android/gradle.properties` 中配置 Maven 凭据。
+
+### 6.2 OpenHarmony (OHPM)
+
+发布 HAR 到 OpenHarmony 包管理器：
+
+```bash
+cd {{ cpy_project_relative_path }}
+ccgo publish ohos
+```
+
+需要安装并认证 `ohpm` CLI。
+
+### 6.3 iOS / macOS
+
+iOS 和 macOS frameworks 通常通过 releases 中的二进制归档分发。使用 CocoaPods 或 Swift Package Manager 进行依赖管理。
+
+## 7. 项目工具
+
+### 7.1 创建版本标签
+
+```bash
+# 从 CCGO.toml 版本自动生成标签
+ccgo tag
+
+# 创建指定版本标签
+ccgo tag v1.2.3
+
+# 创建带消息的标签
+ccgo tag v1.2.3 --message "发布版本 1.2.3"
+
+# 创建但不推送标签
+ccgo tag v1.2.3 --no-push
+
+# 删除标签
+ccgo tag --delete v1.2.3
+```
+
+### 7.2 清理构建产物
+
+```bash
+cd {{ cpy_project_relative_path }}
+
+# 清理所有构建产物
+ccgo clean
+
+# 清理指定平台
+ccgo clean --platform android
+
+# 清理所有平台
+ccgo clean --all
+
+# 试运行（显示将删除的内容）
+ccgo clean --dry-run
+
+# 跳过确认提示
+ccgo clean --yes
+```
+
+### 7.3 构建信息
+
+所有构建都会在输出目录生成 `build_info.json` 文件，包含：
+
+```json
+{
+  "build_metadata": {
+    "version": "1.0",
+    "generated_at": "2025-01-24T10:30:00",
+    "generator": "ccgo"
+  },
+  "project": {
+    "name": "{{ cpy_project_name|upper }}",
+    "version": "1.0.0"
+  },
+  "git": {
+    "branch": "main",
+    "revision": "abc123",
+    "revision_full": "abc123def456...",
+    "tag": "v1.0.0",
+    "is_dirty": false,
+    "remote_url": "/username/repo.git"
+  },
+  "build": {
+    "time": "2025-01-24 10:30:00",
+    "timestamp": 1706090400,
+    "platform": "android",
+    "android": {
+      "ndk_version": "25.2.9519653",
+      "stl": "c++_shared",
+      "min_sdk_version": "21"
+    }
+  },
+  "environment": {
+    "os": "Darwin",
+    "os_version": "23.0.0",
+    "python_version": "3.11.0",
+    "ccgo_version": "1.0.0"
+  }
+}
+```
+
+## 8. 贡献
+
+### 8.1 设置开发环境
+
+克隆项目后，初始化 git hooks 和代码检查工具：
+
+```bash
+cd {{ cpy_project_relative_path }}
+
+# 拉取 lint 工具子模块
+git submodule update --init --recursive
+
+# 安装代码检查工具（仅需运行一次）
+lint/install.sh cpp
+```
+
+这将设置：
+- **cpplint**: Google C++ 代码风格检查器
+- **cppcheck**: 静态分析工具
+- **lizard**: 圈复杂度分析器
+- **commit-msg hook**: 验证提交消息格式
+
+### 8.2 代码风格
+
+项目遵循 **Google C++ 代码风格指南**。使用以下工具进行格式化：
+
+```bash
+cd {{ cpy_project_relative_path }}
+
+# 使用 clang-format 格式化代码
+lint/clangformat_project_scan.sh
+# 输出: clangformat_lint_detail.txt
+
+# 自动修复 cpplint 错误
+lint/cpplint_project_error_fix.sh
+# 输出: cpplint_error_fix_lint_detail.txt
+
+# 仅扫描 cpplint
+lint/cpplint_project_scan.sh
+# 输出: cpplint_lint_detail.txt
+```
+
+### 8.3 静态分析
+
+使用 cppcheck 运行静态分析：
+
+```bash
+cd {{ cpy_project_relative_path }}
+
+# 运行 cppcheck
+lint/cppcheck_project_scan.sh
+# 输出: cppcheck_lint_detail.xml
+```
+
+### 8.4 圈复杂度检查
+
+确保函数圈复杂度 < 20：
+
+```bash
+cd {{ cpy_project_relative_path }}
+
+# 使用 lizard 检查复杂度
+lint/cyclomatic_complexity_project_scan.sh
+# 输出: cyclomatic_complexity_lint_detail.txt
+```
+
+### 8.5 提交消息格式
+
+遵循 [Google Angular Style](https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit) 提交消息格式：
+
+```
+<类型>(<范围>): <简短摘要>
+
+<正文>
+
+<页脚>
+```
+
+**类型**:
+- `feat`: 新功能
+- `fix`: 修复问题
+- `refactor`: 代码重构
+- `docs`: 文档修改
+- `style`: 代码格式修改
+- `test`: 测试修改
+- `chore`: 构建/工具修改
+- `ci`: CI/CD 修改
+
+**范围**: `{{ cpy_project_name|lower }}|base|net|utils|build|docs|test`
+
+**示例**:
+```
+feat(net): 添加HTTP/2支持
+
+包括连接池和流多路复用。
+
+Closes #12393123459
+```
+
+**回退提交**:
+```
+revert: feat(net): 添加HTTP/2支持
+
+This reverts commit abc123def456.
+原因: 在生产环境导致内存泄漏。
+```
+
+## 9. 配置
+
+项目配置存储在 `{{ cpy_project_relative_path }}/CCGO.toml`：
+
+```toml
+[project]
+name = "{{ cpy_project_name|lower }}"
+version = "{{ cpy_project_version }}"
+
+[build]
+verinfo_path = "include/{{ cpy_project_name|lower }}/base/"
+generate_json_metadata = true
+
+[android]
+project_path = "android/main_android_sdk"
+merge_libs = []
+exclude_libs = []
+
+[[android.export_headers]]
+src = "include/{{ cpy_project_name|lower }}/api/*.h"
+dest = "{{ cpy_project_name|lower }}/api"
+
+[ohos]
+project_path = "ohos/main_ohos_sdk"
+merge_libs = []
+exclude_libs = []
+
+[ios]
+[[ios.export_headers]]
+src = "include/{{ cpy_project_name|lower }}/api/*.h"
+dest = "{{ cpy_project_name|lower }}/api"
+
+[macos]
+[[macos.export_headers]]
+src = "include/{{ cpy_project_name|lower }}/api/*.h"
+dest = "{{ cpy_project_name|lower }}/api"
+
+[windows]
+[[windows.export_headers]]
+src = "include/{{ cpy_project_name|lower }}/api/*.h"
+dest = "{{ cpy_project_name|lower }}/api"
+
+[linux]
+[[linux.export_headers]]
+src = "include/{{ cpy_project_name|lower }}/api/*.h"
+dest = "{{ cpy_project_name|lower }}/api"
+
+[include]
+[[include.export_headers]]
+src = "include/{{ cpy_project_name|lower }}/api/*.h"
+dest = "{{ cpy_project_name|lower }}/api"
+
+[publish]
+pages_branch = "gh-pages"
+```
+
+## 10. 示例
+
+`examples/` 目录包含各平台的示例项目，展示如何使用本库：
+
+- **Android**: 使用 AAR 的示例 Android 应用
+- **iOS**: 使用 XCFramework 的示例 iOS 应用
+- **macOS**: 使用 Framework 的示例 macOS 应用
+- **OpenHarmony**: 使用 HAR 的示例 OHOS 应用
+
+## 11. 许可证
+
+Copyright {{ "now" | current_year }} {{ cpy_user_name }} and {{ cpy_project_name|lower }} Project Authors. All rights reserved.
+
+详见 [LICENSE](LICENSE)。

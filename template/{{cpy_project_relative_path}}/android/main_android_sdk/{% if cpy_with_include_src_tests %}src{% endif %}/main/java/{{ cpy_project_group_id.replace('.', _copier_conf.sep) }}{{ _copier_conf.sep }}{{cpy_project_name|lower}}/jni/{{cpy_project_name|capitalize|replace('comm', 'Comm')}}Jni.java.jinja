@@ -1,0 +1,21 @@
+//
+// {{cpy_project_name|capitalize|replace('comm', 'Comm')}}Jni.java
+// jni
+//
+// Created by ccgo on {{ '%Y-%m-%d' | strftime }}.
+// Copyright {{ '%Y' | strftime }} ccgo Project Authors. All rights reserved.
+
+package {{ cpy_project_group_id }}.{{cpy_project_name|lower}}.jni;
+
+public class {{cpy_project_name|capitalize|replace('comm', 'Comm')}}Jni {
+    static {
+        try {
+            System.loadLibrary("c++_shared");
+            System.loadLibrary("lib{{ cpy_project_name|lower }}");
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static native void setDebugLog(boolean isDebugLog);
+}

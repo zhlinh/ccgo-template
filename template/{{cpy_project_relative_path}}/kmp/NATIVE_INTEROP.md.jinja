@@ -1,0 +1,251 @@
+# Native Interop Guide for {{cpy_project_name|capitalize}} KMP
+
+This document explains how different Kotlin Multiplatform targets interact with native C++ code.
+
+## Platform Comparison
+
+| Platform | Target | Interop Method | Why? |
+|----------|--------|----------------|------|
+| **Android** | `androidTarget` (JVM) | **JNI** | Runs on Android VM, requires JNI bridge |
+| **iOS** | `iosArm64`, `iosX64`, etc. (Native) | **cinterop** | Kotlin/Native compiles to native code |
+| **Windows** | `jvm("desktop")` (JVM) | **JNI** | Runs on JVM, requires JNI bridge (MSVC-compatible) |
+| **macOS** | `macosArm64`, `macosX64` (Native) | **cinterop** | Kotlin/Native compiles to native code |
+| **Linux** | `linuxX64`, `linuxArm64` (Native) | **cinterop** | Kotlin/Native compiles to native code |
+
+## Why Windows (JVM) Cannot Use cinterop
+
+### Understanding the Difference
+
+#### **JVM Targets** (Android, Windows Desktop)
+- Compile to **Java bytecode**
+- Run on the **Java Virtual Machine**
+- Cannot directly call C/C++ functions
+- **Must use JNI** (Java Native Interface)
+
+```
+Kotlin (JVM) -> Java Bytecode -> JVM -> JNI -> Native C++
+```
+
+#### **Native Targets** (iOS, macOS, Linux)
+- Compile to **native machine code** via LLVM
+- Run directly on the **CPU** (no VM)
+- Can directly call C/C++ functions via **cinterop**
+
+```
+Kotlin/Native -> LLVM IR -> Native Machine Code -> C++
+```
+
+#### **Why Windows Uses JVM Instead of Native**
+- **CCGO builds**: Use **MSVC** (Visual Studio compiler)
+- **Kotlin/Native**: Uses **MinGW** (GNU compiler for Windows)
+- These toolchains are **incompatible** (different ABIs, calling conventions, runtime libraries)
+- **Solution**: Use JVM target with JNI for Windows (MSVC-compatible)
+
+### Code Example
+
+#### ❌ **WRONG** - Cannot use cinterop on JVM:
+```kotlin
+// This will NOT work on desktopMain (JVM)
+jvm("desktop") {
+    compilations.all {
+        cinterops {  // ❌ ERROR: cinterop only available for Native targets
+            create("MyLib") {
+                defFile = file("...")
+            }
+        }
+    }
+}
+```
+
+#### ✅ **CORRECT** - Use JNI on JVM:
+```kotlin
+// desktopMain/kotlin/MyLib.desktop.kt
+actual class MyLib {
+    companion object {
+        init {
+            System.loadLibrary("mylib")  // Load native library
+        }
+    }
+
+    actual fun nativeCall() {
+        // Call via reflection to JNI class
+        val jniClass = Class.forName("com.example.MyLibJni")
+        val method = jniClass.getMethod("nativeCall")
+        method.invoke(null)
+    }
+}
+```
+
+#### ✅ **CORRECT** - Use cinterop on Native:
+```kotlin
+// macosMain/kotlin/MyLib.macos.kt
+@OptIn(ExperimentalForeignApi::class)
+actual class MyLib {
+    actual fun nativeCall() {
+        // Direct C function call via cinterop
+        mylib_native_call()
+    }
+}
+```
+
+## How to Use Native Code on Desktop
+
+### Option 1: JVM Desktop with JNI (Current Approach)
+
+**Target**: `jvm("desktop")`
+
+**Pros:**
+- ✅ Mature JVM ecosystem
+- ✅ Better IDE support
+- ✅ Easier debugging
+- ✅ Can reuse Android JNI code
+
+**Cons:**
+- ❌ Requires JNI setup
+- ❌ Slower than native code
+
+**Implementation:**
+```kotlin
+kotlin {
+    jvm("desktop") {
+        // This is a JVM target
+    }
+}
+
+// Use JNI to call native code
+actual class {{cpy_project_name|capitalize}}KMP {
+    companion object {
+        init {
+            System.loadLibrary("{{cpy_project_name|lower}}")
+        }
+    }
+
+    actual fun setDebugLog(enable: Boolean) {
+        // Call via reflection to JNI class
+        val jniClass = Class.forName("{{cpy_project_group_id}}.{{cpy_project_name|lower}}.jni.{{cpy_project_name|capitalize}}Jni")
+        val method = jniClass.getMethod("setDebugLog", Boolean::class.javaPrimitiveType)
+        method.invoke(null, enable)
+    }
+}
+```
+
+### Option 2: Native Desktop with cinterop
+
+**Target**: `macosArm64()`, `macosX64()`, `linuxX64()`, `mingwX64()`
+
+**Pros:**
+- ✅ Direct C/C++ calls (faster)
+- ✅ No JVM overhead
+- ✅ Smaller binary size
+
+**Cons:**
+- ❌ Limited library support
+- ❌ More complex setup
+- ❌ Platform-specific builds required
+
+**Implementation:**
+```kotlin
+kotlin {
+    // Native targets
+    macosArm64()
+    macosX64()
+    linuxX64()
+
+    sourceSets {
+        val nativeMain by creating {
+            dependsOn(commonMain)
+        }
+
+        val macosMain by creating {
+            dependsOn(nativeMain)
+        }
+    }
+
+    targets.withType<KotlinNativeTarget> {
+        compilations["main"].cinterops {
+            val {{cpy_project_name|capitalize}} by creating {
+                defFile(project.file("src/nativeInterop/cinterop/{{cpy_project_name|capitalize}}.def"))
+                packageName("{{cpy_project_name|lower}}")
+            }
+        }
+    }
+}
+
+// Direct C function calls
+@OptIn(ExperimentalForeignApi::class)
+actual class {{cpy_project_name|capitalize}}KMP {
+    actual fun setDebugLog(enable: Boolean) {
+        {{cpy_project_name|capitalize}}SetDebugLog(enable)  // Direct C call
+    }
+}
+```
+
+## Current Project Setup
+
+This project uses a **hybrid approach**:
+
+- **Windows**: JVM Desktop with JNI (Option 1)
+  - **Reason**: MSVC compatibility (CCGO uses MSVC, Kotlin/Native uses MinGW)
+  - **Benefits**: Better ecosystem support, Windows-native toolchain compatibility
+
+- **macOS and Linux**: Native Desktop with cinterop (Option 2)
+  - **Reason**: Performance (direct C++ calls without JNI overhead)
+  - **Benefits**: Faster execution, smaller binaries, no JVM dependency
+
+This hybrid approach provides:
+1. ✅ **Universal platform support** (Windows, macOS, Linux)
+2. ✅ **Optimal performance** on each platform
+3. ✅ **MSVC compatibility** for Windows
+4. ✅ **Single codebase** with platform-specific optimizations
+
+## Already Configured!
+
+The template already includes both JVM and Native targets:
+
+```kotlin
+// build.gradle.kts (already configured)
+kotlin {
+    // JVM for Windows
+    jvm("desktop") {
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = "17"
+            }
+        }
+    }
+
+    // Native for macOS
+    macosArm64()
+    macosX64()
+
+    // Native for Linux
+    linuxX64()
+    linuxArm64()
+}
+```
+
+Source sets included:
+- `src/desktopMain/` - JVM implementation (Windows)
+- `src/nativeMain/` - Native implementation (macOS, Linux)
+- `src/macosMain/` - macOS-specific (if needed)
+- `src/linuxMain/` - Linux-specific (if needed)
+
+## References
+
+- [Kotlin/Native C Interop](https://kotlinlang.org/docs/native-c-interop.html)
+- [Kotlin Multiplatform targets](https://kotlinlang.org/docs/multiplatform-dsl-reference.html#targets)
+- [Java Native Interface (JNI)](https://docs.oracle.com/javase/8/docs/technotes/guides/jni/)
+
+## Summary
+
+| Question | Answer |
+|----------|--------|
+| Can desktopMain use cinterop? | **No** - it's a JVM target (for Windows) |
+| What should desktopMain use? | **JNI** via reflection or external library |
+| Can I use cinterop on Desktop? | **Yes** - macOS/Linux use Native targets with cinterop |
+| Which is better? | **Hybrid**: JVM for Windows (MSVC-compatible), Native for macOS/Linux (performance) |
+| Why not Native for all platforms? | CCGO uses MSVC, Kotlin/Native uses MinGW (incompatible on Windows) |
+
+---
+
+**Generated by CCGO** - Cross-platform C++ build system

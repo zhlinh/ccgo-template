@@ -1,0 +1,34 @@
+//
+// {{ cpy_project_name|lower }}_jni.h
+// api/android
+//
+// Created by ccgo on {{ '%Y-%m-%d' | strftime }}.
+// Copyright {{ '%Y' | strftime }} ccgo Project Authors. All rights reserved.
+
+#ifndef {{ cpy_project_name|upper }}_API_ANDROID_{{ cpy_project_name|upper }}_JNI_H_
+#define {{ cpy_project_name|upper }}_API_ANDROID_{{ cpy_project_name|upper }}_JNI_H_
+
+#ifdef __ANDROID__
+
+#  include <jni.h>
+
+#  include <string>
+#
+#  include {{ '"' ~ cpy_project_name|lower ~ '/api/android/' ~ cpy_project_name|lower ~ '_jni_config.h"' }}
+
+#  ifdef __cplusplus
+extern "C" {
+#  endif
+
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved);
+
+JNIEXPORT void JNICALL {{ cpy_project_name|upper }}_JNI_API_DEF(setDebugLog)(JNIEnv *env, jclass cls, jboolean is_debug_log);
+
+
+#  ifdef __cplusplus
+}
+#  endif
+
+#endif  // __ANDROID__
+
+#endif  // {{ cpy_project_name|upper }}_API_ANDROID_{{ cpy_project_name|upper }}_JNI_H_

@@ -1,0 +1,73 @@
+package {{cpy_project_group_id}}.{{cpy_project_name|lower}}.kmp
+
+/**
+ * Desktop (JVM) implementation of {{cpy_project_name|capitalize}}KMP
+ *
+ * This implementation uses JNI to bridge to the native C++ library on desktop platforms
+ * (Windows, macOS, Linux).
+ *
+ * Note: The native library (lib{{cpy_project_name|lower}}.so/.dylib/.dll) should be available
+ * in java.library.path or bundled with the application.
+ * You can build it using: ccgo build windows/macos/linux
+ */
+actual class {{cpy_project_name|capitalize}}KMP actual constructor() {
+    companion object {
+        private const val LIBRARY_NAME = "{{cpy_project_name|lower}}"
+        private var nativeLibraryLoaded = false
+
+        init {
+            try {
+                System.loadLibrary(LIBRARY_NAME)
+                nativeLibraryLoaded = true
+            } catch (e: UnsatisfiedLinkError) {
+                System.err.println("Warning: Failed to load native library '$LIBRARY_NAME': ${e.message}")
+                System.err.println("Native functionality will not be available.")
+                // Don't throw - allow the library to work in "stub" mode
+            }
+        }
+
+        /**
+         * Check if the native library was successfully loaded
+         */
+        fun isNativeLibraryAvailable(): Boolean = nativeLibraryLoaded
+
+        // Native JNI methods
+        @JvmStatic
+        private external fun nativeSetDebugLog(enable: Boolean)
+
+        @JvmStatic
+        private external fun nativeGetVersion(): String
+    }
+
+    actual fun setDebugLog(enable: Boolean) {
+        if (!nativeLibraryLoaded) {
+            println("{{cpy_project_name|capitalize}}KMP.setDebugLog (stub): $enable")
+            return
+        }
+
+        try {
+            nativeSetDebugLog(enable)
+        } catch (e: Exception) {
+            throw RuntimeException("Failed to call setDebugLog: ${e.message}", e)
+        }
+    }
+
+    actual fun getVersion(): String {
+        if (!nativeLibraryLoaded) {
+            return "{{cpy_project_version}} (stub)"
+        }
+
+        return try {
+            nativeGetVersion()
+        } catch (e: Exception) {
+            "Unknown (error: ${e.message})"
+        }
+    }
+
+    actual fun getPlatformName(): String {
+        val osName = System.getProperty("os.name", "Unknown")
+        val osVersion = System.getProperty("os.version", "")
+        val osArch = System.getProperty("os.arch", "")
+        return "Desktop - $osName $osVersion ($osArch)"
+    }
+}

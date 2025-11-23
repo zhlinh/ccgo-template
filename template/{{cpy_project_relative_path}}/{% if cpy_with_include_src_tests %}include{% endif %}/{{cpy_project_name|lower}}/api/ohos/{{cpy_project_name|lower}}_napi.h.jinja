@@ -1,0 +1,45 @@
+//
+// {{ cpy_project_name|lower }}_napi.h
+// api/ohos
+//
+// Created by ccgo on {{ '%Y-%m-%d' | strftime }}.
+// Copyright {{ '%Y' | strftime }} ccgo Project Authors. All rights reserved.
+
+#ifndef {{ cpy_project_name|upper }}_API_OHOS_{{ cpy_project_name|upper }}_NAPI_H_
+#define {{ cpy_project_name|upper }}_API_OHOS_{{ cpy_project_name|upper }}_NAPI_H_
+
+#ifdef __OHOS__
+
+#  include <napi/native_api.h>
+
+#  include <string>
+#
+#  include {{ '"' ~ cpy_project_name|lower ~ '/api/ohos/' ~ cpy_project_name|lower ~ '_napi_config.h"' }}
+
+#  ifdef __cplusplus
+extern "C" {
+#  endif
+
+//! \if ZH-CN
+//! \brief 设置调试日志
+//!
+//! \param env NAPI环境
+//! \param info 回调信息
+//! \return napi_value
+//! \else
+//! \brief Set debug log
+//!
+//! \param env NAPI environment
+//! \param info Callback info
+//! \return napi_value
+//! \endif
+napi_value Napi{{ cpy_project_name|capitalize }}SetDebugLog(napi_env env, napi_callback_info info);
+
+
+#  ifdef __cplusplus
+}
+#  endif
+
+#endif  // __OHOS__
+
+#endif  // {{ cpy_project_name|upper }}_API_OHOS_{{ cpy_project_name|upper }}_NAPI_H_

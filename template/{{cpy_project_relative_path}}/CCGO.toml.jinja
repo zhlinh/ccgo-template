@@ -1,0 +1,102 @@
+# CCGO Project Configuration
+# This file contains build and package configuration for the CCGO cross-platform C++ build system
+# Similar to Cargo.toml for Rust projects
+
+[project]
+name = "{{ cpy_project_name | lower }}"
+version = "{{ cpy_project_version }}"
+description = "{{ cpy_project_name }} library"
+{% if cpy_git_repo_url %}repository = "{{ cpy_git_repo_url }}"{% endif %}
+{% if cpy_user_name %}authors = ["{{ cpy_user_name }} <{{ cpy_user_email }}>"]{% endif %}
+license = "MIT"
+
+[build]
+# Output directory for build artifacts
+output_dir = "cmake_build"
+
+# Version info output path
+verinfo_path = "include/{{ cpy_project_name | lower }}/base/"
+
+# Generate JSON build metadata file
+generate_json_metadata = true
+
+# JSON metadata output path (relative to project root)
+json_metadata_path = "build_info.json"
+
+[android]
+# Android project path
+project_path = "android/main_android_sdk"
+
+# Third-party libraries to merge into output library
+merge_libs = []
+
+# Libraries to exclude from merging
+exclude_libs = []
+
+# Default architectures for Android builds
+default_archs = ["armeabi-v7a", "arm64-v8a", "x86_64"]
+
+[ohos]
+# OpenHarmony project path
+project_path = "ohos/main_ohos_sdk"
+
+# Third-party libraries to merge into output library
+merge_libs = []
+
+# Libraries to exclude from merging
+exclude_libs = []
+
+# Default architectures for OHOS builds
+default_archs = ["armeabi-v7a", "arm64-v8a", "x86_64"]
+
+[ios]
+# iOS exported header files (relative_path = "target_directory")
+export_headers = [
+    { src = "include/{{ cpy_project_name | lower }}/base/verinfo.h", dest = "base" },
+    { src = "include/{{ cpy_project_name | lower }}/api/apple/{{ cpy_project_name | capitalize }}.h", dest = "api" },
+    { src = "include/{{ cpy_project_name | lower }}/api/ios/{{ cpy_project_name | capitalize }}.h", dest = "api" },
+]
+
+[macos]
+# macOS exported header files
+export_headers = [
+    { src = "include/{{ cpy_project_name | lower }}/base/verinfo.h", dest = "base" },
+    { src = "include/{{ cpy_project_name | lower }}/api/apple/{{ cpy_project_name | capitalize }}.h", dest = "api" },
+    { src = "include/{{ cpy_project_name | lower }}/api/macos/{{ cpy_project_name | capitalize }}.h", dest = "api" },
+]
+
+[windows]
+# Windows exported header files
+export_headers = [
+    { src = "include/{{ cpy_project_name | lower }}/base/verinfo.h", dest = "base" },
+    { src = "include/{{ cpy_project_name | lower }}/api/native/{{ cpy_project_name | lower }}.h", dest = "api" },
+]
+
+[linux]
+# Linux exported header files (same as Windows)
+export_headers = [
+    { src = "include/{{ cpy_project_name | lower }}/base/verinfo.h", dest = "base" },
+    { src = "include/{{ cpy_project_name | lower }}/api/native/{{ cpy_project_name | lower }}.h", dest = "api" },
+]
+
+[include]
+# Include header files for SDK packaging
+export_headers = [
+    { src = "include/", dest = "." },
+]
+
+[package]
+# Platforms to include in SDK package
+platforms = ["android", "ios", "macos", "windows", "linux", "ohos"]
+
+# Archive format for distribution
+archive_format = "zip"
+
+# Include documentation in package
+include_docs = false
+
+# Include samples in package
+include_samples = false
+
+# Include KMP artifacts in package
+include_kmp = false
