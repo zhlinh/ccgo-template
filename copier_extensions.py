@@ -54,3 +54,4 @@ class CurrentYearExtension(Extension):
         super().__init__(environment)
         environment.globals["current_year"] = date.today().strftime('%Y')
         environment.globals["current_day"] = date.today().strftime('%Y-%m-%d')
+        environment.filters["current_year"] = lambda x: date.today().strftime('%Y')

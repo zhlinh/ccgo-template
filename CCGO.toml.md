@@ -336,11 +336,166 @@ CCGO will validate your `CCGO.toml` file when reading it. Common errors:
 5. **Header Exports**: Keep header exports minimal and organized
 6. **Documentation**: Update `description` field when project changes
 
+## Dependencies
+
+CCGO supports dependency management similar to Cargo, allowing you to specify dependencies from git repositories or local paths.
+
+### [dependencies]
+
+Define dependencies that are included in all builds.
+
+```toml
+[dependencies]
+# Git dependency with default branch
+my_lib = { git = "https://github.com/user/my_lib.git" }
+
+# Git dependency with specific branch
+feature_lib = { git = "https://github.com/user/feature_lib.git", branch = "develop" }
+
+# Git dependency with specific tag
+stable_lib = { git = "https://github.com/user/stable_lib.git", tag = "v1.2.3" }
+
+# Git dependency with specific commit (SHA1)
+pinned_lib = { git = "https://github.com/user/pinned_lib.git", rev = "0c0990399270277832fbb5b91a1fa118e6f63dba" }
+
+# Git dependency with PR reference (HEAD commit of PR 493)
+pr_lib = { git = "https://github.com/user/pr_lib.git", rev = "refs/pull/493/head" }
+
+# Local path dependency (relative to project root)
+local_lib = { path = "vendor/local_lib" }
+
+# Local path dependency with version
+versioned_local = { path = "../shared_lib", version = "2.0.0" }
+```
+
+**Dependency Types:**
+
+1. **Git Dependencies:**
+   - `git`: Repository URL (required)
+   - `branch`: Specific branch name (optional)
+   - `tag`: Specific tag name (optional)
+   - `rev`: Specific commit SHA, tag, or ref like `refs/pull/493/head` (optional)
+   - If none specified, uses the repository's default branch
+
+2. **Path Dependencies:**
+   - `path`: Relative or absolute path to the dependency (required)
+   - `version`: Optional version specification for documentation
+
+### Platform-Specific Dependencies
+
+Use `[target.'cfg(...)'.dependencies]` sections to specify dependencies only for certain platforms.
+
+```toml
+[target.'cfg(windows)'.dependencies]
+winhttp = { git = "https://github.com/user/winhttp.git", tag = "0.4.0" }
+
+[target.'cfg(unix)'.dependencies]
+openssl = { git = "https://github.com/user/openssl.git", tag = "1.0.1" }
+
+[target.'cfg(target_arch = "x86")'.dependencies]
+native-i686 = { path = "native/i686" }
+```
+
+**Platform Configuration Patterns:**
+
+- `cfg(windows)`: Windows platforms
+- `cfg(unix)`: Unix-like platforms (Linux, macOS, iOS)
+- `cfg(linux)`: Linux only
+- `cfg(macos)`: macOS only
+- `cfg(ios)`: iOS only
+- `cfg(android)`: Android only
+- `cfg(target_arch = "x86")`: x86 architecture (32-bit)
+- `cfg(target_arch = "x86_64")`: x86_64 architecture (64-bit)
+- `cfg(target_arch = "arm")`: ARM architecture
+
+### Dependency Resolution
+
+When you build your project, CCGO will:
+
+1. Parse dependencies from `CCGO.toml`
+2. Download git dependencies to `third_party/.cache/`
+3. Checkout the specified branch/tag/commit
+4. Create symlinks in `third_party/` directory
+5. Generate `CCGO.lock` file with resolved dependency information
+6. Pass dependency paths to CMake via `CCGO_DEP_PATHS` and `CCGO_DEP_INCLUDE_DIRS`
+
+**Lock File:**
+
+CCGO creates a `CCGO.lock` file that records:
+- Exact commit hashes for git dependencies
+- Resolved paths for all dependencies
+- This ensures reproducible builds
+
+**Using Dependencies in CMake:**
+
+Dependencies are automatically made available to your CMake build:
+
+```cmake
+# Include CCGO dependencies module
+include(${CCGO_CMAKE_DIR}/CCGODependencies.cmake)
+
+# Add dependencies to your target
+ccgo_add_dependencies(my_target)
+
+# Or add a dependency as subdirectory (if it has CMakeLists.txt)
+ccgo_add_subdirectory(my_lib)
+
+# Or link a specific library
+ccgo_link_dependency(my_target my_lib my_lib_name)
+
+# Print dependency information for debugging
+ccgo_print_dependencies()
+```
+
+### Example with Dependencies
+
+```toml
+[project]
+name = "myapp"
+version = "1.0.0"
+
+[dependencies]
+# Use a common C++ library
+spdlog = { git = "https://github.com/gabime/spdlog.git", tag = "v1.12.0" }
+json = { git = "https://github.com/nlohmann/json.git", tag = "v3.11.2" }
+
+# Local vendor library
+utils = { path = "vendor/utils" }
+
+[target.'cfg(windows)'.dependencies]
+# Windows-specific library
+wil = { git = "https://github.com/microsoft/wil.git" }
+
+[target.'cfg(unix)'.dependencies]
+# Unix-specific library (for both Linux and macOS)
+libcurl = { path = "vendor/curl-unix" }
+```
+
+Then in your `CMakeLists.txt`:
+
+```cmake
+# Include CCGO dependencies
+include(${CCGO_CMAKE_DIR}/CCGODependencies.cmake)
+
+# Create your library
+add_library(myapp STATIC
+    src/main.cpp
+    src/utils.cpp
+)
+
+# Add CCGO dependencies (includes spdlog, json, utils, and platform-specific ones)
+ccgo_add_dependencies(myapp)
+
+# Or add specific dependencies as subdirectories
+ccgo_add_subdirectory(spdlog)
+target_link_libraries(myapp PRIVATE spdlog::spdlog)
+```
+
 ## Future Enhancements
 
 Planned features for `CCGO.toml`:
 
-- Dependency management
+- Version-based dependencies with a package registry
 - Custom build scripts
 - Platform-specific compile flags
 - Test configuration

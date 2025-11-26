@@ -13,11 +13,16 @@
 #  include <cstdint>
 #  include <memory>
 
+// Only define JNI_OnLoad when building as standalone library
+// When used as a CCGO dependency, the main library will define JNI_OnLoad
+// CCGO_AS_DEPENDENCY is automatically set by CCGO build system
+#ifndef CCGO_AS_DEPENDENCY
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
   (void)reserved;
 
   return JNI_VERSION_1_6;
 }
+#endif  // CCGO_AS_DEPENDENCY
 
 JNIEXPORT void JNICALL {{ cpy_project_name|upper }}_JNI_API_DEF(setDebugLog)(JNIEnv *env, jclass cls, jboolean is_debug_log) {
   (void)env;

@@ -100,3 +100,42 @@ include_samples = false
 
 # Include KMP artifacts in package
 include_kmp = false
+
+# ===================================================================
+# Dependencies (Optional)
+# ===================================================================
+# Similar to Cargo.toml, CCGO supports dependency management.
+# Dependencies can be specified from git repositories, local paths,
+# or with platform-specific configurations.
+
+# [dependencies]
+# Example: Git dependency with default branch
+# my_lib = { git = "https://github.com/user/my_lib.git" }
+
+# Example: Git dependency with specific branch
+# feature_lib = { git = "https://github.com/user/feature_lib.git", branch = "develop" }
+
+# Example: Git dependency with specific tag
+# stable_lib = { git = "https://github.com/user/stable_lib.git", tag = "v1.2.3" }
+
+# Example: Git dependency with specific commit
+# pinned_lib = { git = "https://github.com/user/pinned_lib.git", rev = "0c0990399270277832fbb5b91a1fa118e6f63dba" }
+
+# Example: Git dependency with PR reference
+# pr_lib = { git = "https://github.com/user/pr_lib.git", rev = "refs/pull/493/head" }
+
+# Example: Local path dependency (relative to project root)
+# local_lib = { path = "vendor/local_lib" }
+
+# Example: Local path dependency with version
+# versioned_local = { path = "../shared_lib", version = "2.0.0" }
+
+# Platform-specific dependencies (only included for specific platforms)
+# [target.'cfg(windows)'.dependencies]
+# win_specific = { git = "https://github.com/user/windows_lib.git" }
+
+# [target.'cfg(unix)'.dependencies]
+# unix_specific = { path = "vendor/unix_lib" }
+
+# [target.'cfg(target_arch = "x86")'.dependencies]
+# x86_lib = { path = "native/i686" }
