@@ -89,12 +89,6 @@ _message_after_copy: |
 
     2. Read "README.md" and start coding.
 
-    3. Enable lint check:
-
-       $ cd {{ cpy_project_relative_path }}
-       $ git submodule update --init --recursive
-       $ lint/install.sh cpp
-
     ===============================
 
 _message_before_copy: |
