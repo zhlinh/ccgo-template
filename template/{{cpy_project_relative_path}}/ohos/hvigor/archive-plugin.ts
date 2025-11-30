@@ -105,6 +105,7 @@ function createZipArchive(sourceDir: string, zipPath: string): void {
 
 /**
  * Archive OHOS build artifacts into ZIP package
+ * Output directory: target/ohos/ (consistent with Android's target/android/)
  */
 function archiveOhosArtifacts(rootDir: string): void {
     console.log('==================Archive OHOS Project========================');
@@ -118,11 +119,12 @@ function archiveOhosArtifacts(rootDir: string): void {
     console.log(`Project: ${projectName}`);
     console.log(`Version: ${fullVersion}`);
 
-    const binDir = path.join(rootDir, 'bin');
+    // Output to target/ohos/ directory (consistent with Android's target/android/)
+    const targetDir = path.join(rootDir, 'target', 'ohos');
     const ohosMainSdk = path.join(rootDir, 'ohos', 'main_ohos_sdk');
 
-    // Create bin directory if not exists
-    fs.mkdirSync(binDir, { recursive: true });
+    // Create target/ohos directory if not exists
+    fs.mkdirSync(targetDir, { recursive: true });
 
     // Find and copy HAR file
     const harSearchPath = path.join(ohosMainSdk, 'build', 'default', 'outputs', 'default');
@@ -135,14 +137,14 @@ function archiveOhosArtifacts(rootDir: string): void {
         console.warn(`WARNING: No HAR file found in ${harSearchPath}`);
     } else {
         const harFile = path.join(harSearchPath, harFiles[0]);
-        const harDest = path.join(binDir, `${projectNameUpper}_OHOS_SDK-${fullVersion}.har`);
+        const harDest = path.join(targetDir, `${projectNameUpper}_OHOS_SDK-${fullVersion}.har`);
         fs.copyFileSync(harFile, harDest);
         console.log(`Copied HAR: ${harDest}`);
     }
 
     // Create archive directory structure
     const archiveName = `(ARCHIVE)_${projectNameUpper}_OHOS_SDK-${fullVersion}`;
-    const archiveDir = path.join(binDir, archiveName);
+    const archiveDir = path.join(targetDir, archiveName);
 
     // Remove existing archive directory if exists
     if (fs.existsSync(archiveDir)) {
@@ -175,21 +177,31 @@ function archiveOhosArtifacts(rootDir: string): void {
     }
 
     // Create ZIP archive
-    const zipPath = path.join(binDir, `${archiveName}.zip`);
+    const zipPath = path.join(targetDir, `${archiveName}.zip`);
     createZipArchive(archiveDir, zipPath);
 
     // Remove temporary archive directory
     fs.rmSync(archiveDir, { recursive: true, force: true });
 
+    // Copy build_info.json from cmake_build/OHOS to target/ohos
+    const buildInfoSrc = path.join(rootDir, 'cmake_build', 'OHOS', 'build_info.json');
+    if (fs.existsSync(buildInfoSrc)) {
+        const buildInfoDest = path.join(targetDir, 'build_info.json');
+        fs.copyFileSync(buildInfoSrc, buildInfoDest);
+        console.log(`Copied build_info.json: ${buildInfoDest}`);
+    } else {
+        console.warn(`WARNING: build_info.json not found at ${buildInfoSrc}`);
+    }
+
     console.log('==================Archive Complete========================');
-    console.log(`HAR file: ${binDir}/${projectNameUpper}_OHOS_SDK-${fullVersion}.har`);
+    console.log(`HAR file: ${targetDir}/${projectNameUpper}_OHOS_SDK-${fullVersion}.har`);
     console.log(`Archive ZIP: ${zipPath}`);
 
-    // List bin directory contents
-    console.log('\nContents of bin directory:');
-    const binContents = fs.readdirSync(binDir);
-    for (const item of binContents.sort()) {
-        const itemPath = path.join(binDir, item);
+    // List target/ohos directory contents
+    console.log('\nContents of target/ohos directory:');
+    const targetContents = fs.readdirSync(targetDir);
+    for (const item of targetContents.sort()) {
+        const itemPath = path.join(targetDir, item);
         const stats = fs.statSync(itemPath);
         if (stats.isFile()) {
             const sizeMB = (stats.size / 1024 / 1024).toFixed(2);
