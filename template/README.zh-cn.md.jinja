@@ -97,7 +97,7 @@ ccgo build android --ide-project
 
 **输出文件**:
 - AAR 文件: `bin/android/{{ cpy_project_name|upper }}_ANDROID_SDK-{版本号}-{发布类型}.aar`
-- 归档包（含未 strip 的 .so）: `bin/android/(ARCHIVE)_{{ cpy_project_name|upper }}_ANDROID_SDK-{版本号}-{发布类型}.zip`
+- 归档包（含未 strip 的 .so）: `bin/android/ARCHIVE_{{ cpy_project_name|upper }}_ANDROID_SDK-{版本号}-{发布类型}.zip`
 - 构建元数据: `bin/android/build_info.json`
 
 ### 3.2 iOS
@@ -116,7 +116,7 @@ ccgo build ios --ide-project
 
 **输出文件**:
 - XCFramework: `bin/ios/{{ cpy_project_name|upper }}_IOS_FRAMEWORK-{版本号}-{发布类型}.xcframework/`
-- 归档包: `bin/ios/(ARCHIVE)_{{ cpy_project_name|upper }}_IOS_FRAMEWORK-{版本号}-{发布类型}.zip`
+- 归档包: `bin/ios/ARCHIVE_{{ cpy_project_name|upper }}_IOS_FRAMEWORK-{版本号}-{发布类型}.zip`
 - 构建元数据: `bin/ios/build_info.json`
 
 ### 3.3 macOS
@@ -135,7 +135,7 @@ ccgo build macos --ide-project
 
 **输出文件**:
 - Framework: `bin/macos/{{ cpy_project_name|upper }}_MACOS_FRAMEWORK-{版本号}-{发布类型}.framework/`
-- 归档包: `bin/macos/(ARCHIVE)_{{ cpy_project_name|upper }}_MACOS_FRAMEWORK-{版本号}-{发布类型}.zip`
+- 归档包: `bin/macos/ARCHIVE_{{ cpy_project_name|upper }}_MACOS_FRAMEWORK-{版本号}-{发布类型}.zip`
 - 构建元数据: `bin/macos/build_info.json`
 
 ### 3.4 Windows
@@ -157,7 +157,7 @@ ccgo build windows --ide-project
 
 **输出文件**:
 - 库目录: `bin/windows/{{ cpy_project_name|upper }}_WINDOWS_SDK-{版本号}-{发布类型}.dir/`
-- 归档包: `bin/windows/(ARCHIVE)_{{ cpy_project_name|upper }}_WINDOWS_SDK-{版本号}-{发布类型}.zip`
+- 归档包: `bin/windows/ARCHIVE_{{ cpy_project_name|upper }}_WINDOWS_SDK-{版本号}-{发布类型}.zip`
 - 构建元数据: `bin/windows/build_info.json`
 
 ### 3.5 Linux
@@ -176,7 +176,7 @@ ccgo build linux --ide-project
 
 **输出文件**:
 - 库目录: `bin/linux/{{ cpy_project_name|upper }}_LINUX_SDK-{版本号}-{发布类型}.dir/`
-- 归档包: `bin/linux/(ARCHIVE)_{{ cpy_project_name|upper }}_LINUX_SDK-{版本号}-{发布类型}.zip`
+- 归档包: `bin/linux/ARCHIVE_{{ cpy_project_name|upper }}_LINUX_SDK-{版本号}-{发布类型}.zip`
 - 构建元数据: `bin/linux/build_info.json`
 
 ### 3.6 OpenHarmony (OHOS)
@@ -195,7 +195,7 @@ ccgo build ohos --arch arm64-v8a
 
 **输出文件**:
 - HAR 文件: `bin/ohos/{{ cpy_project_name|upper }}_OHOS_SDK-{版本号}-{发布类型}.har`
-- 归档包: `bin/ohos/(ARCHIVE)_{{ cpy_project_name|upper }}_OHOS_SDK-{版本号}-{发布类型}.zip`
+- 归档包: `bin/ohos/ARCHIVE_{{ cpy_project_name|upper }}_OHOS_SDK-{版本号}-{发布类型}.zip`
 - 构建元数据: `bin/ohos/build_info.json`
 
 ## 4. 测试与性能分析

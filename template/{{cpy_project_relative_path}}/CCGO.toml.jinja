@@ -49,21 +49,26 @@ exclude_libs = []
 # Default architectures for OHOS builds
 default_archs = ["armeabi-v7a", "arm64-v8a", "x86_64"]
 
-[ios]
-# iOS exported header files (relative_path = "target_directory")
+[apple]
+# Common Apple platform exported header files (iOS/macOS/tvOS/watchOS)
+# Platform-specific sections can override this if needed
 export_headers = [
     { src = "include/{{ cpy_project_name | lower }}/base/verinfo.h", dest = "base" },
     { src = "include/{{ cpy_project_name | lower }}/api/apple/{{ cpy_project_name | capitalize }}.h", dest = "api" },
-    { src = "include/{{ cpy_project_name | lower }}/api/ios/{{ cpy_project_name | capitalize }}.h", dest = "api" },
 ]
 
-[macos]
-# macOS exported header files
-export_headers = [
-    { src = "include/{{ cpy_project_name | lower }}/base/verinfo.h", dest = "base" },
-    { src = "include/{{ cpy_project_name | lower }}/api/apple/{{ cpy_project_name | capitalize }}.h", dest = "api" },
-    { src = "include/{{ cpy_project_name | lower }}/api/macos/{{ cpy_project_name | capitalize }}.h", dest = "api" },
-]
+# Optional: Platform-specific overrides (uncomment if needed)
+# [ios]
+# export_headers = [...]
+#
+# [macos]
+# export_headers = [...]
+#
+# [tvos]
+# export_headers = [...]
+#
+# [watchos]
+# export_headers = [...]
 
 [windows]
 # Windows exported header files

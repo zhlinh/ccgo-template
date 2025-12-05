@@ -1,11 +1,12 @@
 /**
- * Custom Hvigor plugin for archiving OHOS project build artifacts.
+ * Custom Hvigor plugin for building OHOS HAR package.
  *
- * This plugin provides an 'archiveProject' task similar to Gradle's archiveProject,
- * which packages the HAR file and related build artifacts into an archive ZIP.
+ * This plugin provides a 'buildHAR' task that builds native libraries and
+ * packages the HAR file. ZIP archive creation is handled by Python's
+ * archive_ohos_project() for unified structure across all platforms.
  *
  * Usage:
- *   hvigorw archiveProject
+ *   hvigorw buildHAR
  */
 
 import { HvigorNode, HvigorPlugin } from '@ohos/hvigor';
@@ -59,56 +60,11 @@ function getProjectName(rootDir: string): string {
 }
 
 /**
- * Copy directory recursively
+ * Copy HAR file to target/ohos/ directory
+ * ZIP archive creation is handled by Python's archive_ohos_project()
  */
-function copyDirRecursive(src: string, dest: string): void {
-    if (!fs.existsSync(src)) {
-        return;
-    }
-
-    fs.mkdirSync(dest, { recursive: true });
-
-    const entries = fs.readdirSync(src, { withFileTypes: true });
-    for (const entry of entries) {
-        const srcPath = path.join(src, entry.name);
-        const destPath = path.join(dest, entry.name);
-
-        if (entry.isDirectory()) {
-            copyDirRecursive(srcPath, destPath);
-        } else {
-            fs.copyFileSync(srcPath, destPath);
-        }
-    }
-}
-
-/**
- * Create ZIP archive from directory using system zip command
- */
-function createZipArchive(sourceDir: string, zipPath: string): void {
-    const parentDir = path.dirname(sourceDir);
-    const dirName = path.basename(sourceDir);
-
-    // Remove existing zip file if it exists
-    if (fs.existsSync(zipPath)) {
-        fs.unlinkSync(zipPath);
-    }
-
-    // Use system zip command: cd to parent dir and zip the directory
-    const zipCmd = `cd "${parentDir}" && zip -r "${zipPath}" "${dirName}"`;
-    execSync(zipCmd, { stdio: 'pipe' });
-
-    // Get file size
-    const stats = fs.statSync(zipPath);
-    const sizeMB = (stats.size / 1024 / 1024).toFixed(2);
-    console.log(`Archive created: ${zipPath} (${sizeMB} MB)`);
-}
-
-/**
- * Archive OHOS build artifacts into ZIP package
- * Output directory: target/ohos/ (consistent with Android's target/android/)
- */
-function archiveOhosArtifacts(rootDir: string): void {
-    console.log('==================Archive OHOS Project========================');
+function copyHarToTarget(rootDir: string): void {
+    console.log('==================Copy HAR to Target========================');
 
     const versionName = getVersionName(rootDir);
     const versionSuffix = getVersionSuffix();
@@ -119,15 +75,16 @@ function archiveOhosArtifacts(rootDir: string): void {
     console.log(`Project: ${projectName}`);
     console.log(`Version: ${fullVersion}`);
 
-    // Output to target/ohos/ directory (consistent with Android's target/android/)
+    // Output to target/ohos/ directory
     const targetDir = path.join(rootDir, 'target', 'ohos');
     const ohosMainSdk = path.join(rootDir, 'ohos', 'main_ohos_sdk');
 
     // Create target/ohos directory if not exists
     fs.mkdirSync(targetDir, { recursive: true });
 
-    // Find and copy HAR file
+    // Find and copy HAR file to targetDir
     const harSearchPath = path.join(ohosMainSdk, 'build', 'default', 'outputs', 'default');
+    const harFilename = `${projectNameUpper}_OHOS_SDK-${fullVersion}.har`;
     let harFiles: string[] = [];
     if (fs.existsSync(harSearchPath)) {
         harFiles = fs.readdirSync(harSearchPath).filter(f => f.endsWith('.har'));
@@ -137,92 +94,32 @@ function archiveOhosArtifacts(rootDir: string): void {
         console.warn(`WARNING: No HAR file found in ${harSearchPath}`);
     } else {
         const harFile = path.join(harSearchPath, harFiles[0]);
-        const harDest = path.join(targetDir, `${projectNameUpper}_OHOS_SDK-${fullVersion}.har`);
+        // Copy to targetDir (Python will move to haars/ in unified archive)
+        const harDest = path.join(targetDir, harFilename);
         fs.copyFileSync(harFile, harDest);
         console.log(`Copied HAR: ${harDest}`);
     }
 
-    // Create archive directory structure
-    const archiveName = `(ARCHIVE)_${projectNameUpper}_OHOS_SDK-${fullVersion}`;
-    const archiveDir = path.join(targetDir, archiveName);
-
-    // Remove existing archive directory if exists
-    if (fs.existsSync(archiveDir)) {
-        fs.rmSync(archiveDir, { recursive: true, force: true });
-    }
-    fs.mkdirSync(archiveDir, { recursive: true });
-
-    // Copy symbol libraries (obj/local with debug info)
-    const objLocalSrc = path.join(ohosMainSdk, 'obj', 'local');
-    if (fs.existsSync(objLocalSrc)) {
-        const objLocalDest = path.join(archiveDir, 'obj', 'local');
-        copyDirRecursive(objLocalSrc, objLocalDest);
-        console.log('Copied symbol libraries: obj/local');
-    }
-
-    // Copy libs (stripped release libraries)
-    const libsSrc = path.join(ohosMainSdk, 'libs');
-    if (fs.existsSync(libsSrc)) {
-        const libsDest = path.join(archiveDir, 'libs');
-        copyDirRecursive(libsSrc, libsDest);
-        console.log('Copied libs: libs');
-    }
-
-    // Copy TypeScript/ArkTS source files
-    const etsSrc = path.join(ohosMainSdk, 'src', 'main', 'ets');
-    if (fs.existsSync(etsSrc)) {
-        const etsDest = path.join(archiveDir, 'ets');
-        copyDirRecursive(etsSrc, etsDest);
-        console.log('Copied ArkTS source: ets');
-    }
-
-    // Create ZIP archive
-    const zipPath = path.join(targetDir, `${archiveName}.zip`);
-    createZipArchive(archiveDir, zipPath);
-
-    // Remove temporary archive directory
-    fs.rmSync(archiveDir, { recursive: true, force: true });
-
-    // Copy build_info.json from cmake_build/OHOS to target/ohos
-    const buildInfoSrc = path.join(rootDir, 'cmake_build', 'OHOS', 'build_info.json');
-    if (fs.existsSync(buildInfoSrc)) {
-        const buildInfoDest = path.join(targetDir, 'build_info.json');
-        fs.copyFileSync(buildInfoSrc, buildInfoDest);
-        console.log(`Copied build_info.json: ${buildInfoDest}`);
-    } else {
-        console.warn(`WARNING: build_info.json not found at ${buildInfoSrc}`);
-    }
-
-    console.log('==================Archive Complete========================');
-    console.log(`HAR file: ${targetDir}/${projectNameUpper}_OHOS_SDK-${fullVersion}.har`);
-    console.log(`Archive ZIP: ${zipPath}`);
-
-    // List target/ohos directory contents
-    console.log('\nContents of target/ohos directory:');
-    const targetContents = fs.readdirSync(targetDir);
-    for (const item of targetContents.sort()) {
-        const itemPath = path.join(targetDir, item);
-        const stats = fs.statSync(itemPath);
-        if (stats.isFile()) {
-            const sizeMB = (stats.size / 1024 / 1024).toFixed(2);
-            console.log(`  ${item} (${sizeMB} MB)`);
-        }
-    }
+    console.log('==================HAR Build Complete========================');
+    console.log(`HAR file: ${targetDir}/${harFilename}`);
+    console.log('Note: Use Python\'s archive_ohos_project() to create unified ZIP archive');
 }
 
 /**
- * Archive plugin that adds the archiveProject task
+ * Archive plugin that adds the buildHAR task
+ * Note: Renamed from archiveProject to buildHAR
+ * ZIP archive creation is now handled by Python's archive_ohos_project()
  */
 export function archivePlugin(): HvigorPlugin {
     return {
         pluginId: 'archivePlugin',
         apply(node: HvigorNode) {
-            // Register the archiveProject task
+            // Register the buildHAR task (renamed from archiveProject)
             node.registerTask({
-                name: 'archiveProject',
+                name: 'buildHAR',
                 dependencies: [], // No dependencies - we manually execute all steps
                 run: async (taskContext) => {
-                    console.log('==================Archive OHOS Project========================');
+                    console.log('==================Build OHOS HAR========================');
 
                     // Get project root directory (two levels up from module: ohos/main_ohos_sdk -> ohos -> root)
                     const moduleDir = node.getNodePath();
@@ -253,13 +150,13 @@ export function archivePlugin(): HvigorPlugin {
                             stdio: 'inherit',
                         });
 
-                        // Step 3: Archive artifacts (implemented in TypeScript)
-                        console.log('\n--- Step 3: Archiving artifacts ---');
-                        archiveOhosArtifacts(rootDir);
+                        // Step 3: Copy HAR to target/ohos/
+                        console.log('\n--- Step 3: Copying HAR to target ---');
+                        copyHarToTarget(rootDir);
 
-                        console.log('==================Archive Complete========================');
+                        console.log('==================Build HAR Complete========================');
                     } catch (error) {
-                        console.error('Archive failed:', error);
+                        console.error('Build HAR failed:', error);
                         throw error;
                     }
                 }

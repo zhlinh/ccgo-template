@@ -1,4 +1,4 @@
-group "com.mojet.app.sample"
+group "{{ cpy_project_group_id }}.{{cpy_project_name|lower}}.example"
 version "1.0-SNAPSHOT"
 
 allprojects {

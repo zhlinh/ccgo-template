@@ -7,7 +7,7 @@ plugins {
     kotlin("native.cocoapods")
 }
 
-group = "com.mojet.app.sample"
+group = "{{ cpy_project_group_id }}.{{cpy_project_name|lower}}.example"
 version = "1.0-SNAPSHOT"
 
 kotlin {
@@ -136,7 +136,7 @@ kotlin {
 android {
     compileSdk = 34
     buildToolsVersion = "34.0.0"
-    namespace = "com.mojet.app.sample"
+    namespace = "{{ cpy_project_group_id }}.{{cpy_project_name|lower}}.example"
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
         minSdk = 24

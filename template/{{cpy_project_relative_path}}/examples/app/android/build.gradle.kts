@@ -4,7 +4,7 @@ plugins {
     kotlin("android")
 }
 
-group "com.mojet.app.sample"
+group "{{ cpy_project_group_id }}.{{cpy_project_name|lower}}.example"
 version "1.0-SNAPSHOT"
 
 repositories {
@@ -20,9 +20,9 @@ dependencies {
 android {
     compileSdk = 34
     buildToolsVersion = "34.0.0"
-    namespace = "com.mojet.app.sample"
+    namespace = "{{ cpy_project_group_id }}.{{cpy_project_name|lower}}.example"
     defaultConfig {
-        applicationId = "com.mojet.app.sample.android"
+        applicationId = "{{ cpy_project_group_id }}.{{cpy_project_name|lower}}.example.android"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
