@@ -1,0 +1,380 @@
+# Migration to Kotlin/Native Desktop Targets
+
+This document explains the architectural decision to use **Kotlin/Native** targets instead of **JVM** targets for desktop platforms (macOS and Linux) in the {{cpy_project_name|capitalize}} KMP library.
+
+## Decision Summary
+
+- **Before**: `jvm("desktop")` target for all desktop platforms (Windows, macOS, Linux)
+- **After**:
+  - Native targets for macOS/Linux: `macosX64()`, `macosArm64()`, `linuxX64()`, `linuxArm64()`
+  - JVM target for Windows: `jvm("desktop")`
+- **Reason**: Enable direct C++ function calls via cinterop on macOS/Linux (no JNI overhead), while maintaining Windows compatibility via JVM
+
+## Why This Change?
+
+### Performance Benefits
+
+#### JVM Approach (Old)
+```
+Kotlin (JVM) → Java Bytecode → JVM → JNI → Native C++
+```
+- Multiple abstraction layers
+- JNI marshalling overhead
+- Memory copies between JVM and native heap
+- Reflection-based calls add additional overhead
+
+#### Kotlin/Native Approach (New)
+```
+Kotlin/Native → LLVM IR → Native Machine Code → C++
+```
+- Direct C function calls via cinterop
+- No JNI overhead
+- No marshalling costs
+- Compile-time bindings
+
+### Code Comparison
+
+#### JVM Desktop (Old - Removed)
+```kotlin
+// desktopMain/kotlin/{{cpy_project_name|capitalize}}KMP.desktop.kt
+actual class {{cpy_project_name|capitalize}}KMP actual constructor() {
+    companion object {
+        init {
+            System.loadLibrary("{{cpy_project_name|lower}}")  // Load JNI library
+        }
+    }
+
+    actual fun setDebugLog(enable: Boolean) {
+        // Call via reflection to JNI class
+        val jniClass = Class.forName("{{cpy_project_group_id}}.{{cpy_project_name|lower}}.jni.{{cpy_project_name|capitalize}}Jni")
+        val method = jniClass.getMethod("setDebugLog", Boolean::class.javaPrimitiveType)
+        method.invoke(null, enable)  // Reflection + JNI overhead
+    }
+}
+```
+
+#### Native Desktop (New)
+```kotlin
+// nativeMain/kotlin/{{cpy_project_name|capitalize}}KMP.native.kt
+@OptIn(ExperimentalForeignApi::class)
+actual class {{cpy_project_name|capitalize}}KMP actual constructor() {
+    actual fun setDebugLog(enable: Boolean) {
+        // Direct C function call through cinterop
+        {{cpy_project_name|lower}}_set_debug_log(if (enable) 1 else 0)
+    }
+}
+```
+
+## Platform Support Matrix
+
+| Platform | Target | Interop Method | Status |
+|----------|--------|----------------|--------|
+| **Android** | `androidTarget` (JVM) | JNI | ✅ Supported (uses existing JNI infrastructure) |
+| **iOS** | `iosArm64`, `iosX64`, etc. | cinterop | ✅ Supported |
+| **macOS** | `macosArm64`, `macosX64` (Native) | cinterop | ✅ Supported |
+| **Linux** | `linuxX64`, `linuxArm64` (Native) | cinterop | ✅ Supported |
+| **Windows** | `jvm("desktop")` (JVM) | JNI | ✅ Supported (MSVC-compatible via JNI) |
+
+## Windows Compatibility Solution
+
+### Why Windows Uses JVM Instead of Native
+
+CCGO and Kotlin/Native use incompatible toolchains for Windows:
+
+- **CCGO builds**: Use **MSVC** (Visual Studio compiler)
+- **Kotlin/Native**: Uses **MinGW** (GNU compiler for Windows)
+
+These toolchains produce incompatible binaries:
+- Different calling conventions
+- Different name mangling
+- Different runtime libraries
+- Different ABI (Application Binary Interface)
+
+### Windows Solution: JVM Target (Included by Default)
+
+The template includes `jvm("desktop")` target for Windows compatibility:
+
+```kotlin
+// build.gradle.kts (included by default)
+kotlin {
+    // JVM target for Windows
+    jvm("desktop") {
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = "17"
+            }
+        }
+    }
+
+    // Native targets for macOS/Linux
+    macosX64()
+    macosArm64()
+    linuxX64()
+    linuxArm64()
+}
+```
+
+This configuration provides:
+- ✅ **Windows support** via JVM + JNI (MSVC-compatible)
+- ✅ **macOS/Linux** use optimized Native targets (cinterop)
+- ✅ **Both coexist** in the same project
+- ✅ **Single codebase** with platform-specific implementations
+
+## Implementation Details
+
+### 1. Build Configuration Changes
+
+**File**: `kmp/build.gradle.kts.jinja`
+
+#### Changes Made
+
+```kotlin
+kotlin {
+    // Android target (unchanged)
+    androidTarget { ... }
+
+    // iOS targets (unchanged)
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
+
+    // NEW: Desktop Native targets for macOS and Linux
+    macosX64()
+    macosArm64()
+    linuxX64()
+    linuxArm64()
+
+    // KEPT: Desktop JVM target for Windows
+    // Windows uses JVM because CCGO builds with MSVC, while Kotlin/Native uses MinGW (incompatible)
+    jvm("desktop") {
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = "17"
+            }
+        }
+    }
+}
+
+// cinterop configuration for Native targets (macOS, Linux, iOS)
+kotlin {
+    targets.withType<KotlinNativeTarget> {
+        compilations.getByName("main") {
+            cinterops {
+                val {{cpy_project_name|capitalize}} by creating {
+                    defFile(project.file("src/nativeInterop/cinterop/{{cpy_project_name|capitalize}}.def"))
+                    packageName("{{cpy_project_name|lower}}")
+                    includeDirs.headerFilterOnly(
+                        project.file("../include/{{cpy_project_name|lower}}/api/apple"),
+                        project.file("../include/{{cpy_project_name|lower}}/api/native")
+                    )
+                }
+            }
+        }
+    }
+}
+```
+
+### 2. Source Set Structure
+
+#### Kept
+- `src/desktopMain/` (JVM desktop implementation for Windows)
+
+#### Added
+```
+src/
+├── desktopMain/         # JVM Desktop (Windows)
+│   └── kotlin/
+│       └── {{cpy_project_name|capitalize}}KMP.desktop.kt (JNI implementation)
+│
+├── nativeMain/          # Shared Native implementation (macOS, Linux)
+│   └── kotlin/
+│       └── {{cpy_project_name|capitalize}}KMP.native.kt (cinterop implementation)
+│
+├── macosMain/           # macOS-specific (if needed)
+│   └── kotlin/
+│
+└── linuxMain/           # Linux-specific (if needed)
+    └── kotlin/
+```
+
+### 3. Maven Publishing
+
+**Before**:
+- `{{cpy_project_name|lower}}-kmp-desktop` (single artifact for all desktop platforms)
+
+**After**:
+- `{{cpy_project_name|lower}}-kmp-desktop` (Windows JVM)
+- `{{cpy_project_name|lower}}-kmp-macos` (macOS Native)
+- `{{cpy_project_name|lower}}-kmp-linux` (Linux Native)
+
+## Development Workflow
+
+### Building Native Libraries
+
+Before building the KMP library, build the native C++ libraries:
+
+```bash
+# For macOS (Native target)
+ccgo build macos
+
+# For Linux (Native target)
+ccgo build linux
+
+# For Windows (JVM target)
+ccgo build windows
+```
+
+### Building KMP Library
+
+```bash
+cd kmp
+
+# Build all targets
+./gradlew build
+
+# Build specific targets
+./gradlew macosX64MainKlibrary
+./gradlew linuxX64MainKlibrary
+```
+
+### Testing
+
+```bash
+# Run all tests
+./gradlew allTests
+
+# Platform-specific tests
+./gradlew macosX64Test
+./gradlew linuxX64Test
+```
+
+### Publishing
+
+```bash
+# Publish to local Maven
+./gradlew publishToMavenLocal
+
+# Publish to remote Maven
+./gradlew publish
+```
+
+## cinterop Setup
+
+### Definition File
+
+**File**: `src/nativeInterop/cinterop/{{cpy_project_name|capitalize}}.def`
+
+```properties
+# Header files to process
+headers = {{cpy_project_name|capitalize}}.h
+
+# Package name for generated Kotlin code
+package = {{cpy_project_name|lower}}
+
+# Additional configuration (optional)
+# libraryPaths = /path/to/libs
+# staticLibraries = lib{{cpy_project_name|lower}}.a
+# linkerOpts = -L/path/to/libs
+```
+
+### Header Files
+
+The cinterop system expects headers in:
+- `../include/{{cpy_project_name|lower}}/api/apple/{{cpy_project_name|capitalize}}.h`
+- `../include/{{cpy_project_name|lower}}/api/native/{{cpy_project_name|capitalize}}.h`
+
+## Migration Checklist
+
+If updating an existing project to use Native targets for macOS/Linux while keeping JVM for Windows:
+
+- [ ] Keep `jvm("desktop")` target in build.gradle.kts (for Windows)
+- [ ] Add Native targets: `macosX64()`, `macosArm64()`, `linuxX64()`, `linuxArm64()`
+- [ ] Configure cinterop in build.gradle.kts for Native targets
+- [ ] Keep `src/desktopMain/` directory (for Windows JVM)
+- [ ] Create `src/nativeMain/` directory (for macOS/Linux Native)
+- [ ] Implement Native platform-specific code using cinterop in `nativeMain`
+- [ ] Update Maven publishing configuration (add macos/linux publications)
+- [ ] Build native C++ libraries:
+  - `ccgo build macos` (for macOS Native)
+  - `ccgo build linux` (for Linux Native)
+  - `ccgo build windows` (for Windows JVM)
+- [ ] Test on all target platforms
+- [ ] Update documentation and README
+
+## Advantages of This Approach
+
+### Performance
+- ✅ **No JNI overhead** - Direct C function calls
+- ✅ **Better memory efficiency** - No JVM heap
+- ✅ **Smaller binaries** - No JVM dependency
+
+### Consistency
+- ✅ **Same approach as iOS** - Both use cinterop
+- ✅ **Unified Native codebase** - Share code between iOS, macOS, Linux
+- ✅ **Platform-idiomatic** - macOS/Linux apps feel native
+
+### Development
+- ✅ **Type-safe bindings** - cinterop generates Kotlin wrappers
+- ✅ **Compile-time checks** - Catch errors early
+- ✅ **Better IDE support** - Direct navigation to C code
+
+## Disadvantages and Trade-offs
+
+### Ecosystem
+- ⚠️ **Limited Native library support** - Some JVM libraries unavailable for Native targets (macOS/Linux)
+- ⚠️ **Smaller Native community** - Fewer resources than JVM
+
+### Complexity
+- ⚠️ **Platform-specific builds** - Must build for each architecture
+- ⚠️ **cinterop setup** - Additional configuration required for Native targets
+- ⚠️ **Debugging** - Native debugging more complex than JVM
+
+### Mixed Target Architecture
+- ⚠️ **JVM for Windows, Native for others** - Different execution models per platform
+- ✅ **But**: This is the optimal solution given MSVC/MinGW incompatibility
+- ✅ **Benefit**: Each platform gets the best performance possible
+
+## Future Considerations
+
+### If Kotlin/Native adds MSVC support
+If Kotlin/Native adds official MSVC toolchain support in the future:
+
+1. Add `mingwX64()` target in build.gradle.kts (or wait for official MSVC target)
+2. Update cinterop configuration for Windows Native
+3. Create `src/windowsMain/` with cinterop implementation
+4. Test CCGO MSVC builds compatibility with K/N
+5. Optionally deprecate Windows JVM target in favor of Native
+
+### Current Best Practice
+The current configuration (JVM for Windows, Native for macOS/Linux) is the **recommended approach** until Kotlin/Native MSVC support is available:
+
+```kotlin
+kotlin {
+    // JVM for Windows (current solution)
+    jvm("desktop")
+
+    // Native for macOS/Linux (optimal performance)
+    macosX64()
+    macosArm64()
+    linuxX64()
+    linuxArm64()
+}
+```
+
+This provides the best balance of:
+- ✅ **Universal platform support** (Windows, macOS, Linux)
+- ✅ **Optimal performance** where possible (Native on macOS/Linux)
+- ✅ **MSVC compatibility** (JNI on Windows)
+- ✅ **Single codebase** with platform-specific optimizations
+
+## References
+
+- [Kotlin/Native C Interop](https://kotlinlang.org/docs/native-c-interop.html)
+- [Kotlin Multiplatform targets](https://kotlinlang.org/docs/multiplatform-dsl-reference.html#targets)
+- [NATIVE_INTEROP.md](./NATIVE_INTEROP.md) - Detailed explanation of JVM vs Native
+
+---
+
+**Migration completed**: {{"%Y-%m-%d"|strftime}}
+
+This architectural change improves performance and consistency across all supported platforms while maintaining the option to support Windows via JVM target.

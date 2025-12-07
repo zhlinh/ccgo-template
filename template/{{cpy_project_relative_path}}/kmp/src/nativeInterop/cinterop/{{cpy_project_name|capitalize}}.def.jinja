@@ -1,0 +1,28 @@
+# Kotlin/Native cinterop definition file for {{cpy_project_name|capitalize}}
+#
+# This file defines the C/Objective-C interop configuration for Native targets
+# (iOS, macOS, Linux)
+# See: https://kotlinlang.org/docs/native-c-interop.html
+
+# Header files to process
+headers = {{cpy_project_name|capitalize|replace('comm', 'Comm')}}.h
+
+# Package name for generated Kotlin code
+package = {{cpy_project_name|lower}}
+
+# Exclude system libraries to avoid compatibility issues with newer SDK features
+excludeSystemLibs = true
+
+# Static or dynamic library to link (optional)
+# libraryPaths = /path/to/libs
+
+# Linker options (optional)
+# linkerOpts = -L/path/to/libs -l{{cpy_project_name|lower}}
+
+# Note: The header file should be available in the include paths specified in build.gradle.kts:
+# - ../include/{{cpy_project_name|lower}}/api/apple/{{cpy_project_name|capitalize|replace('comm', 'Comm')}}.h (for iOS/macOS)
+# - ../include/{{cpy_project_name|lower}}/api/native/{{cpy_project_name|lower}}.h (for Linux)
+#
+# The include paths are configured in build.gradle.kts via:
+# - includeDirs.allHeaders(...)
+# - compilerOpts("-I...")

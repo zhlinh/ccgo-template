@@ -1,0 +1,186 @@
+# CCGO Project Configuration
+# This file contains build and package configuration for the CCGO cross-platform C++ build system
+# Similar to Cargo.toml for Rust projects
+
+[project]
+name = "{{ cpy_project_name | lower }}"
+version = "{{ cpy_project_version }}"
+description = "{{ cpy_project_name }} library"
+{% if cpy_git_repo_url %}repository = "{{ cpy_git_repo_url }}"{% endif %}
+{% if cpy_user_name %}authors = ["{{ cpy_user_name }} <{{ cpy_user_email }}>"]{% endif %}
+license = "MIT"
+
+[build]
+# Output directory for build artifacts
+output_dir = "cmake_build"
+
+# Version info output path
+verinfo_path = "include/{{ cpy_project_name | lower }}/base/"
+
+# Generate JSON build metadata file
+generate_json_metadata = true
+
+# JSON metadata output path (relative to project root)
+json_metadata_path = "build_info.json"
+
+[android]
+# Android project path
+project_path = "android/main_android_sdk"
+
+# Third-party libraries to merge into output library
+merge_libs = []
+
+# Libraries to exclude from merging
+exclude_libs = []
+
+# Default architectures for Android builds
+default_archs = ["armeabi-v7a", "arm64-v8a", "x86_64"]
+
+[ohos]
+# OpenHarmony project path
+project_path = "ohos/main_ohos_sdk"
+
+# Third-party libraries to merge into output library
+merge_libs = []
+
+# Libraries to exclude from merging
+exclude_libs = []
+
+# Default architectures for OHOS builds
+default_archs = ["armeabi-v7a", "arm64-v8a", "x86_64"]
+
+[apple]
+# Common Apple platform exported header files (iOS/macOS/tvOS/watchOS)
+# Platform-specific sections can override this if needed
+export_headers = [
+    { src = "include/{{ cpy_project_name | lower }}/base/verinfo.h", dest = "base" },
+    { src = "include/{{ cpy_project_name | lower }}/api/apple/{{ cpy_project_name | capitalize }}.h", dest = "api" },
+]
+
+# Optional: Platform-specific overrides (uncomment if needed)
+# [ios]
+# export_headers = [...]
+#
+# [macos]
+# export_headers = [...]
+#
+# [tvos]
+# export_headers = [...]
+#
+# [watchos]
+# export_headers = [...]
+
+[windows]
+# Windows exported header files
+export_headers = [
+    { src = "include/{{ cpy_project_name | lower }}/base/verinfo.h", dest = "base" },
+    { src = "include/{{ cpy_project_name | lower }}/api/native/{{ cpy_project_name | lower }}.h", dest = "api" },
+]
+
+[linux]
+# Linux exported header files (same as Windows)
+export_headers = [
+    { src = "include/{{ cpy_project_name | lower }}/base/verinfo.h", dest = "base" },
+    { src = "include/{{ cpy_project_name | lower }}/api/native/{{ cpy_project_name | lower }}.h", dest = "api" },
+]
+
+[include]
+# Include header files for SDK packaging
+export_headers = [
+    { src = "include/", dest = "." },
+]
+
+[package]
+# Platforms to include in SDK package
+platforms = ["android", "ios", "macos", "windows", "linux", "ohos"]
+
+# Archive format for distribution
+archive_format = "zip"
+
+# Include documentation in package
+include_docs = false
+
+# Include samples in package
+include_samples = false
+
+# Include KMP artifacts in package
+include_kmp = false
+
+# ===================================================================
+# Publish Configuration (Optional)
+# ===================================================================
+# Maven publishing configuration for Android/JVM artifacts.
+# Credentials are typically set via environment variables or gradle.properties
+# for security reasons. CCGO.toml can provide default repository URLs.
+#
+# Priority (high to low):
+# 1. Environment variables
+# 2. CCGO.toml
+# 3. Project-level gradle.properties (in project root)
+# 3. ~/.gradle/gradle.properties
+
+# [publish]
+# # Enable signing for Maven Central publishing
+# sign_enabled = true
+#
+# # Signing credentials (prefer environment variables for security)
+# # signing_key = ""  # Use SIGNING_IN_MEMORY_KEY env var instead
+# # signing_key_password = ""  # Use SIGNING_IN_MEMORY_KEY_PASSWORD env var instead
+
+# [publish.maven]
+# # Maven Central credentials (prefer environment variables for security)
+# # central_username = ""  # Use MAVEN_CENTRAL_USERNAME env var instead
+# # central_password = ""  # Use MAVEN_CENTRAL_PASSWORD env var instead
+#
+# # Local Maven repository path
+# local_path = "~/.m2/repository"
+#
+# # Custom Maven repositories (comma-separated for multiple)
+# # custom_urls = "https://maven.example.com/releases"
+# # custom_usernames = ""  # Use MAVEN_CUSTOM_USERNAMES env var instead
+# # custom_passwords = ""  # Use MAVEN_CUSTOM_PASSWORDS env var instead
+#
+# # Or use array format for multiple custom repositories
+# # [[publish.maven.custom]]
+# # url = "https://maven.company.com/releases"
+# # username = ""
+# # password = ""
+
+# ===================================================================
+# Dependencies (Optional)
+# ===================================================================
+# Similar to Cargo.toml, CCGO supports dependency management.
+# Dependencies can be specified from git repositories, local paths,
+# or with platform-specific configurations.
+
+# [dependencies]
+# Example: Git dependency with default branch
+# my_lib = { git = "https://github.com/user/my_lib.git" }
+
+# Example: Git dependency with specific branch
+# feature_lib = { git = "https://github.com/user/feature_lib.git", branch = "develop" }
+
+# Example: Git dependency with specific tag
+# stable_lib = { git = "https://github.com/user/stable_lib.git", tag = "v1.2.3" }
+
+# Example: Git dependency with specific commit
+# pinned_lib = { git = "https://github.com/user/pinned_lib.git", rev = "0c0990399270277832fbb5b91a1fa118e6f63dba" }
+
+# Example: Git dependency with PR reference
+# pr_lib = { git = "https://github.com/user/pr_lib.git", rev = "refs/pull/493/head" }
+
+# Example: Local path dependency (relative to project root)
+# local_lib = { path = "vendor/local_lib" }
+
+# Example: Local path dependency with version
+# versioned_local = { path = "../shared_lib", version = "2.0.0" }
+
+# Platform-specific dependencies (only included for specific platforms)
+# [target.'cfg(windows)'.dependencies]
+# win_specific = { git = "https://github.com/user/windows_lib.git" }
+
+# [target.'cfg(unix)'.dependencies]
+# unix_specific = { path = "vendor/unix_lib" }
+
+# [target.'cfg(target_arch = "x86")'.dependencies]
+# x86_lib = { path = "native/i686" }

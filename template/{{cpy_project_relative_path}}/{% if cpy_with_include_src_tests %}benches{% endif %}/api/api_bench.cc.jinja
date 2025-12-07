@@ -1,0 +1,60 @@
+//
+// api_bench.cc
+// api
+//
+// Created by ccgo on {{ '%Y-%m-%d' | strftime }}.
+// Copyright {{ '%Y' | strftime }} ccgo Project Authors. All rights reserved.
+
+#include "{{cpy_project_name|lower}}/api/native/{{cpy_project_name|lower}}.h"
+
+#include <string>
+#include <vector>
+
+#include "benchmark/benchmark.h"
+
+namespace {{cpy_project_name|lower}} {
+
+// Method 1
+void AddNum1(int* a, int* b, int* result, int size) {
+  for (int i = 0; i < size; ++i) {
+    result[i] = a[i] + b[i];
+  }
+}
+
+// Method 2
+void AddNum2(int* a, int* b, int* result, int size) {
+  for (int i = 0; i < size; i += 2) {
+    result[i] = a[i] + b[i];
+    if (i+1 < size) result[i+1] = a[i+1] + b[i+1];
+  }
+}
+
+// Benchmark for Method 1
+static void BM_Method1(benchmark::State& state) {
+  const int size = 1024;
+  std::vector<int> a(size, 1);
+  std::vector<int> b(size, 2);
+  std::vector<int> result(size);
+
+  for (auto _ : state) {
+    AddNum1(a.data(), b.data(), result.data(), size);
+    benchmark::DoNotOptimize(result);
+  }
+}
+BENCHMARK(BM_Method1)->Iterations(1000);
+
+// Benchmark for Method 2
+static void BM_Method2(benchmark::State& state) {
+  const int size = 1024;
+  std::vector<int> a(size, 1);
+  std::vector<int> b(size, 2);
+  std::vector<int> result(size);
+
+  for (auto _ : state) {
+    AddNum2(a.data(), b.data(), result.data(), size);
+    benchmark::DoNotOptimize(result);
+  }
+}
+BENCHMARK(BM_Method2)->Iterations(1000);
+
+}  // namespace {{cpy_project_name|lower}}

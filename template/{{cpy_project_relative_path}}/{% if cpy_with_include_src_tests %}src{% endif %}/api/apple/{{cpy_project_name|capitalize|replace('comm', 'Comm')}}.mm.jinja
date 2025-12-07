@@ -1,0 +1,21 @@
+//
+// {{ cpy_project_name|capitalize|replace('comm', 'Comm') }}.mm
+// api/apple
+//
+// Created by ccgo on {{ '%Y-%m-%d' | strftime }}.
+// Copyright {{ '%Y' | strftime }} ccgo Project Authors. All rights reserved.
+
+#include "{{cpy_project_name|lower}}/api/apple/{{ cpy_project_name|capitalize|replace('comm', 'Comm') }}.h"
+#include "{{cpy_project_name|lower}}/api/native/{{cpy_project_name|lower}}.h"
+
+//-----------------------------------------------------------------------------
+// C API implementations for Kotlin/Native cinterop
+//-----------------------------------------------------------------------------
+
+void {{ cpy_project_name|lower }}_set_debug_log(bool enable) {
+    {{cpy_project_name|lower}}_SetDebugLog(enable);
+}
+
+const char* {{ cpy_project_name|lower }}_get_version(void) {
+    return {{cpy_project_name|lower}}_GetVersion();
+}

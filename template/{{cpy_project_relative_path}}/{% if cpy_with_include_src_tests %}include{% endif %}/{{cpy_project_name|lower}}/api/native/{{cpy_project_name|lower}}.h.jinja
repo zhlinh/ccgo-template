@@ -1,0 +1,74 @@
+//
+// {{cpy_project_name|lower}}.h
+// api/native
+//
+// Created by ccgo on {{ '%Y-%m-%d' | strftime }}.
+// Copyright {{ '%Y' | strftime }} ccgo Project Authors. All rights reserved.
+
+#ifndef {{ cpy_project_name|upper }}_API_NATIVE_{{ cpy_project_name|upper }}_H_
+#define {{ cpy_project_name|upper }}_API_NATIVE_{{ cpy_project_name|upper }}_H_
+
+#include <stdint.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#ifndef COMM_PUBLIC
+// this is for non-project use, no need to define COMM_PUBLIC
+// or windows will add __imp_ prefix when searching for symbols
+#  if defined(COMM_ENABLE_EXPORTS) && COMM_ENABLE_EXPORTS == 1
+#    if defined _WIN32 || defined __CYGWIN__
+#      ifdef BUILDING_DLL
+#        ifdef __GNUC__
+#          define COMM_PUBLIC __attribute__((dllexport))
+#        else
+#          define COMM_PUBLIC __declspec(dllexport)
+#        endif
+#      else
+#        ifdef __GNUC__
+#          define COMM_PUBLIC __attribute__((dllimport))
+#        else
+#          define COMM_PUBLIC __declspec(dllimport)
+#        endif
+#      endif
+#    else
+#      if defined(__clang__) || (defined(__GNUC__) && __GNUC__ >= 4)
+#        define COMM_PUBLIC __attribute__((visibility("default")))
+#      else
+#        define COMM_PUBLIC
+#      endif
+#    endif
+#  else
+#    define COMM_PUBLIC
+#  endif  // defined(COMM_ENABLE_EXPORTS) && COMM_ENABLE_EXPORTS == 1
+#endif    // #ifndef (COMM_PUBLIC)
+
+//! \if ZH-CN
+//! \brief set debug log.
+//!
+//! \param is_debug_log 是否启用调试日志
+//! \else
+//! \brief set debug log.
+//!
+//! \param is_debug_log  the debug log
+//! \endif
+void {{ cpy_project_name|lower }}_SetDebugLog(bool is_debug_log);
+
+//! \if ZH-CN
+//! \brief 获取版本号
+//!
+//! \return 返回版本号字符串
+//! \else
+//! \brief Get version string
+//!
+//! \return Returns version string
+//! \endif
+const char* {{ cpy_project_name|lower }}_GetVersion(void);
+
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif  // {{ cpy_project_name|upper }}_API_NATIVE_FOUNDRY_COMM_LOG_H_

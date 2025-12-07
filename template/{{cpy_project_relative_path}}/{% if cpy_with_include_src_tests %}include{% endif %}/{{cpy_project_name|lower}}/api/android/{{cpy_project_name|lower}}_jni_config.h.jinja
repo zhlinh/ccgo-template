@@ -1,0 +1,25 @@
+//
+// {{ cpy_project_name|lower }}_jni_config.h
+// api/android
+//
+// Created by ccgo on {{ '%Y-%m-%d' | strftime }}.
+// Copyright {{ '%Y' | strftime }} ccgo Project Authors. All rights reserved.
+
+#ifndef {{ cpy_project_name|upper }}_API_ANDROID_{{ cpy_project_name|upper }}_JNI_CONFIG_H_
+#define {{ cpy_project_name|upper }}_API_ANDROID_{{ cpy_project_name|upper }}_JNI_CONFIG_H_
+
+#ifdef __ANDROID__
+
+#  ifndef {{ cpy_project_name|upper }}_JNI_API_PREFIX
+#    define {{ cpy_project_name|upper }}_JNI_API_PREFIX Java_{{ cpy_project_group_id|replace('.', '_') }}_{{ cpy_project_name|lower }}_jni_{{ cpy_project_name|capitalize|replace('comm', 'Comm') }}Jni_
+#  endif
+
+// the following two macros are utility macros to concatenate two macros
+#  define _TOOLS_CONCAT(a, b) a##b
+#  define TOOLS_CONCAT(a, b) _TOOLS_CONCAT(a, b)
+
+#  define {{ cpy_project_name|upper }}_JNI_API_DEF(f) TOOLS_CONCAT({{ cpy_project_name|upper }}_JNI_API_PREFIX, f)
+
+#endif  // __ANDROID__
+
+#endif  // {{ cpy_project_name|upper }}_API_ANDROID_{{ cpy_project_name|upper }}_JNI_CONFIG_H_

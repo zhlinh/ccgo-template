@@ -1,0 +1,19 @@
+//
+// {{cpy_project_name|lower}}.cc
+// api/native
+//
+// Created by ccgo on {{ '%Y-%m-%d' | strftime }}.
+// Copyright {{ '%Y' | strftime }} ccgo Project Authors. All rights reserved.
+
+#include "{{cpy_project_name|lower}}/api/native/{{cpy_project_name|lower}}.h"
+
+#include "{{cpy_project_name|lower}}/base/global_var.h"
+
+void {{cpy_project_name|lower}}_SetDebugLog(bool is_debug_log) {
+    {{cpy_project_name|lower}}::GlobalVar::GetInstance().debug_ = is_debug_log;
+}
+
+const char* {{cpy_project_name|lower}}_GetVersion(void) {
+    return "{{cpy_project_version}}";
+}
+

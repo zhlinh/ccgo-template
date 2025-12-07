@@ -1,0 +1,31 @@
+#
+# Copyright 2024 zhlinh and ccgo Project Authors. All rights reserved.
+# Use of this source code is governed by a MIT-style
+# license that can be found at
+#
+# https://opensource.org/license/MIT
+#
+# The above copyright notice and this permission
+# notice shall be included in all copies or
+# substantial portions of the Software.
+
+# Kotlin code style for this project: "official" or "obsolete":
+kotlin.code.style=official
+
+# Kotlin Multiplatform
+kotlin.mpp.stability.nowarn=true
+kotlin.mpp.androidSourceSetLayoutVersion=2
+
+# Kotlin Native
+kotlin.native.binary.memoryModel=experimental
+kotlin.native.cacheKind=none
+
+# Android
+android.useAndroidX=true
+android.nonTransitiveRClass=true
+
+# Gradle
+org.gradle.jvmargs=-Xmx4096m -Dfile.encoding=UTF-8
+org.gradle.parallel=true
+org.gradle.caching=true
+org.gradle.configuration-cache=true
