@@ -76,6 +76,16 @@ cpy_with_include_src_tests:
   help: Do you want to include src and tests directories?
   default: True
 
+cpy_with_apple_ide:
+  type: bool
+  help: Do you want to include Apple IDE integration directory (Xcode workspace)?
+  default: True
+
+cpy_with_windows_ide:
+  type: bool
+  help: Do you want to include Windows IDE integration directory (Visual Studio/VS Code)?
+  default: True
+
 
 _message_after_copy: |
     ===============================
@@ -122,6 +132,8 @@ _skip_if_exists:
 - "{{ _subdirectory }}/{{ cpy_project_relative_path }}/CMakeConfig.local.cmake"
 - "{{ _subdirectory }}/{{ cpy_project_relative_path }}/local.properties"
 - "{{ _subdirectory }}/{{ cpy_project_relative_path }}/CNAME"
+- "{{ _subdirectory }}/{{ cpy_project_relative_path }}/apple/"
+- "{{ _subdirectory }}/{{ cpy_project_relative_path }}/windows/"
 
 _exclude:
 - copier_extensions.py
