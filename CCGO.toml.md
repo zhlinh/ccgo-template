@@ -148,35 +148,6 @@ export_headers = [
 
 This section defines which headers to include when packaging the SDK.
 
-### [package]
-
-SDK packaging configuration.
-
-```toml
-[package]
-platforms = ["android", "ios", "macos", "windows", "linux", "ohos"]
-archive_format = "zip"
-include_docs = false
-include_samples = false
-include_kmp = false
-```
-
-**Fields:**
-- `platforms`: List of platforms to include in the SDK package
-- `archive_format`: Archive format (`zip`, `tar.gz`, or `both`)
-- `include_docs`: Whether to include documentation
-- `include_samples`: Whether to include sample code
-- `include_kmp`: Whether to include Kotlin Multiplatform artifacts
-
-**Supported Platforms:**
-- `android`: Android AAR packages
-- `ios`: iOS frameworks/xcframeworks
-- `macos`: macOS frameworks
-- `windows`: Windows static libraries (.lib)
-- `linux`: Linux static libraries (.a)
-- `ohos`: OpenHarmony HAR packages
-- `kmp`: Kotlin Multiplatform packages
-
 ## Example Complete Configuration
 
 ```toml
@@ -236,13 +207,6 @@ export_headers = [
 export_headers = [
     { src = "include/", dest = "." },
 ]
-
-[package]
-platforms = ["android", "ios", "macos", "windows", "linux"]
-archive_format = "zip"
-include_docs = true
-include_samples = true
-include_kmp = false
 ```
 
 ## Migration from build_config.py
