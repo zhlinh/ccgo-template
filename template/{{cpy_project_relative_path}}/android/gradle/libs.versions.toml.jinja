@@ -1,28 +1,5 @@
 [versions]
-# main project
-commMainProject = "{{cpy_project_version}}"
-commIsRelease = "false"
-commGroupId = "{{cpy_project_group_id}}"
-commDependencies = """
-                    {% if cpy_project_dependencies | length > 0 -%}
-                    {{ cpy_project_dependencies|replace(',', ',\n                    ')|trim }}
-                    {%- else -%}
-                    EMPTY
-                    {%- endif %}
-                   """
-compileSdkVersion = "34"
-commIsSignEnabled = "false"
-commAndroidStl = "c++_shared"
-commPublishChannelDesc = "EMPTY"
-buildToolsVersion = "34.0.0"
-minSdkVersion = "19"
-appMinSdkVersion = "21"
-targetSdkVersion = "34"
-#cmakeAbiFilters = "arm64-v8a"
-cmakeAbiFilters = "armeabi-v7a,arm64-v8a,x86_64"
-cmakeVersion = "3.22.1"
-ndkVersion = "25.2.9519653"
-# android
+# Third-party library versions
 accompanist = "0.34.0"
 androidDesugarJdkLibs = "2.0.4"
 # AGP and tools should be updated together
@@ -85,10 +62,9 @@ room = "2.6.1"
 secrets = "2.0.1"
 truth = "1.4.2"
 turbine = "1.0.0"
-mavenPublishPlugin = "0.29.0"
-mavenNmcpPlugin = "0.0.8"
+mavenNmcpPlugin = "1.2.0"
 # CCGO Gradle Build Logic Convention Plugins (com.mojeter.ccgo.gradle)
-ccgoBuildlogic = "0.0.15"
+ccgoBuildlogic = "0.0.18"
 
 [libraries]
 accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }
@@ -182,7 +158,6 @@ firebase-performance-gradlePlugin = { group = "com.google.firebase", name = "per
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 room-gradlePlugin = { group = "androidx.room", name = "room-gradle-plugin", version.ref = "room" }
-maven-publishPlugin = { group = "com.vanniktech.maven.publish", name = "com.vanniktech.maven.publish.gradle.plugin", version.ref = "mavenPublishPlugin" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
@@ -202,7 +177,8 @@ protobuf = { id = "com.google.protobuf", version.ref = "protobufPlugin" }
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 room = { id = "androidx.room", version.ref = "room" }
 secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secrets" }
-maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublishPlugin" }
+mavenNmcp = { id = "com.gradleup.nmcp", version.ref = "mavenNmcpPlugin" }
+mavenNmcpAggregation = { id = "com.gradleup.nmcp.aggregation", version.ref = "mavenNmcpPlugin" }
 
 # CCGO Gradle Build Logic Convention Plugins (published to Maven Central)
 ccgo-android-application = { id = "com.mojeter.ccgo.gradle.android.application", version.ref = "ccgoBuildlogic" }

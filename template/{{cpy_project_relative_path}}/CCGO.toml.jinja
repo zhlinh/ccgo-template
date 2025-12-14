@@ -23,9 +23,25 @@ generate_json_metadata = true
 # JSON metadata output path (relative to project root)
 json_metadata_path = "build_info.json"
 
+# CMake version
+cmake_version = "3.22.1"
+
 [android]
 # Android project path
 project_path = "android/main_android_sdk"
+
+# Android SDK versions
+compile_sdk = 34
+build_tools = "34.0.0"
+min_sdk = 19
+app_min_sdk = 21
+target_sdk = 34
+
+# Android NDK version
+ndk_version = "25.2.9519653"
+
+# Android STL type: c++_shared or c++_static
+stl = "c++_shared"
 
 # Third-party libraries to merge into output library
 merge_libs = []
@@ -91,44 +107,40 @@ export_headers = [
 ]
 
 # ===================================================================
-# Publish Configuration (Optional)
+# Publish Configuration
 # ===================================================================
 # Maven publishing configuration for Android/JVM artifacts.
 # Credentials are typically set via environment variables or gradle.properties
-# for security reasons. CCGO.toml can provide default repository URLs.
+# for security reasons.
 #
 # Priority (high to low):
 # 1. Environment variables
 # 2. CCGO.toml
 # 3. Project-level gradle.properties (in project root)
-# 3. ~/.gradle/gradle.properties
+# 4. ~/.gradle/gradle.properties
 
-# [publish]
-# # Enable signing for Maven Central publishing
-# sign_enabled = true
-#
-# # Signing credentials (prefer environment variables for security)
-# # signing_key = ""  # Use SIGNING_IN_MEMORY_KEY env var instead
-# # signing_key_password = ""  # Use SIGNING_IN_MEMORY_KEY_PASSWORD env var instead
+[publish.maven]
+# Maven group ID for publishing (e.g., "com.example.project")
+group_id = "{{ cpy_project_group_id }}"
 
-# [publish.maven]
-# # Maven Central credentials (prefer environment variables for security)
-# # central_username = ""  # Use MAVEN_CENTRAL_USERNAME env var instead
-# # central_password = ""  # Use MAVEN_CENTRAL_PASSWORD env var instead
-#
-# # Local Maven repository path
+# Maven artifact ID (optional, defaults to project name)
+# artifact_id = "{{ cpy_project_name | lower }}"
+
+# Channel description for artifact naming (e.g., "beta", "release", or empty string)
+channel_desc = ""
+
+# Maven dependencies to include in POM file (format: "groupId:artifactId:version")
+{% if cpy_project_dependencies and cpy_project_dependencies != "EMPTY" %}
+dependencies = [
+{% for dep in cpy_project_dependencies.split(',') %}{% if dep.strip() and ':' in dep.strip() %}    "{{ dep.strip() }}",
+{% endif %}{% endfor %}]
+{% else %}
+dependencies = []
+{% endif %}
+
+# Optional Maven configuration (credentials should be in env vars or gradle.properties)
 # local_path = "~/.m2/repository"
-#
-# # Custom Maven repositories (comma-separated for multiple)
-# # custom_urls = "https://maven.example.com/releases"
-# # custom_usernames = ""  # Use MAVEN_CUSTOM_USERNAMES env var instead
-# # custom_passwords = ""  # Use MAVEN_CUSTOM_PASSWORDS env var instead
-#
-# # Or use array format for multiple custom repositories
-# # [[publish.maven.custom]]
-# # url = "https://maven.company.com/releases"
-# # username = ""
-# # password = ""
+# custom_urls = "https://maven.example.com/releases"
 
 # ===================================================================
 # Dependencies (Optional)

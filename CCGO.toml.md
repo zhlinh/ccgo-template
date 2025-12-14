@@ -455,6 +455,55 @@ ccgo_add_subdirectory(spdlog)
 target_link_libraries(myapp PRIVATE spdlog::spdlog)
 ```
 
+## Publishing Configuration
+
+### [publish.maven]
+
+Maven publishing configuration for Android/JVM artifacts.
+
+```toml
+[publish.maven]
+# Maven group ID for publishing (e.g., "com.example.project")
+group_id = "com.example.mylib"
+
+# Maven artifact ID (optional, defaults to project name)
+# artifact_id = "mylib"
+
+# Channel description for artifact naming (e.g., "beta", "release", or empty string)
+channel_desc = ""
+
+# Maven dependencies to include in POM file (format: "groupId:artifactId:version")
+dependencies = [
+    "com.example:dependency1:1.0.0",
+    "com.example:dependency2:2.0.0",
+]
+```
+
+**Fields:**
+- `group_id` (required): Maven group ID for publishing (e.g., "com.example.project")
+- `artifact_id` (optional): Maven artifact ID, defaults to project name if not specified
+- `channel_desc` (optional): Channel description for artifact naming (e.g., "beta", "release", or empty string)
+- `dependencies` (optional): List of Maven dependencies to include in POM file
+
+**Credential Priority (high to low):**
+1. Environment variables
+2. CCGO.toml
+3. Project-level gradle.properties (in project root)
+4. ~/.gradle/gradle.properties
+
+**Example with custom artifact ID:**
+```toml
+[project]
+name = "myawesomelib"
+version = "1.0.0"
+
+[publish.maven]
+group_id = "com.company.libs"
+artifact_id = "awesome-sdk"  # Published as com.company.libs:awesome-sdk:1.0.0
+channel_desc = ""
+dependencies = []
+```
+
 ## Future Enhancements
 
 Planned features for `CCGO.toml`:
