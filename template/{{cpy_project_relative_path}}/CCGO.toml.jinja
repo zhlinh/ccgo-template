@@ -122,7 +122,7 @@ export_headers = [
 # 3. Project-level gradle.properties (in project root)
 # 4. ~/.gradle/gradle.properties
 
-[publish.maven]
+[publish.android.maven]
 # Maven group ID for publishing (e.g., "com.example.project")
 group_id = "{{ cpy_project_group_id }}"
 
@@ -132,10 +132,11 @@ group_id = "{{ cpy_project_group_id }}"
 # Channel description for artifact naming (e.g., "beta", "release", or empty string)
 channel_desc = ""
 
-# Maven dependencies to include in POM file (format: "groupId:artifactId:version")
+# Maven dependencies to include in POM file
+# Format: { group = "com.example", artifact = "lib", version = "1.0.0" }
 {% if cpy_project_dependencies and cpy_project_dependencies != "EMPTY" %}
 dependencies = [
-{% for dep in cpy_project_dependencies.split(',') %}{% if dep.strip() and ':' in dep.strip() %}    "{{ dep.strip() }}",
+{% for dep in cpy_project_dependencies.split(',') %}{% if dep.strip() and ':' in dep.strip() %}{% set parts = dep.strip().split(':') %}    { group = "{{ parts[0] }}", artifact = "{{ parts[1] }}", version = "{{ parts[2] if parts|length > 2 else '1.0.0' }}" },
 {% endif %}{% endfor %}]
 {% else %}
 dependencies = []

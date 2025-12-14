@@ -1,0 +1,30 @@
+// swift-tools-version:5.3
+// The swift-tools-version declares the minimum version of Swift required to build this package.
+
+import PackageDescription
+
+let package = Package(
+    name: "{{ cpy_project_relative_path }}",
+    platforms: [
+        .iOS("13.0"),
+        .macOS("10.15"),
+        .tvOS("13.0"),
+        .watchOS("6.0")
+    ],
+    products: [
+        .library(name: "{{ cpy_project_relative_path }}", targets: ["{{ cpy_project_relative_path }}"]),
+    ],
+    targets: [
+        // Local binary target (for development)
+        .binaryTarget(
+            name: "{{ cpy_project_relative_path }}",
+            path: "../cmake_build/iOS/static/out/{{ cpy_project_relative_path }}.xcframework"
+        ),
+        // Remote binary target (for distribution via GitHub releases)
+        // .binaryTarget(
+        //     name: "{{ cpy_project_relative_path }}",
+        //     url: "{{ cpy_git_repo_url }}/releases/download/v{{ cpy_project_version }}/{{ cpy_project_relative_path }}.xcframework.zip",
+        //     checksum: "REPLACE_WITH_SHA256_CHECKSUM"
+        // ),
+    ]
+)

@@ -1,0 +1,28 @@
+Pod::Spec.new do |s|
+  s.name             = '{{ cpy_project_relative_path }}'
+  s.version          = '{{ cpy_project_version }}'
+  s.summary          = '{{ cpy_project_name }} library'
+  s.homepage         = '{{ cpy_git_repo_url }}'
+  s.license          = { :type => 'MIT', :file => 'LICENSE' }
+  s.author           = '{{ cpy_user_name }}'
+  # Binary distribution: download xcframework zip from GitHub releases
+  s.source           = { :http => '{{ cpy_git_repo_url }}/releases/download/v' + s.version.to_s + '/{{ cpy_project_relative_path }}.xcframework.zip' }
+  # For git source (requires xcframework committed to repo):
+  # s.source           = { :git => '{{ cpy_git_repo_url }}.git', :tag => 'v' + s.version.to_s }
+  s.ios.deployment_target = '13.0'
+  s.macos.deployment_target = '10.15'
+  s.tvos.deployment_target = '13.0'
+  s.watchos.deployment_target = '6.0'
+  s.swift_version    = '5.0'
+  # Platform-specific vendored frameworks
+  s.ios.vendored_frameworks = 'ios/{{ cpy_project_relative_path }}.xcframework'
+  s.macos.vendored_frameworks = 'macos/{{ cpy_project_relative_path }}.xcframework'
+  s.tvos.vendored_frameworks = 'tvos/{{ cpy_project_relative_path }}.xcframework'
+  s.watchos.vendored_frameworks = 'watchos/{{ cpy_project_relative_path }}.xcframework'
+  s.libraries        = 'c++'
+  s.pod_target_xcconfig = {
+    'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',
+    'CLANG_CXX_LIBRARY' => 'libc++',
+  }
+  s.static_framework = true
+end
