@@ -205,6 +205,20 @@ enabled = true
 use_local_path = true
 
 # ===================================================================
+# OHOS Publish Configuration (OHPM)
+# ===================================================================
+# Configuration for publishing to OpenHarmony Package Manager.
+# Use: ccgo publish ohos --ohpm official/local/private
+
+[publish.ohos.ohpm]
+# Registry type: official, private, or local
+registry = "official"
+
+# OHPM dependencies
+# Format: { name = "package-name", version = "1.0.0" }
+dependencies = []
+
+# ===================================================================
 # Dependencies (Optional)
 # ===================================================================
 # Similar to Cargo.toml, CCGO supports dependency management.

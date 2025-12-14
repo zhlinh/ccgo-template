@@ -1,0 +1,42 @@
+# {{ cpy_project_name }}
+
+A cross-platform C++ library built with CCGO.
+
+## Description
+
+{{ cpy_project_name }} library.
+
+## Platforms
+
+- Android (armeabi-v7a, arm64-v8a, x86_64)
+- iOS
+- macOS
+- tvOS
+- watchOS
+- OpenHarmony/HarmonyOS (armeabi-v7a, arm64-v8a, x86_64)
+- Windows
+- Linux
+
+## Installation
+
+### Android (Maven)
+
+```gradle
+implementation '{{ cpy_project_group_id }}:{{ cpy_project_relative_path }}:{{ cpy_project_version }}'
+```
+
+### iOS/macOS (CocoaPods)
+
+```ruby
+pod '{{ cpy_project_relative_path }}', '~> {{ cpy_project_version.split('.')[0] }}.0'
+```
+
+### OpenHarmony (OHPM)
+
+```bash
+ohpm install {{ cpy_project_relative_path }}
+```
+
+## License
+
+MIT License - see [LICENSE](LICENSE) for details.
