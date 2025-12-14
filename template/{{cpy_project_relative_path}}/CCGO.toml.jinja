@@ -56,6 +56,9 @@ default_archs = ["armeabi-v7a", "arm64-v8a", "x86_64"]
 # OpenHarmony project path
 project_path = "ohos/main_ohos_sdk"
 
+# OHOS STL type: c++_shared or c++_static
+stl = "c++_shared"
+
 # Third-party libraries to merge into output library
 merge_libs = []
 
@@ -141,6 +144,64 @@ dependencies = []
 # Optional Maven configuration (credentials should be in env vars or gradle.properties)
 # local_path = "~/.m2/repository"
 # custom_urls = "https://maven.example.com/releases"
+
+# ===================================================================
+# Apple Publish Configuration (CocoaPods & SPM)
+# ===================================================================
+# Configuration for publishing to Apple platforms via CocoaPods and Swift Package Manager.
+# Use: ccgo publish apple --cocoapods / --spm / --all
+
+[publish.apple]
+# Pod/Package name (defaults to project name)
+pod_name = "{{ cpy_project_name | capitalize }}"
+
+# Target platforms for publishing (ios, macos, tvos, watchos, or "all")
+platforms = ["ios", "macos"]
+
+# Minimum deployment targets
+min_ios_version = "13.0"
+min_macos_version = "10.15"
+min_tvos_version = "13.0"
+min_watchos_version = "6.0"
+
+# Summary/description for the package
+summary = "{{ cpy_project_name }} library"
+# description = "A more detailed description of the library"
+
+[publish.apple.cocoapods]
+# Enable/disable CocoaPods publishing
+enabled = true
+
+# Repository: "trunk" for public CocoaPods, or URL for private spec repo
+repo = "trunk"
+
+# Private spec repo URL (required if repo = "private")
+# spec_repo = "https://github.com/yourorg/Specs.git"
+
+# License type
+license = "MIT"
+
+# Homepage URL
+{% if cpy_git_repo_url %}homepage = "{{ cpy_git_repo_url }}"{% else %}# homepage = "https://github.com/yourorg/yourproject"{% endif %}
+
+# URL to hosted XCFramework zip (for binary distribution)
+# source_url = "https://github.com/yourorg/yourproject/releases/download/v1.0.0/YourProject.xcframework.zip"
+
+# Use static framework linking (default: true)
+static_framework = true
+
+[publish.apple.spm]
+# Enable/disable Swift Package Manager publishing
+enabled = true
+
+# Git URL for the package (defaults to git remote origin)
+{% if cpy_git_repo_url %}git_url = "{{ cpy_git_repo_url }}"{% else %}# git_url = "https://github.com/yourorg/yourproject"{% endif %}
+
+# URL to hosted XCFramework zip (for remote binary distribution)
+# xcframework_url = "https://github.com/yourorg/yourproject/releases/download/v1.0.0/YourProject.xcframework.zip"
+
+# Use local path instead of URL (for development)
+use_local_path = true
 
 # ===================================================================
 # Dependencies (Optional)
