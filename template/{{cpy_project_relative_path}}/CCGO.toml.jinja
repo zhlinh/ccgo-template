@@ -6,6 +6,7 @@
 name = "{{ cpy_project_name | lower }}"
 version = "{{ cpy_project_version }}"
 description = "{{ cpy_project_name }} library"
+group_id = "{{ cpy_project_group_id }}"
 {% if cpy_git_repo_url %}repository = "{{ cpy_git_repo_url }}"{% endif %}
 {% if cpy_user_name %}authors = ["{{ cpy_user_name }} <{{ cpy_user_email }}>"]{% endif %}
 license = "MIT"

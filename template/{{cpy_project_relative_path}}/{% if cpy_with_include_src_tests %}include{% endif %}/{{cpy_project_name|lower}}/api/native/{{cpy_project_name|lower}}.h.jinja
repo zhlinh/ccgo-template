@@ -14,35 +14,35 @@
 extern "C" {
 #endif
 
-#ifndef COMM_PUBLIC
-// this is for non-project use, no need to define COMM_PUBLIC
+#ifndef CCGO_PUBLIC
+// this is for non-project use, no need to define CCGO_PUBLIC
 // or windows will add __imp_ prefix when searching for symbols
-#  if defined(COMM_ENABLE_EXPORTS) && COMM_ENABLE_EXPORTS == 1
+#  if defined(CCGO_ENABLE_EXPORTS) && CCGO_ENABLE_EXPORTS == 1
 #    if defined _WIN32 || defined __CYGWIN__
 #      ifdef BUILDING_DLL
 #        ifdef __GNUC__
-#          define COMM_PUBLIC __attribute__((dllexport))
+#          define CCGO_PUBLIC __attribute__((dllexport))
 #        else
-#          define COMM_PUBLIC __declspec(dllexport)
+#          define CCGO_PUBLIC __declspec(dllexport)
 #        endif
 #      else
 #        ifdef __GNUC__
-#          define COMM_PUBLIC __attribute__((dllimport))
+#          define CCGO_PUBLIC __attribute__((dllimport))
 #        else
-#          define COMM_PUBLIC __declspec(dllimport)
+#          define CCGO_PUBLIC __declspec(dllimport)
 #        endif
 #      endif
 #    else
 #      if defined(__clang__) || (defined(__GNUC__) && __GNUC__ >= 4)
-#        define COMM_PUBLIC __attribute__((visibility("default")))
+#        define CCGO_PUBLIC __attribute__((visibility("default")))
 #      else
-#        define COMM_PUBLIC
+#        define CCGO_PUBLIC
 #      endif
 #    endif
 #  else
-#    define COMM_PUBLIC
-#  endif  // defined(COMM_ENABLE_EXPORTS) && COMM_ENABLE_EXPORTS == 1
-#endif    // #ifndef (COMM_PUBLIC)
+#    define CCGO_PUBLIC
+#  endif  // defined(CCGO_ENABLE_EXPORTS) && CCGO_ENABLE_EXPORTS == 1
+#endif    // #ifndef (CCGO_PUBLIC)
 
 //! \if ZH-CN
 //! \brief set debug log.
@@ -71,4 +71,4 @@ const char* {{ cpy_project_name|lower }}_GetVersion(void);
 }
 #endif
 
-#endif  // {{ cpy_project_name|upper }}_API_NATIVE_FOUNDRY_COMM_LOG_H_
+#endif  // {{ cpy_project_name|upper }}_API_NATIVE_{{ cpy_project_name|upper }}_H_

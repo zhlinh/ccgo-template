@@ -1,4 +1,6 @@
 [versions]
+# CCGO Gradle Build Logic Convention Plugins (com.mojeter.ccgo.gradle)
+ccgoBuildlogic = "0.0.18"
 # Third-party library versions
 accompanist = "0.34.0"
 androidDesugarJdkLibs = "2.0.4"
@@ -46,6 +48,7 @@ hiltExt = "1.1.0"
 jacoco = "0.8.7"
 junit4 = "4.13.2"
 kotlin = "1.9.22"
+kotlinMultiplatform = "1.9.20"
 kotlinxCoroutines = "1.8.0"
 kotlinxDatetime = "0.5.0"
 kotlinxSerializationJson = "1.6.3"
@@ -63,8 +66,6 @@ secrets = "2.0.1"
 truth = "1.4.2"
 turbine = "1.0.0"
 mavenNmcpPlugin = "1.2.0"
-# CCGO Gradle Build Logic Convention Plugins (com.mojeter.ccgo.gradle)
-ccgoBuildlogic = "0.0.18"
 
 [libraries]
 accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }
@@ -170,6 +171,8 @@ firebase-perf = { id = "com.google.firebase.firebase-perf", version.ref = "fireb
 gms = { id = "com.google.gms.google-services", version.ref = "gmsPlugin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlinMultiplatform" }
+kotlin-native-cocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotlinMultiplatform" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 module-graph = { id = "com.jraska.module.graph.assertion", version.ref = "moduleGraph" }
@@ -198,3 +201,7 @@ ccgo-android-lint = { id = "com.mojeter.ccgo.gradle.android.lint", version.ref =
 ccgo-android-room = { id = "com.mojeter.ccgo.gradle.android.room", version.ref = "ccgoBuildlogic" }
 ccgo-jvm-library = { id = "com.mojeter.ccgo.gradle.jvm.library", version.ref = "ccgoBuildlogic" }
 ccgo-android-root = { id = "com.mojeter.ccgo.gradle.android.root", version.ref = "ccgoBuildlogic" }
+ccgo-kmp-publish = { id = "com.mojeter.ccgo.gradle.kmp.publish", version.ref = "ccgoBuildlogic" }
+ccgo-kmp-library-native-python = { id = "com.mojeter.ccgo.gradle.kmp.library.native.python", version.ref = "ccgoBuildlogic" }
+ccgo-kmp-library-native-empty = { id = "com.mojeter.ccgo.gradle.kmp.library.native.empty", version.ref = "ccgoBuildlogic" }
+ccgo-kmp-root = { id = "com.mojeter.ccgo.gradle.kmp.root", version.ref = "ccgoBuildlogic" }

@@ -9,10 +9,11 @@
 # notice shall be included in all copies or
 # substantial portions of the Software.
 
-# the setting of visibility, 1 means open, 0 means close
-set(CONFIG_COMM_PRESET_VISIBILITY 1)
-
-# set(CONFIG_COMM_DEPS_MAP
-# crypto encoding
-# syscall platform
-# )
+# This file is for project-specific CMake settings.
+# Settings like symbol visibility and submodule dependencies
+# are now configured in CCGO.toml and passed via CMake args.
+#
+# Example settings that can be added here:
+# - Custom compiler flags
+# - Platform-specific configurations
+# - Third-party library paths

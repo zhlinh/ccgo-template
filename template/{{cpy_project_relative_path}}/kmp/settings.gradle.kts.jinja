@@ -18,12 +18,6 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
     }
-
-    plugins {
-        kotlin("multiplatform") version "1.9.20"
-        kotlin("native.cocoapods") version "1.9.20"
-        id("com.android.library") version "8.1.0"
-    }
 }
 
 dependencyResolutionManagement {
