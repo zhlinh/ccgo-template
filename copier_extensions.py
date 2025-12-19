@@ -52,6 +52,6 @@ class SlugifyExtension(Extension):
 class CurrentYearExtension(Extension):
     def __init__(self, environment):
         super().__init__(environment)
-        environment.globals["current_year"] = date.today().strftime('%Y')
-        environment.globals["current_day"] = date.today().strftime('%Y-%m-%d')
+        environment.globals["current_year"] = lambda: date.today().strftime('%Y')
+        environment.globals["current_day"] = lambda: date.today().strftime('%Y-%m-%d')
         environment.filters["current_year"] = lambda x: date.today().strftime('%Y')
