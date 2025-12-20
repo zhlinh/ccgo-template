@@ -9,11 +9,11 @@
 
 #include "{{cpy_project_name|lower}}/base/global_var.h"
 
-void {{cpy_project_name|lower}}_SetDebugLog(bool is_debug_log) {
-    {{cpy_project_name|lower}}::GlobalVar::GetInstance().debug_ = is_debug_log;
+void {{cpy_project_name|lower|macro_safe}}_SetDebugLog(bool is_debug_log) {
+    {{cpy_project_name|lower|macro_safe}}::GlobalVar::GetInstance().debug_ = is_debug_log;
 }
 
-const char* {{cpy_project_name|lower}}_GetVersion(void) {
+const char* {{cpy_project_name|lower|macro_safe}}_GetVersion(void) {
     return "{{cpy_project_version}}";
 }
 

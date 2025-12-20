@@ -6,6 +6,8 @@ _jinja_extensions:
 - copier_extensions.py:CurrentYearExtension
 - copier_extensions.py:GitExtension
 - copier_extensions.py:SlugifyExtension
+- copier_extensions.py:MacroSafeExtension
+- copier_extensions.py:PascalCaseExtension
 
 # questions
 cpy_project_name:

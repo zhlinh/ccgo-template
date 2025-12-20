@@ -5,8 +5,8 @@
 // Created by ccgo on {{ '%Y-%m-%d' | strftime }}.
 // Copyright {{ '%Y' | strftime }} ccgo Project Authors. All rights reserved.
 
-#ifndef {{ cpy_project_name|upper }}_API_OHOS_{{ cpy_project_name|upper }}_NAPI_H_
-#define {{ cpy_project_name|upper }}_API_OHOS_{{ cpy_project_name|upper }}_NAPI_H_
+#ifndef {{ cpy_project_name|upper|macro_safe }}_API_OHOS_{{ cpy_project_name|upper|macro_safe }}_NAPI_H_
+#define {{ cpy_project_name|upper|macro_safe }}_API_OHOS_{{ cpy_project_name|upper|macro_safe }}_NAPI_H_
 
 #ifdef __OHOS__
 
@@ -33,7 +33,7 @@ extern "C" {
 //! \param info Callback info
 //! \return napi_value
 //! \endif
-napi_value Napi{{ cpy_project_name|capitalize }}SetDebugLog(napi_env env, napi_callback_info info);
+napi_value Napi{{ cpy_project_name|pascal_case }}SetDebugLog(napi_env env, napi_callback_info info);
 
 
 #  ifdef __cplusplus
@@ -42,4 +42,4 @@ napi_value Napi{{ cpy_project_name|capitalize }}SetDebugLog(napi_env env, napi_c
 
 #endif  // __OHOS__
 
-#endif  // {{ cpy_project_name|upper }}_API_OHOS_{{ cpy_project_name|upper }}_NAPI_H_
+#endif  // {{ cpy_project_name|upper|macro_safe }}_API_OHOS_{{ cpy_project_name|upper|macro_safe }}_NAPI_H_

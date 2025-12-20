@@ -1,18 +1,18 @@
-package {{cpy_project_group_id}}.{{cpy_project_name|lower}}.kmp
+package {{cpy_project_group_id}}.{{cpy_project_name|lower|macro_safe}}.kmp
 
 /**
- * Android implementation of {{cpy_project_name|capitalize}}KMP
+ * Android implementation of {{cpy_project_name|pascal_case}}KMP
  *
  * This implementation uses JNI to bridge to the native C++ library.
  * The native library is loaded automatically when this class is first accessed.
  *
- * Note: The native library (lib{{cpy_project_name|lower}}.so) should be placed in
+ * Note: The native library (lib{{cpy_project_name|lower|macro_safe}}.so) should be placed in
  * src/androidMain/jniLibs/<abi>/ before building.
  * You can build it using: ccgo build android
  */
-actual class {{cpy_project_name|capitalize}}KMP actual constructor() {
+actual class {{cpy_project_name|pascal_case}}KMP actual constructor() {
     companion object {
-        private const val LIBRARY_NAME = "{{cpy_project_name|lower}}"
+        private const val LIBRARY_NAME = "{{cpy_project_name|lower|macro_safe}}"
 
         init {
             try {

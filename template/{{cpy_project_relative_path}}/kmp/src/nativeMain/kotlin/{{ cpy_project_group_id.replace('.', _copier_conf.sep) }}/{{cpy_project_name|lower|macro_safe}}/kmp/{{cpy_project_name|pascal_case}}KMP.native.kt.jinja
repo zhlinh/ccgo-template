@@ -1,4 +1,4 @@
-package {{cpy_project_group_id}}.{{cpy_project_name|lower}}.kmp
+package {{cpy_project_group_id}}.{{cpy_project_name|lower|macro_safe}}.kmp
 
 /**
  * DEPRECATED: This file is no longer used.
@@ -22,11 +22,11 @@ package {{cpy_project_group_id}}.{{cpy_project_name|lower}}.kmp
  *     targets.withType<KotlinNativeTarget> {
  *         compilations.getByName("main") {
  *             cinterops {
- *                 val {{cpy_project_name|capitalize}} by creating {
- *                     defFile(project.file("src/nativeInterop/cinterop/{{cpy_project_name|capitalize}}.def"))
- *                     packageName("{{cpy_project_name|lower}}")
+ *                 val {{cpy_project_name|pascal_case}} by creating {
+ *                     defFile(project.file("src/nativeInterop/cinterop/{{cpy_project_name|pascal_case}}.def"))
+ *                     packageName("{{cpy_project_name|lower|macro_safe}}")
  *                     includeDirs.headerFilterOnly(
- *                         project.file("../include/{{cpy_project_name|lower}}/api/native")
+ *                         project.file("../include/{{cpy_project_name|lower|macro_safe}}/api/native")
  *                     )
  *                 }
  *             }
@@ -35,11 +35,11 @@ package {{cpy_project_group_id}}.{{cpy_project_name|lower}}.kmp
  * }
  * ```
  *
- * The {{cpy_project_name|capitalize}}.def file should contain:
+ * The {{cpy_project_name|pascal_case}}.def file should contain:
  * ```
- * headers = {{cpy_project_name|lower}}.h
- * package = {{cpy_project_name|lower}}
+ * headers = {{cpy_project_name|lower|macro_safe}}.h
+ * package = {{cpy_project_name|lower|macro_safe}}
  * libraryPaths = ../cmake_build/Native/Native.out/lib
- * staticLibraries = lib{{cpy_project_name|lower}}.a
+ * staticLibraries = lib{{cpy_project_name|lower|macro_safe}}.a
  * ```
  */

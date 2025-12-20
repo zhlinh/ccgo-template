@@ -41,9 +41,9 @@ napi_value CreateUndefined(napi_env env) {
 }  // namespace
 
 // 设置调试日志
-napi_value Napi{{ cpy_project_name|capitalize }}SetDebugLog(napi_env env, napi_callback_info info) {
+napi_value Napi{{ cpy_project_name|pascal_case }}SetDebugLog(napi_env env, napi_callback_info info) {
   bool is_debug_log = GetBoolParam(env, info, 0);
-  {{cpy_project_name|lower}}_SetDebugLog(is_debug_log);
+  {{cpy_project_name|lower|macro_safe}}_SetDebugLog(is_debug_log);
   return CreateUndefined(env);
 }
 
@@ -51,7 +51,7 @@ napi_value Napi{{ cpy_project_name|capitalize }}SetDebugLog(napi_env env, napi_c
 EXTERN_C_START
 static napi_value Init(napi_env env, napi_value exports) {
   napi_property_descriptor desc[] = {
-    {{ '{' }} "setDebugLog", nullptr, Napi{{ cpy_project_name|capitalize }}SetDebugLog, nullptr, nullptr, nullptr, napi_default, nullptr {{ '}' }},
+    {{ '{' }} "setDebugLog", nullptr, Napi{{ cpy_project_name|pascal_case }}SetDebugLog, nullptr, nullptr, nullptr, napi_default, nullptr {{ '}' }},
   };
 
   napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);
@@ -60,19 +60,19 @@ static napi_value Init(napi_env env, napi_value exports) {
 EXTERN_C_END
 
 // 模块定义
-static napi_module {{ cpy_project_name|lower }}Module = {
+static napi_module {{ cpy_project_name|lower|macro_safe }}Module = {
   .nm_version = 1,
   .nm_flags = 0,
   .nm_filename = nullptr,
   .nm_register_func = Init,
-  .nm_modname = "{{ cpy_project_name|capitalize }}",
+  .nm_modname = "{{ cpy_project_name|pascal_case }}",
   .nm_priv = ((void*)0),
   .reserved = { 0 },
 };
 
 // 模块注册
-extern "C" __attribute__((constructor)) void Register{{ cpy_project_name|capitalize }}Module(void) {
-  napi_module_register(&{{ cpy_project_name|lower }}Module);
+extern "C" __attribute__((constructor)) void Register{{ cpy_project_name|pascal_case }}Module(void) {
+  napi_module_register(&{{ cpy_project_name|lower|macro_safe }}Module);
 }
 
 #endif  // __OHOS__

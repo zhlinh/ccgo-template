@@ -12,10 +12,10 @@
 // C API implementations for Kotlin/Native cinterop
 //-----------------------------------------------------------------------------
 
-void {{ cpy_project_name|lower }}_set_debug_log(bool enable) {
-    {{cpy_project_name|lower}}_SetDebugLog(enable);
+void {{ cpy_project_name|lower|macro_safe }}_set_debug_log(bool enable) {
+    {{cpy_project_name|lower|macro_safe}}_SetDebugLog(enable);
 }
 
-const char* {{ cpy_project_name|lower }}_get_version(void) {
-    return {{cpy_project_name|lower}}_GetVersion();
+const char* {{ cpy_project_name|lower|macro_safe }}_get_version(void) {
+    return {{cpy_project_name|lower|macro_safe}}_GetVersion();
 }

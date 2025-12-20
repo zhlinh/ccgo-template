@@ -5,8 +5,8 @@
 // Created by ccgo on {{ '%Y-%m-%d' | strftime }}.
 // Copyright {{ '%Y' | strftime }} ccgo Project Authors. All rights reserved.
 
-#ifndef {{ cpy_project_name|upper }}_BASE_GLOBAL_VAR_H_
-#define {{ cpy_project_name|upper }}_BASE_GLOBAL_VAR_H_
+#ifndef {{ cpy_project_name|upper|macro_safe }}_BASE_GLOBAL_VAR_H_
+#define {{ cpy_project_name|upper|macro_safe }}_BASE_GLOBAL_VAR_H_
 
 #include <map>
 #include <set>
@@ -20,10 +20,10 @@
 #  include <jni.h>
 #endif
 
-namespace {{ cpy_project_name|lower }} {
+namespace {{ cpy_project_name|lower|macro_safe }} {
 
-#define {{ cpy_project_name|upper }}_GV ({{ cpy_project_name|lower }}::GlobalVar::GetInstance())
-#define {{ cpy_project_name|upper }}_DEBUG ({{ cpy_project_name|lower }}::GlobalVar::GetInstance().debug_)
+#define {{ cpy_project_name|upper|macro_safe }}_GV ({{ cpy_project_name|lower|macro_safe }}::GlobalVar::GetInstance())
+#define {{ cpy_project_name|upper|macro_safe }}_DEBUG ({{ cpy_project_name|lower|macro_safe }}::GlobalVar::GetInstance().debug_)
 
 class GlobalVar {
  private:
@@ -40,6 +40,6 @@ class GlobalVar {
   bool debug_ = false;
 };
 
-}  // namespace {{ cpy_project_name|lower }}
+}  // namespace {{ cpy_project_name|lower|macro_safe }}
 
-#endif  // {{ cpy_project_name|upper }}_BASE_GLOBAL_VAR_H_
+#endif  // {{ cpy_project_name|upper|macro_safe }}_BASE_GLOBAL_VAR_H_

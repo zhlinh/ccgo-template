@@ -1,24 +1,24 @@
-package {{cpy_project_group_id}}.{{cpy_project_name|lower}}.kmp
+package {{cpy_project_group_id}}.{{cpy_project_name|lower|macro_safe}}.kmp
 
 import kotlinx.cinterop.*
 import platform.Foundation.*
 import platform.UIKit.UIDevice
-import {{cpy_project_name|lower}}.*
+import {{cpy_project_name|lower|macro_safe}}.*
 
 /**
- * iOS implementation of {{cpy_project_name|capitalize}}KMP
+ * iOS implementation of {{cpy_project_name|pascal_case}}KMP
  *
  * This implementation uses Kotlin/Native cinterop to bridge to the native C++ library
  * through C API functions.
  */
 @OptIn(ExperimentalForeignApi::class)
-actual class {{cpy_project_name|capitalize}}KMP actual constructor() {
+actual class {{cpy_project_name|pascal_case}}KMP actual constructor() {
     actual fun setDebugLog(enable: Boolean) {
-        {{cpy_project_name|lower}}_set_debug_log(enable)
+        {{cpy_project_name|lower|macro_safe}}_set_debug_log(enable)
     }
 
     actual fun getVersion(): String {
-        return {{cpy_project_name|lower}}_get_version()?.toKString() ?: "Unknown"
+        return {{cpy_project_name|lower|macro_safe}}_get_version()?.toKString() ?: "Unknown"
     }
 
     actual fun getPlatformName(): String {
@@ -49,13 +49,13 @@ actual class {{cpy_project_name|capitalize}}KMP actual constructor() {
  *     targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
  *         compilations.getByName("main") {
  *             cinterops {
- *                 val {{cpy_project_name|capitalize}} by creating {
- *                     defFile(project.file("src/nativeInterop/cinterop/{{cpy_project_name|capitalize}}.def"))
- *                     packageName("{{cpy_project_name|lower}}")
+ *                 val {{cpy_project_name|pascal_case}} by creating {
+ *                     defFile(project.file("src/nativeInterop/cinterop/{{cpy_project_name|pascal_case}}.def"))
+ *                     packageName("{{cpy_project_name|lower|macro_safe}}")
  *
  *                     // Point to the framework
  *                     includeDirs.headerFilterOnly(
- *                         project.file("../include/{{cpy_project_name|lower}}/api/apple")
+ *                         project.file("../include/{{cpy_project_name|lower|macro_safe}}/api/apple")
  *                     )
  *                 }
  *             }

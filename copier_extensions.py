@@ -35,6 +35,20 @@ def slugify(value, separator="-"):
     return re.sub(r"[-_\s]+", separator, value).strip("-_")
 
 
+def macro_safe(value):
+    """Convert a string to a valid C/C++ macro name by replacing hyphens with underscores."""
+    return str(value).replace("-", "_")
+
+
+def pascal_case(value):
+    """Convert a hyphen-separated string to PascalCase for Java class names.
+
+    Example: 'ccgo-test-build' -> 'CcgoTestBuild'
+    """
+    parts = str(value).split("-")
+    return "".join(part.capitalize() for part in parts)
+
+
 class GitExtension(Extension):
     def __init__(self, environment):
         super().__init__(environment)
@@ -47,6 +61,18 @@ class SlugifyExtension(Extension):
     def __init__(self, environment):
         super().__init__(environment)
         environment.filters["slugify"] = slugify
+
+
+class MacroSafeExtension(Extension):
+    def __init__(self, environment):
+        super().__init__(environment)
+        environment.filters["macro_safe"] = macro_safe
+
+
+class PascalCaseExtension(Extension):
+    def __init__(self, environment):
+        super().__init__(environment)
+        environment.filters["pascal_case"] = pascal_case
 
 
 class CurrentYearExtension(Extension):

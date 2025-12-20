@@ -11,12 +11,12 @@
 
 #include "gtest/gtest.h"
 
-namespace {{cpy_project_name|lower}} {
+namespace {{cpy_project_name|lower|macro_safe}} {
 
 TEST(ApiTest, testDebuglog) {
-  {{cpy_project_name|lower}}_SetDebugLog(true);
+  {{cpy_project_name|lower|macro_safe}}_SetDebugLog(true);
   // TODO: add test code here
   ASSERT_TRUE(1 == 1);
 }
 
-}  // namespace {{cpy_project_name|lower}}
+}  // namespace {{cpy_project_name|lower|macro_safe}}

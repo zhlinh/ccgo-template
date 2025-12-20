@@ -5,8 +5,8 @@
 //  Created by ccgo on {{ '%Y-%m-%d' | strftime }}.
 //  Copyright {{ '%Y' | strftime }} ccgo Project Authors. All rights reserved.
 
-#ifndef {{ cpy_project_name|upper }}_APPLE_H
-#define {{ cpy_project_name|upper }}_APPLE_H
+#ifndef {{ cpy_project_name|upper|macro_safe }}_APPLE_H
+#define {{ cpy_project_name|upper|macro_safe }}_APPLE_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -52,7 +52,7 @@ extern "C" {
 //!
 //!  \param enable Enable debug log (1=enable, 0=disable)
 //! \endif
-void {{ cpy_project_name|lower }}_set_debug_log(bool enable);
+void {{ cpy_project_name|lower|macro_safe }}_set_debug_log(bool enable);
 
 //! \if ZH-CN
 //! \brief 获取版本号
@@ -63,7 +63,7 @@ void {{ cpy_project_name|lower }}_set_debug_log(bool enable);
 //!
 //!  \return Version string
 //! \endif
-const char* {{ cpy_project_name|lower }}_get_version(void);
+const char* {{ cpy_project_name|lower|macro_safe }}_get_version(void);
 
 //-----------------------------------------------------------------------------
 //!  @}  // end name {{ cpy_project_name|lower }}-base
@@ -73,6 +73,6 @@ const char* {{ cpy_project_name|lower }}_get_version(void);
 }
 #endif
 
-#endif // {{ cpy_project_name|upper }}_APPLE_H
+#endif // {{ cpy_project_name|upper|macro_safe }}_APPLE_H
 
 //!  @}  // end group iOS

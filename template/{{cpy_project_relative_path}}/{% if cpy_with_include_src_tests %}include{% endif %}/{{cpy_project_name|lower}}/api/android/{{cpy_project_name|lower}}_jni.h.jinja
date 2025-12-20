@@ -5,8 +5,8 @@
 // Created by ccgo on {{ '%Y-%m-%d' | strftime }}.
 // Copyright {{ '%Y' | strftime }} ccgo Project Authors. All rights reserved.
 
-#ifndef {{ cpy_project_name|upper }}_API_ANDROID_{{ cpy_project_name|upper }}_JNI_H_
-#define {{ cpy_project_name|upper }}_API_ANDROID_{{ cpy_project_name|upper }}_JNI_H_
+#ifndef {{ cpy_project_name|upper|macro_safe }}_API_ANDROID_{{ cpy_project_name|upper|macro_safe }}_JNI_H_
+#define {{ cpy_project_name|upper|macro_safe }}_API_ANDROID_{{ cpy_project_name|upper|macro_safe }}_JNI_H_
 
 #ifdef __ANDROID__
 
@@ -22,7 +22,7 @@ extern "C" {
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved);
 
-JNIEXPORT void JNICALL {{ cpy_project_name|upper }}_JNI_API_DEF(setDebugLog)(JNIEnv *env, jclass cls, jboolean is_debug_log);
+JNIEXPORT void JNICALL {{ cpy_project_name|upper|macro_safe }}_JNI_API_DEF(setDebugLog)(JNIEnv *env, jclass cls, jboolean is_debug_log);
 
 
 #  ifdef __cplusplus
@@ -31,4 +31,4 @@ JNIEXPORT void JNICALL {{ cpy_project_name|upper }}_JNI_API_DEF(setDebugLog)(JNI
 
 #endif  // __ANDROID__
 
-#endif  // {{ cpy_project_name|upper }}_API_ANDROID_{{ cpy_project_name|upper }}_JNI_H_
+#endif  // {{ cpy_project_name|upper|macro_safe }}_API_ANDROID_{{ cpy_project_name|upper|macro_safe }}_JNI_H_

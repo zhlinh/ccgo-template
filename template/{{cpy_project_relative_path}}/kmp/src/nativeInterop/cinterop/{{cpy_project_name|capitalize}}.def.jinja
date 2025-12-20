@@ -8,7 +8,7 @@
 headers = {{cpy_project_name|capitalize|replace('comm', 'Comm')}}.h
 
 # Package name for generated Kotlin code
-package = {{cpy_project_name|lower}}
+package = {{cpy_project_name|lower|macro_safe}}
 
 # Exclude system libraries to avoid compatibility issues with newer SDK features
 excludeSystemLibs = true

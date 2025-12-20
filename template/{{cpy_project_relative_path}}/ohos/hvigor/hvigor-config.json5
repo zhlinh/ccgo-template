@@ -2,7 +2,7 @@
   // must be the same as command line tools
   "modelVersion": "5.0.0",
   "dependencies": {
-    "@ccgo/hvigor-ohos-plugin": "^0.0.1"
+    "@ccgo/hvigor-ohos-plugin": "^0.0.2"
   },
   "execution": {
     // "analyze": "normal",                     /* Define the build analyze mode. Value: [ "normal" | "advanced" | false ]. Default: "normal" */

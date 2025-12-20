@@ -1,0 +1,7 @@
+{
+  "name": "ohos-build",
+  "private": true,
+  "devDependencies": {
+    "@ccgo/hvigor-ohos-plugin": "^0.0.2"
+  }
+}

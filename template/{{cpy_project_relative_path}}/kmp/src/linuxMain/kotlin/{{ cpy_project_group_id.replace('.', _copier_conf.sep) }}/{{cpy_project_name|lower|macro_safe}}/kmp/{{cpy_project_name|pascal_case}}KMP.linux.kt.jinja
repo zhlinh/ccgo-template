@@ -1,23 +1,23 @@
-package {{cpy_project_group_id}}.{{cpy_project_name|lower}}.kmp
+package {{cpy_project_group_id}}.{{cpy_project_name|lower|macro_safe}}.kmp
 
 import kotlinx.cinterop.*
-import {{cpy_project_name|lower}}.*
+import {{cpy_project_name|lower|macro_safe}}.*
 import kotlin.experimental.ExperimentalNativeApi
 
 /**
- * Linux implementation of {{cpy_project_name|capitalize}}KMP
+ * Linux implementation of {{cpy_project_name|pascal_case}}KMP
  *
  * This implementation uses Kotlin/Native cinterop to directly call C/C++ functions
  * without JNI overhead.
  */
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
-actual class {{cpy_project_name|capitalize}}KMP actual constructor() {
+actual class {{cpy_project_name|pascal_case}}KMP actual constructor() {
     actual fun setDebugLog(enable: Boolean) {
-        {{cpy_project_name|lower}}_set_debug_log(enable)
+        {{cpy_project_name|lower|macro_safe}}_set_debug_log(enable)
     }
 
     actual fun getVersion(): String {
-        return {{cpy_project_name|lower}}_get_version()?.toKString() ?: "Unknown"
+        return {{cpy_project_name|lower|macro_safe}}_get_version()?.toKString() ?: "Unknown"
     }
 
     actual fun getPlatformName(): String {

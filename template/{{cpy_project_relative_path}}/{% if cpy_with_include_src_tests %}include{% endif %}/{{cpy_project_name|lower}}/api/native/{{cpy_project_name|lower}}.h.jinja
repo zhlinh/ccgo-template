@@ -5,8 +5,8 @@
 // Created by ccgo on {{ '%Y-%m-%d' | strftime }}.
 // Copyright {{ '%Y' | strftime }} ccgo Project Authors. All rights reserved.
 
-#ifndef {{ cpy_project_name|upper }}_API_NATIVE_{{ cpy_project_name|upper }}_H_
-#define {{ cpy_project_name|upper }}_API_NATIVE_{{ cpy_project_name|upper }}_H_
+#ifndef {{ cpy_project_name|upper|macro_safe }}_API_NATIVE_{{ cpy_project_name|upper|macro_safe }}_H_
+#define {{ cpy_project_name|upper|macro_safe }}_API_NATIVE_{{ cpy_project_name|upper|macro_safe }}_H_
 
 #include <stdint.h>
 
@@ -53,7 +53,7 @@ extern "C" {
 //!
 //! \param is_debug_log  the debug log
 //! \endif
-void {{ cpy_project_name|lower }}_SetDebugLog(bool is_debug_log);
+void {{ cpy_project_name|lower|macro_safe }}_SetDebugLog(bool is_debug_log);
 
 //! \if ZH-CN
 //! \brief 获取版本号
@@ -64,11 +64,11 @@ void {{ cpy_project_name|lower }}_SetDebugLog(bool is_debug_log);
 //!
 //! \return Returns version string
 //! \endif
-const char* {{ cpy_project_name|lower }}_GetVersion(void);
+const char* {{ cpy_project_name|lower|macro_safe }}_GetVersion(void);
 
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif  // {{ cpy_project_name|upper }}_API_NATIVE_{{ cpy_project_name|upper }}_H_
+#endif  // {{ cpy_project_name|upper|macro_safe }}_API_NATIVE_{{ cpy_project_name|upper|macro_safe }}_H_

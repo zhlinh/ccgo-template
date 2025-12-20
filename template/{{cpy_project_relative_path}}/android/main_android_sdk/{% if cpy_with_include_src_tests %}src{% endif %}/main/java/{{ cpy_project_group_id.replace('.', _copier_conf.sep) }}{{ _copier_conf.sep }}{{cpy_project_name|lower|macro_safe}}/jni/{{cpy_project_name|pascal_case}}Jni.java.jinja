@@ -1,17 +1,17 @@
 //
-// {{cpy_project_name|capitalize|replace('comm', 'Comm')}}Jni.java
+// {{cpy_project_name|pascal_case}}Jni.java
 // jni
 //
 // Created by ccgo on {{ '%Y-%m-%d' | strftime }}.
 // Copyright {{ '%Y' | strftime }} ccgo Project Authors. All rights reserved.
 
-package {{ cpy_project_group_id }}.{{cpy_project_name|lower}}.jni;
+package {{ cpy_project_group_id }}.{{cpy_project_name|lower|macro_safe}}.jni;
 
-public class {{cpy_project_name|capitalize|replace('comm', 'Comm')}}Jni {
+public class {{cpy_project_name|pascal_case}}Jni {
     static {
         try {
             System.loadLibrary("c++_shared");
-            System.loadLibrary("lib{{ cpy_project_name|lower }}");
+            System.loadLibrary("{{ cpy_project_name|lower }}");
         } catch (Throwable e) {
             e.printStackTrace();
         }

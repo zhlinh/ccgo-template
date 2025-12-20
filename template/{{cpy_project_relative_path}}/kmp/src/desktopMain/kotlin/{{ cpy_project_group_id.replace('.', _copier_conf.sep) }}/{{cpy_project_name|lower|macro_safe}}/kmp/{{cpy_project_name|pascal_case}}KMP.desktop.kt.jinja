@@ -1,18 +1,18 @@
-package {{cpy_project_group_id}}.{{cpy_project_name|lower}}.kmp
+package {{cpy_project_group_id}}.{{cpy_project_name|lower|macro_safe}}.kmp
 
 /**
- * Desktop (JVM) implementation of {{cpy_project_name|capitalize}}KMP
+ * Desktop (JVM) implementation of {{cpy_project_name|pascal_case}}KMP
  *
  * This implementation uses JNI to bridge to the native C++ library on desktop platforms
  * (Windows, macOS, Linux).
  *
- * Note: The native library (lib{{cpy_project_name|lower}}.so/.dylib/.dll) should be available
+ * Note: The native library (lib{{cpy_project_name|lower|macro_safe}}.so/.dylib/.dll) should be available
  * in java.library.path or bundled with the application.
  * You can build it using: ccgo build windows/macos/linux
  */
-actual class {{cpy_project_name|capitalize}}KMP actual constructor() {
+actual class {{cpy_project_name|pascal_case}}KMP actual constructor() {
     companion object {
-        private const val LIBRARY_NAME = "{{cpy_project_name|lower}}"
+        private const val LIBRARY_NAME = "{{cpy_project_name|lower|macro_safe}}"
         private var nativeLibraryLoaded = false
 
         init {
@@ -41,7 +41,7 @@ actual class {{cpy_project_name|capitalize}}KMP actual constructor() {
 
     actual fun setDebugLog(enable: Boolean) {
         if (!nativeLibraryLoaded) {
-            println("{{cpy_project_name|capitalize}}KMP.setDebugLog (stub): $enable")
+            println("{{cpy_project_name|pascal_case}}KMP.setDebugLog (stub): $enable")
             return
         }
 

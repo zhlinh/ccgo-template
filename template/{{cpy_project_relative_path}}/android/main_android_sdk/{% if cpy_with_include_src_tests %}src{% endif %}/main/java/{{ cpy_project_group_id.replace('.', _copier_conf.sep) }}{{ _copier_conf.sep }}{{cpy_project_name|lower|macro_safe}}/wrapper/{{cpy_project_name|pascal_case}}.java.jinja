@@ -1,29 +1,29 @@
 //
-// {{cpy_project_name|capitalize|replace('comm', 'Comm')}}.java
+// {{cpy_project_name|pascal_case}}.java
 // wrapper
 //
 // Created by ccgo on {{ '%Y-%m-%d' | strftime }}.
 // Copyright {{ '%Y' | strftime }} ccgo Project Authors. All rights reserve.
 
-package {{ cpy_project_group_id }}.{{cpy_project_name|lower}}.wrapper;
+package {{ cpy_project_group_id }}.{{cpy_project_name|lower|macro_safe}}.wrapper;
 
-import {{ cpy_project_group_id }}.{{cpy_project_name|lower}}.jni.{{cpy_project_name|capitalize|replace('comm', 'Comm')}}Jni;
+import {{ cpy_project_group_id }}.{{cpy_project_name|lower|macro_safe}}.jni.{{cpy_project_name|pascal_case}}Jni;
 
 /*!
  * \if ZH-CN
- * \file {{cpy_project_name|capitalize|replace('comm', 'Comm')}}.java
+ * \file {{cpy_project_name|pascal_case}}.java
  * \brief {{ cpy_project_name|lower }}通用库java接口文件
  * \else
- * \file {{cpy_project_name|capitalize|replace('comm', 'Comm')}}.java
+ * \file {{cpy_project_name|pascal_case}}.java
  * \brief {{ cpy_project_name|lower }} common library java api file
  * \endif
  */
 
 /*! \addtogroup Android
  * \if ZH-CN
- * {{cpy_project_name|capitalize|replace('comm', 'Comm')}}-Android平台
+ * {{cpy_project_name|pascal_case}}-Android平台
  * \else
- * {{cpy_project_name|capitalize|replace('comm', 'Comm')}} for Android Platform
+ * {{cpy_project_name|pascal_case}} for Android Platform
  * \endif
  *  @{
  */
@@ -39,7 +39,7 @@ import {{ cpy_project_group_id }}.{{cpy_project_name|lower}}.jni.{{cpy_project_n
  * @author ccgo
  * \endif
  */
-public class {{cpy_project_name|capitalize|replace('comm', 'Comm')}} {
+public class {{cpy_project_name|pascal_case}} {
     // -----------------------------------------------------------------------------
     //!  \name {{cpy_project_name|lower}}-base
     //!  @{
@@ -60,7 +60,7 @@ public class {{cpy_project_name|capitalize|replace('comm', 'Comm')}} {
      * \endif
      */
     public static void setDebugLog(boolean isDebugLog) {
-        {{cpy_project_name|capitalize|replace('comm', 'Comm')}}Jni.setDebugLog(isDebugLog);
+        {{cpy_project_name|pascal_case}}Jni.setDebugLog(isDebugLog);
     }
 
     // -----------------------------------------------------------------------------

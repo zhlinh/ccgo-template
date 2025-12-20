@@ -24,10 +24,10 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
 }
 #endif  // CCGO_AS_DEPENDENCY
 
-JNIEXPORT void JNICALL {{ cpy_project_name|upper }}_JNI_API_DEF(setDebugLog)(JNIEnv *env, jclass cls, jboolean is_debug_log) {
+JNIEXPORT void JNICALL {{ cpy_project_name|upper|macro_safe }}_JNI_API_DEF(setDebugLog)(JNIEnv *env, jclass cls, jboolean is_debug_log) {
   (void)env;
   (void)cls;
-  {{cpy_project_name|lower}}_SetDebugLog(is_debug_log);
+  {{cpy_project_name|lower|macro_safe}}_SetDebugLog(is_debug_log);
 }
 
 #endif  // __ANDROID__

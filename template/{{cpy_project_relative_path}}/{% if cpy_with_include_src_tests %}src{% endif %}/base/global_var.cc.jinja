@@ -7,7 +7,7 @@
 
 #include "{{ cpy_project_name|lower }}/base/global_var.h"
 
-namespace {{ cpy_project_name|lower }} {
+namespace {{ cpy_project_name|lower|macro_safe }} {
 
 GlobalVar &GlobalVar::GetInstance() {
   static GlobalVar instance;
@@ -16,4 +16,4 @@ GlobalVar &GlobalVar::GetInstance() {
 
 void GlobalVar::Clear() {}
 
-}  // namespace {{ cpy_project_name|lower }}
+}  // namespace {{ cpy_project_name|lower|macro_safe }}
