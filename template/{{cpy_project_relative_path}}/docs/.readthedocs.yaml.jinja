@@ -11,8 +11,8 @@ build:
     - doxygen
 
 mkdocs:
-  configuration: mkdocs.yml
+  configuration: {{ cpy_project_relative_path }}/mkdocs.yml
 
 python:
   install:
-    - requirements: docs/requirements.txt
+    - requirements: {{ cpy_project_relative_path }}/docs/requirements.txt
