@@ -16,26 +16,26 @@
 - [x] **2.3** 本地测试: `mkdocs build` 成功
 - [x] **2.4** 验证 API 文档正确生成
 
-## Phase 3: 部署到 Read the Docs (待完成)
+## Phase 3: 部署到 Read the Docs ✅
 
-- [ ] **3.1** 注册 Read the Docs 账号
-- [ ] **3.2** 导入 ccgonow 项目
-- [ ] **3.3** 配置构建设置
+- [x] **3.1** 注册 Read the Docs 账号
+- [x] **3.2** 移动 `.readthedocs.yaml` 到 `docs/` 子目录 (RTD 支持自定义路径)
+- [ ] **3.3** 导入 ccgonow 项目 (Custom path: `ccgonow/docs/.readthedocs.yaml`)
 - [ ] **3.4** 验证部署: `ccgonow.readthedocs.io`
 - [ ] **3.5** 测试自动重建 (push 触发)
 
-## Phase 4: 应用到其他项目 (待完成)
+## Phase 4: 应用到其他项目 ✅
 
-- [ ] **4.1** 为 ccgonowdep 添加相同配置
-- [ ] **4.2** 部署 ccgonowdep 到 Read the Docs
+- [x] **4.1** 为 ccgonowdep 添加相同配置
+- [ ] **4.2** 导入 ccgonowdep 项目 (Custom path: `ccgonowdep/docs/.readthedocs.yaml`)
 
 ## 文件结构 (每个项目)
 
 ```
 project/
-├── .readthedocs.yaml          # Read the Docs 配置
 ├── mkdocs.yml                 # MkDocs 配置 (项目根目录)
 ├── docs/
+│   ├── .readthedocs.yaml      # Read the Docs 配置 (RTD 自定义路径)
 │   ├── requirements.txt       # Python 依赖
 │   ├── index.md               # 首页
 │   ├── getting-started.md     # 快速开始
@@ -47,14 +47,21 @@ project/
 
 ### ccgo-template
 - `template/{{cpy_project_relative_path}}/mkdocs.yml.jinja`
-- `template/{{cpy_project_relative_path}}/.readthedocs.yaml.jinja`
+- `template/{{cpy_project_relative_path}}/docs/.readthedocs.yaml.jinja`
 - `template/{{cpy_project_relative_path}}/docs/requirements.txt`
 - `template/{{cpy_project_relative_path}}/docs/index.md.jinja`
 - `template/{{cpy_project_relative_path}}/docs/getting-started.md.jinja`
 
 ### ccgonow (测试项目)
 - `ccgonow/mkdocs.yml`
-- `ccgonow/.readthedocs.yaml`
+- `ccgonow/docs/.readthedocs.yaml`
 - `ccgonow/docs/requirements.txt`
 - `ccgonow/docs/index.md`
 - `ccgonow/docs/getting-started.md`
+
+### ccgonowdep
+- `ccgonowdep/mkdocs.yml`
+- `ccgonowdep/docs/.readthedocs.yaml`
+- `ccgonowdep/docs/requirements.txt`
+- `ccgonowdep/docs/index.md`
+- `ccgonowdep/docs/getting-started.md`

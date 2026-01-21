@@ -9,10 +9,6 @@ build:
     python: "3.11"
   apt_packages:
     - doxygen
-
-mkdocs:
-  configuration: mkdocs.yml
-
-python:
-  install:
-    - requirements: docs/requirements.txt
+  commands:
+    - pip install -r {{ cpy_project_relative_path }}/docs/requirements.txt
+    - cd {{ cpy_project_relative_path }} && mkdocs build --site-dir $READTHEDOCS_OUTPUT/html
