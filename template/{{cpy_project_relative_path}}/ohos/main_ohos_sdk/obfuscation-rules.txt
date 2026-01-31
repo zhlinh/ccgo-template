@@ -8,6 +8,8 @@
 # -disable-obfuscation: disable all obfuscations
 # -enable-property-obfuscation: obfuscate the property names
 # -enable-toplevel-obfuscation: obfuscate the names in the global scope
+# -enable-filename-obfuscation: obfuscate the file names
+# -enable-export-obfuscation: obfuscate the export names
 # -compact: remove unnecessary blank spaces and all line feeds
 # -remove-log: remove all console.* statements
 # -print-namecache: print the name cache that contains the mapping from the old names to new names
@@ -16,8 +18,10 @@
 # Keep options:
 # -keep-property-name: specifies property names that you want to keep
 # -keep-global-name: specifies names that you want to keep in the global scope
+# -keep-dts: keep names exported from .d.ets declaration files
+# -keep: keep all names in specified path (files or directories)
 
--enable-property-obfuscation
--enable-toplevel-obfuscation
--enable-filename-obfuscation
--enable-export-obfuscation
+# Disable obfuscation for HAR package
+# Reason: All exports in HAR are public APIs that must remain accessible to consumers.
+# The native C++ library (.so) is already compiled binary, obfuscating ArkTS layer provides little value.
+-disable-obfuscation

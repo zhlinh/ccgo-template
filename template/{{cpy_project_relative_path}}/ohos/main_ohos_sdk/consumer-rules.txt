@@ -1,0 +1,13 @@
+# Consumer obfuscation rules for HAR package
+# These rules are automatically applied to modules that depend on this HAR.
+#
+# When consumer modules enable obfuscation, these rules ensure that
+# the HAR's exported APIs remain accessible.
+#
+# For more details, see
+#   https://developer.huawei.com/consumer/cn/doc/harmonyos-guides-V5/source-obfuscation-V5
+
+# Keep all exports from declaration file
+# Note: Create Index.d.ets with your exported types if needed
+-keep-dts
+./Index.d.ets
