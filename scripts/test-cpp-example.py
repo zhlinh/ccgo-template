@@ -6,9 +6,10 @@ Run: python3 scripts/test-cpp-example.py --ccgo /path/to/ccgo
 """
 
 import argparse
-from pathlib import Path
 import subprocess
 import tempfile
+from contextlib import nullcontext
+from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
@@ -16,6 +17,9 @@ from jinja2 import Environment, FileSystemLoader, StrictUndefined
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--ccgo", required=True, type=Path)
+    parser.add_argument(
+        "--output-dir", type=Path, help="Keep the generated test project"
+    )
     parser.add_argument(
         "--build-imgui",
         action="store_true",
@@ -35,18 +39,29 @@ def main():
     environment = Environment(
         loader=FileSystemLoader(str(template)), undefined=StrictUndefined
     )
-    context = dict(
-        cpy_project_name="ExampleDemo",
-        cpy_project_version="1.0.0",
-        cpy_project_group_id="com.example",
-        cpy_git_repo_url="",
-        cpy_user_name="Example Author",
-        cpy_user_email="example@example.com",
-        cpy_project_dependencies="EMPTY",
+    environment.filters["macro_safe"] = lambda value: value.replace("-", "_")
+    context = {
+        "cpy_project_name": "ExampleDemo",
+        "cpy_project_version": "1.0.0",
+        "cpy_project_group_id": "com.example",
+        "cpy_git_repo_url": "",
+        "cpy_user_name": "Example Author",
+        "cpy_user_email": "example@example.com",
+        "cpy_project_dependencies": "EMPTY",
+    }
+    output = (
+        nullcontext(args.output_dir.resolve())
+        if args.output_dir
+        else tempfile.TemporaryDirectory(prefix="ccgo-template-example-")
     )
-    with tempfile.TemporaryDirectory(prefix="ccgo-template-example-") as temporary:
+    with output as temporary:
         root = Path(temporary)
-        for relative in ["CCGO.toml", "app/basic/main.cpp", "app/imgui/main.cpp"]:
+        for relative in [
+            "CCGO.toml",
+            "app/basic/main.cpp",
+            "app/imgui/main.cpp",
+            "app/imgui/explorer.h",
+        ]:
             destination = root / relative
             destination.parent.mkdir(parents=True, exist_ok=True)
             destination.write_text(
@@ -54,6 +69,20 @@ def main():
             )
         destination = root / "app/imgui/CMakeLists.txt"
         destination.write_text((template / "app/imgui/CMakeLists.txt").read_text())
+        for kind, relative in [
+            ("include", "exampledemo/api/native/echo.h"),
+            ("src", "api/native/echo.cc"),
+        ]:
+            source = (
+                "{% if cpy_with_include_src_tests %}"
+                + kind
+                + "{% endif %}/"
+                + relative.replace("exampledemo", "{{cpy_project_name|lower}}")
+                + ".jinja"
+            )
+            destination = root / kind / relative
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_text(environment.get_template(source).render(**context))
         cmake_args = []
         for dependency in ["glfw", "imgui"]:
             source = getattr(args, dependency + "_source")
@@ -81,7 +110,11 @@ def main():
             ["--app", "basic", "--release", "--build-only"],
         ]:
             result = subprocess.run(
-                [str(ccgo), "run", *options], cwd=root, text=True, capture_output=True
+                [str(ccgo), "run", *options],
+                cwd=root,
+                text=True,
+                capture_output=True,
+                check=False,
             )
             assert result.returncode == 0, result.stdout + result.stderr
             if "--build-only" not in options:
@@ -92,14 +125,39 @@ def main():
             "Template C++ app passed: explicit/default target, arguments, release build-only"
         )
         if args.build_imgui:
-            subprocess.run(
-                [str(ccgo), "run", "--app", "imgui-demo", "--release", "--build-only"],
-                cwd=root,
-                check=True,
-            )
-            print(
-                "Template ImGui app passed: configure and release build; no GUI launched"
-            )
+            check_imgui(ccgo, root)
+
+def check_imgui(ccgo, root):
+    subprocess.run(
+        [str(ccgo), "run", "--app", "imgui-demo", "--release", "--build-only"],
+        cwd=root,
+        check=True,
+    )
+    print(
+        "Template ImGui app passed: configure and release build; no GUI launched"
+    )
+    for value in ["hello", "", "two words %s", "你好"]:
+        result = subprocess.run(
+            [
+                str(ccgo),
+                "run",
+                "--app",
+                "imgui-demo",
+                "--release",
+                "--",
+                "--echo",
+                value,
+            ],
+            cwd=root,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert "ExampleDemo: " + value in result.stdout.splitlines(), (
+            result.stdout
+        )
+    print("Linked SDK echo passed: normal, empty, spaces/percent, UTF-8 input")
 
 
 if __name__ == "__main__":

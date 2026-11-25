@@ -32,5 +32,9 @@ target_link_libraries(imgui_backend PUBLIC glfw OpenGL::GL ${CMAKE_DL_LIBS})
 target_compile_features(imgui_backend PUBLIC cxx_std_17)
 
 add_executable(imgui_demo main.cpp)
-target_link_libraries(imgui_demo PRIVATE imgui_backend)
-# Add your SDK libraries here when extending the standalone demo.
+target_compile_definitions(imgui_demo PRIVATE DEMO_FONT_DIR="${imgui_SOURCE_DIR}/misc/fonts")
+get_filename_component(SDK_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../.." ABSOLUTE)
+add_library(project_echo STATIC "${SDK_ROOT}/src/api/native/echo.cc")
+target_include_directories(project_echo PUBLIC "${SDK_ROOT}/include")
+target_compile_features(project_echo PUBLIC cxx_std_17)
+target_link_libraries(imgui_demo PRIVATE imgui_backend project_echo)

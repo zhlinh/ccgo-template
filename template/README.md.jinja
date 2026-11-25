@@ -595,8 +595,9 @@ ccgo run --app imgui-demo
 ccgo run --app imgui-demo --release --build-only
 ```
 
-`app/imgui/` is a standalone CMake UI starter; connect your SDK in its
-`CMakeLists.txt` and button handler. `[[app]]` also supports existing Qt/CMake,
+`app/imgui/` links the project's `Echo` source as a static library. Enter text and
+press **Call SDK** to display the project name followed by that text.
+`[[app]]` also supports existing Qt/CMake,
 Flutter and Tauri projects in `app/`; install each toolchain and app
 dependencies first. `--app` does not automatically build/import the SDK.
 

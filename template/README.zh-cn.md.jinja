@@ -593,8 +593,9 @@ ccgo run --app imgui-demo
 ccgo run --app imgui-demo --release --build-only
 ```
 
-`app/imgui/` 是独立的 CMake UI 起步工程，可在其 `CMakeLists.txt` 和按钮处理函数中
-接入自己的 SDK。`[[app]]` 也支持放在 `app/` 下的 Qt/CMake、Flutter 和 Tauri 工程；
+`app/imgui/` 将项目的 `Echo` 源文件编译为静态库并链接。输入文本后点击 **Call SDK**，
+即可显示“项目名称: 输入文本”的返回值。
+`[[app]]` 也支持放在 `app/` 下的 Qt/CMake、Flutter 和 Tauri 工程；
 需要先安装对应工具链和应用依赖，`--app` 不会自动构建或导入 SDK。
 
 `app/` 目录包含各平台的示例项目，展示如何使用本库：

@@ -1,0 +1,9 @@
+#include "{{ cpy_project_name|lower }}/api/native/echo.h"
+
+namespace {{ cpy_project_name|lower|macro_safe }} {
+
+std::string Echo(const std::string& input) {
+    return std::string("{{ cpy_project_name }}: ") + input;
+}
+
+}  // namespace {{ cpy_project_name|lower|macro_safe }}

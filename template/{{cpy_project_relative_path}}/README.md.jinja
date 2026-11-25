@@ -62,8 +62,9 @@ ccgo run --app imgui-demo --release --build-only
 ```
 
 The ImGui starter in `app/imgui/` uses CMake, GLFW and OpenGL; its first
-build downloads pinned dependency versions. It is a standalone UI demo; add SDK
-libraries in its CMakeLists.txt to connect the buttons to your project.
+build downloads pinned dependency versions. Enter text and press **Call SDK** to
+call `Echo` and display `{{ cpy_project_name }}: <input>`. CMake links the project's
+`src/api/native/echo.cc` as a separate static library using its public header.
 
 Use `[[app]]` for a C++/CMake/ImGui/Qt, Flutter or Tauri project in `app/`.
 Flutter calls `flutter run`/`flutter build`; Tauri calls `cargo tauri dev`/`build`.

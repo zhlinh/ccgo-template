@@ -1,0 +1,10 @@
+#pragma once
+
+#include <string>
+
+namespace {{ cpy_project_name|lower|macro_safe }} {
+
+// Returns the project name followed by the input, including UTF-8 text.
+std::string Echo(const std::string& input);
+
+}  // namespace {{ cpy_project_name|lower|macro_safe }}

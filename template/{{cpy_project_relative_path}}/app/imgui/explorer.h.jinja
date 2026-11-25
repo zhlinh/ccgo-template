@@ -1,0 +1,213 @@
+#pragma once
+
+#include <algorithm>
+#include <chrono>
+#include <cstdio>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "{{ cpy_project_name|lower }}/api/native/echo.h"
+#include "imgui.h"
+
+namespace explorer {
+
+const ImVec4 ink(0.12f, 0.20f, 0.21f, 1.0f);
+const ImVec4 muted(0.40f, 0.46f, 0.45f, 1.0f);
+const ImVec4 accent(0.05f, 0.40f, 0.35f, 1.0f);
+ImFont* heading = nullptr;
+ImFont* mono = nullptr;
+
+void Setup(float density) {
+    ImGuiIO& io = ImGui::GetIO();
+    io.IniFilename = nullptr;
+    io.FontGlobalScale = 1.0f / density;
+    io.Fonts->AddFontFromFileTTF(DEMO_FONT_DIR "/Karla-Regular.ttf", 18.0f * density);
+    heading = io.Fonts->AddFontFromFileTTF(DEMO_FONT_DIR "/Karla-Regular.ttf", 34.0f * density);
+    mono = io.Fonts->AddFontFromFileTTF(DEMO_FONT_DIR "/Cousine-Regular.ttf", 15.0f * density);
+    ImGui::StyleColorsLight();
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.WindowPadding = ImVec2(24, 24);
+    style.FramePadding = ImVec2(14, 11);
+    style.ItemSpacing = ImVec2(12, 14);
+    style.ChildRounding = 12;
+    style.FrameRounding = 7;
+    style.PopupRounding = 8;
+    style.ChildBorderSize = 1;
+    style.FrameBorderSize = 1;
+    style.Colors[ImGuiCol_Text] = ink;
+    style.Colors[ImGuiCol_TextDisabled] = muted;
+    style.Colors[ImGuiCol_WindowBg] = ImVec4(0.96f, 0.95f, 0.92f, 1);
+    style.Colors[ImGuiCol_ChildBg] = ImVec4(1, 0.995f, 0.98f, 1);
+    style.Colors[ImGuiCol_Border] = ImVec4(0.85f, 0.87f, 0.83f, 1);
+    style.Colors[ImGuiCol_FrameBg] = ImVec4(0.96f, 0.97f, 0.94f, 1);
+    style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.90f, 0.94f, 0.90f, 1);
+    style.Colors[ImGuiCol_FrameBgActive] = ImVec4(0.87f, 0.93f, 0.88f, 1);
+    style.Colors[ImGuiCol_Button] = ImVec4(0.87f, 0.92f, 0.87f, 1);
+    style.Colors[ImGuiCol_ButtonHovered] = ImVec4(0.78f, 0.87f, 0.81f, 1);
+    style.Colors[ImGuiCol_ButtonActive] = ImVec4(0.69f, 0.81f, 0.74f, 1);
+    style.Colors[ImGuiCol_CheckMark] = accent;
+    style.Colors[ImGuiCol_TableHeaderBg] = ImVec4(0.85f, 0.90f, 0.85f, 1);
+    style.Colors[ImGuiCol_TableRowBgAlt] = ImVec4(0.10f, 0.30f, 0.20f, 0.035f);
+    style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.45f, 0.75f, 0.61f, 0.4f);
+}
+
+struct Call {
+    std::string input;
+    std::string output;
+    double milliseconds;
+};
+
+struct State {
+    char input[1024] = "Hello, world!";
+    std::vector<Call> history;
+    int total = 0;
+    bool copied = false;
+
+    void Invoke() {
+        const auto start = std::chrono::steady_clock::now();
+        std::string result = {{ cpy_project_name|lower|macro_safe }}::Echo(input);
+        const double elapsed =
+            std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - start).count();
+        history.insert(history.begin(), {input, std::move(result), elapsed});
+        if (history.size() > 20) history.pop_back();
+        ++total;
+        copied = false;
+    }
+};
+
+void Label(const char* text) { ImGui::TextColored(muted, "%s", text); }
+
+void Sidebar(float width, float height) {
+    ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.09f, 0.23f, 0.22f, 1));
+    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.90f, 0.95f, 0.89f, 1));
+    ImGui::BeginChild("Sidebar", ImVec2(width, height), ImGuiChildFlags_AlwaysUseWindowPadding);
+    ImGui::TextColored(ImVec4(0.69f, 0.86f, 0.55f, 1), "CCGO / LAB");
+    ImGui::Spacing();
+    ImGui::PushFont(heading);
+    ImGui::TextUnformatted("Build.\nCall.\nExplore.");
+    ImGui::PopFont();
+    ImGui::Spacing();
+    ImGui::TextWrapped("A small playground for your native SDK.");
+    ImGui::Dummy(ImVec2(0, 28));
+    ImGui::Separator();
+    ImGui::TextUnformatted("01   String echo");
+    ImGui::TextWrapped("{{ cpy_project_name }}");
+    ImGui::TextWrapped("C++ SDK / local static library");
+    ImGui::Dummy(ImVec2(0, 30));
+    ImGui::TextColored(ImVec4(0.69f, 0.86f, 0.55f, 1), "THE ROUND TRIP");
+    ImGui::TextWrapped("Your text\n   |\nEcho(string)\n   |\nProject name + your text");
+    ImGui::EndChild();
+    ImGui::PopStyleColor(2);
+}
+
+void Request(State& state, float width) {
+    ImGui::BeginChild("Request", ImVec2(width, 288), ImGuiChildFlags_Borders);
+    Label("01 / REQUEST");
+    ImGui::TextUnformatted("What would you like to say?");
+    ImGui::SetNextItemWidth(-1);
+    bool submit = ImGui::InputTextWithHint("##Input", "Type something...", state.input, sizeof(state.input),
+                                           ImGuiInputTextFlags_EnterReturnsTrue);
+    ImGui::PushStyleColor(ImGuiCol_Button, accent);
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.06f, 0.49f, 0.41f, 1));
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.04f, 0.32f, 0.28f, 1));
+    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 1));
+    if (ImGui::Button("Call SDK", ImVec2(136, 42)) || submit) state.Invoke();
+    ImGui::PopStyleColor(4);
+    ImGui::SameLine();
+    if (ImGui::Button("Clear", ImVec2(72, 42))) state.input[0] = '\0';
+    Label("TRY AN INPUT");
+    if (ImGui::SmallButton("Hello, world!"))
+        std::snprintf(state.input, sizeof(state.input), "%s", "Hello, world!");
+    ImGui::SameLine();
+    if (ImGui::SmallButton("Empty string")) state.input[0] = '\0';
+    ImGui::EndChild();
+}
+
+void Response(State& state, float width) {
+    ImGui::BeginChild("Response", ImVec2(width, 288), ImGuiChildFlags_Borders);
+    Label("02 / RESPONSE");
+    if (state.history.empty()) {
+        ImGui::TextUnformatted("Ready when you are.");
+        ImGui::Spacing();
+        Label("Your SDK result will appear here.");
+        ImGui::TextWrapped("Enter a message and click Call SDK, or press Enter.");
+    } else {
+        const Call& call = state.history.front();
+        ImGui::TextColored(accent, "SUCCESS  /  %.3f ms", call.milliseconds);
+        ImGui::BeginChild("Result", ImVec2(0, 85));
+        ImGui::PushFont(mono);
+        ImGui::TextWrapped("%s", call.output.c_str());
+        ImGui::PopFont();
+        ImGui::EndChild();
+        if (ImGui::Button(state.copied ? "Copied!" : "Copy result")) {
+            ImGui::SetClipboardText(call.output.c_str());
+            state.copied = true;
+        }
+        ImGui::SameLine();
+        ImGui::TextDisabled("%zu bytes", call.output.size());
+    }
+    ImGui::EndChild();
+}
+
+void History(const State& state) {
+    ImGui::Spacing();
+    ImGui::TextUnformatted("Recent calls");
+    ImGui::SameLine();
+    ImGui::TextDisabled("/ %d total", state.total);
+    if (state.history.empty()) {
+        Label("No calls yet. Your last 20 calls will be kept for this session.");
+        return;
+    }
+    if (ImGui::BeginTable("History", 3, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingStretchProp)) {
+        ImGui::TableSetupColumn("Input", ImGuiTableColumnFlags_WidthStretch, 1);
+        ImGui::TableSetupColumn("SDK return value", ImGuiTableColumnFlags_WidthStretch, 1.5f);
+        ImGui::TableSetupColumn("Time", ImGuiTableColumnFlags_WidthFixed, 84);
+        ImGui::TableHeadersRow();
+        for (const Call& call : state.history) {
+            ImGui::TableNextRow(0, 32);
+            ImGui::TableNextColumn();
+            ImGui::TextWrapped("%s", call.input.empty() ? "(empty)" : call.input.c_str());
+            ImGui::TableNextColumn();
+            ImGui::TextWrapped("%s", call.output.c_str());
+            ImGui::TableNextColumn();
+            ImGui::Text("%.3f ms", call.milliseconds);
+        }
+        ImGui::EndTable();
+    }
+}
+
+void Draw(State& state) {
+    const ImGuiViewport* viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(viewport->WorkPos);
+    ImGui::SetNextWindowSize(viewport->WorkSize);
+    ImGui::Begin("SDK Explorer", nullptr,
+                 ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+    const bool sidebar = ImGui::GetContentRegionAvail().x >= 950;
+    if (sidebar) {
+        Sidebar(228, ImGui::GetContentRegionAvail().y);
+        ImGui::SameLine(0, 28);
+    }
+    ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0, 0, 0, 0));
+    ImGui::BeginChild("Workspace", ImVec2(0, 0));
+    ImGui::PopStyleColor();
+    Label("NATIVE SDK PLAYGROUND  /  01");
+    ImGui::PushFont(heading);
+    ImGui::TextUnformatted("String echo");
+    ImGui::PopFont();
+    ImGui::TextWrapped("Send a little text. Get a little {{ cpy_project_name }} back.");
+    ImGui::Spacing();
+    ImGui::Separator();
+    ImGui::Spacing();
+    const float available = ImGui::GetContentRegionAvail().x;
+    const bool columns = available >= 680;
+    const float width = columns ? (available - 16) / 2 : available;
+    Request(state, width);
+    if (columns) ImGui::SameLine(0, 16);
+    Response(state, width);
+    History(state);
+    ImGui::EndChild();
+    ImGui::End();
+}
+
+}  // namespace explorer

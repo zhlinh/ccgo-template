@@ -1,3 +1,8 @@
+#include <iostream>
+#include <string>
+
+#include "{{ cpy_project_name|lower }}/api/native/echo.h"
+#include "explorer.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -7,7 +12,12 @@
 #endif
 #include <GLFW/glfw3.h>
 
-int main() {
+int main(int argc, char* argv[]) {
+    // Exercise the same linked SDK function without requiring a display server.
+    if (argc == 3 && std::string(argv[1]) == "--echo") {
+        std::cout << {{ cpy_project_name|lower|macro_safe }}::Echo(argv[2]) << std::endl;
+        return 0;
+    }
     if (!glfwInit()) {
         return 1;
     }
@@ -22,16 +32,20 @@ int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 #endif
-    GLFWwindow* window = glfwCreateWindow(1000, 680, "{{ cpy_project_name }} - ImGui Demo", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(1180, 780, "{{ cpy_project_name }} - ImGui Demo", nullptr, nullptr);
     if (!window) {
         glfwTerminate();
         return 1;
     }
+    glfwSetWindowSizeLimits(window, 520, 480, GLFW_DONT_CARE, GLFW_DONT_CARE);
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGui::StyleColorsLight();
+    float scale_x = 1.0f;
+    float scale_y = 1.0f;
+    glfwGetWindowContentScale(window, &scale_x, &scale_y);
+    explorer::Setup(std::max(1.0f, std::max(scale_x, scale_y)));
     if (!ImGui_ImplGlfw_InitForOpenGL(window, true) || !ImGui_ImplOpenGL3_Init(glsl)) {
         ImGui::DestroyContext();
         glfwDestroyWindow(window);
@@ -39,29 +53,19 @@ int main() {
         return 1;
     }
 
-    int calls = 0;
+    explorer::State state;
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-        ImGui::SetNextWindowPos(ImVec2(24, 24), ImGuiCond_FirstUseEver);
-        ImGui::SetNextWindowSize(ImVec2(500, 260), ImGuiCond_FirstUseEver);
-        ImGui::Begin("{{ cpy_project_name }} SDK Explorer");
-        ImGui::TextUnformatted("C++ / Dear ImGui / GLFW / OpenGL");
-        ImGui::Separator();
-        ImGui::TextWrapped("Replace the button handler with a call to your C/C++ SDK.");
-        if (ImGui::Button("Run demo action")) {
-            ++calls;
-        }
-        ImGui::Text("Actions completed: %d", calls);
-        ImGui::End();
+        explorer::Draw(state);
         ImGui::Render();
         int width = 0;
         int height = 0;
         glfwGetFramebufferSize(window, &width, &height);
         glViewport(0, 0, width, height);
-        glClearColor(0.91f, 0.93f, 0.94f, 1.0f);
+        glClearColor(0.96f, 0.95f, 0.92f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
