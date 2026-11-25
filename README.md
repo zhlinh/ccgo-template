@@ -252,7 +252,7 @@ ccgo doc --open
 | `android/` | Gradle-based Android library module |
 | `ohos/` | hvigor-based OpenHarmony module |
 | `kmp/` | Kotlin Multiplatform library wrapper |
-| `examples/` | Sample applications for each platform |
+| `app/` | Sample applications for each platform |
 
 ## Troubleshooting
 

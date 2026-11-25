@@ -11,10 +11,29 @@ group_id = "{{ cpy_project_group_id }}"
 {% if cpy_user_name %}authors = ["{{ cpy_user_name }} <{{ cpy_user_email }}>"]{% endif %}
 license = "MIT"
 
-# Host C++ example: ccgo run --example basic
-[[example]]
+# Host C++ example: ccgo run --app basic
+[[app]]
 name = "basic"
-path = "examples/basic/main.cpp"
+path = "app/basic/main.cpp"
+
+# Desktop ImGui application: ccgo run --app imgui-demo
+[[app]]
+name = "imgui-demo"
+path = "app/imgui"
+framework = "cmake"
+target = "imgui_demo"
+executable = "imgui_demo"
+
+# Flutter/Tauri projects can be added without changing ccgo:
+# [[app]]
+# name = "flutter-demo"
+# path = "app/flutter-demo"
+# framework = "flutter"
+#
+# [[app]]
+# name = "tauri-demo"
+# path = "app/tauri-demo"
+# framework = "tauri"
 
 # Declare a standalone executable when its source exists:
 # [[bin]]

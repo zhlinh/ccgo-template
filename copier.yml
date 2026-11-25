@@ -125,7 +125,7 @@ _skip_if_exists:
 - "{{ _subdirectory }}/{{ cpy_project_relative_path }}/benches/"
 - "{{ _subdirectory }}/{{ cpy_project_relative_path }}/src/"
 - "{{ _subdirectory }}/{{ cpy_project_relative_path }}/include/"
-- "{{ _subdirectory }}/{{ cpy_project_relative_path }}/examples/"
+- "{{ _subdirectory }}/{{ cpy_project_relative_path }}/app/"
 - "{{ _subdirectory }}/{{ cpy_project_relative_path }}/docs/Doxyfile.in"
 - "{{ _subdirectory }}/{{ cpy_project_relative_path }}/docs/Doxyfile.zh-cn.in"
 - "{{ _subdirectory }}/{{ cpy_project_relative_path }}/tests/"

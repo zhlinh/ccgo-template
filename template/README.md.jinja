@@ -575,21 +575,32 @@ pages_branch = "gh-pages"
 
 ## 10. Examples
 
-The C++ starter lives in `examples/basic/main.cpp`. From the project directory
+The C++ starter lives in `app/basic/main.cpp`. From the project directory
 containing `CCGO.toml`, run:
 
 ```bash
-ccgo run --example basic
-ccgo run --example basic --release --build-only
-ccgo run --example basic -- --help
+ccgo run --app basic
+ccgo run --app basic --release --build-only
+ccgo run --app basic -- --help
 ```
 
-Use `[[example]]` for examples and `[[bin]]` with `ccgo run --bin <name>` for
+Use `[[app]]` for examples and `[[bin]]` with `ccgo run --bin <name>` for
 executable tools. These commands use the local host toolchain. The standalone
 starter does not link the SDK; add the required libraries when extending it.
-Platform UI applications use their own build tools.
+Application projects can use `ccgo run --app <name>` to invoke their own build tools.
 
-The `examples/` directory contains example projects demonstrating usage across various platforms:
+```bash
+# Desktop ImGui + GLFW + OpenGL demo (downloads dependencies on first build)
+ccgo run --app imgui-demo
+ccgo run --app imgui-demo --release --build-only
+```
+
+`app/imgui/` is a standalone CMake UI starter; connect your SDK in its
+`CMakeLists.txt` and button handler. `[[app]]` also supports existing Qt/CMake,
+Flutter and Tauri projects in `app/`; install each toolchain and app
+dependencies first. `--app` does not automatically build/import the SDK.
+
+The `app/` directory contains example projects demonstrating usage across various platforms:
 
 - **Android**: Sample Android app using the AAR
 - **iOS**: Sample iOS app using the XCFramework
