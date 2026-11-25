@@ -575,6 +575,20 @@ pages_branch = "gh-pages"
 
 ## 10. Examples
 
+The C++ starter lives in `examples/basic/main.cpp`. From the project directory
+containing `CCGO.toml`, run:
+
+```bash
+ccgo run --example basic
+ccgo run --example basic --release --build-only
+ccgo run --example basic -- --help
+```
+
+Use `[[example]]` for examples and `[[bin]]` with `ccgo run --bin <name>` for
+executable tools. These commands use the local host toolchain. The standalone
+starter does not link the SDK; add the required libraries when extending it.
+Platform UI applications use their own build tools.
+
 The `examples/` directory contains example projects demonstrating usage across various platforms:
 
 - **Android**: Sample Android app using the AAR

@@ -11,6 +11,16 @@ group_id = "{{ cpy_project_group_id }}"
 {% if cpy_user_name %}authors = ["{{ cpy_user_name }} <{{ cpy_user_email }}>"]{% endif %}
 license = "MIT"
 
+# Host C++ example: ccgo run --example basic
+[[example]]
+name = "basic"
+path = "examples/basic/main.cpp"
+
+# Declare a standalone executable when its source exists:
+# [[bin]]
+# name = "my-cli"
+# path = "src/bin/main.cpp"
+
 [build]
 # Output directory for build artifacts
 output_dir = "cmake_build"

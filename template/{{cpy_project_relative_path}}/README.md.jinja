@@ -37,6 +37,23 @@ pod '{{ cpy_project_relative_path }}', '~> {{ cpy_project_version.split('.')[0] 
 ohpm install {{ cpy_project_relative_path }}
 ```
 
+## C++ Examples And Binaries
+
+Run these commands from the directory containing this project's `CCGO.toml`:
+
+```bash
+ccgo run --example basic
+ccgo run --example basic -- --help
+ccgo run --example basic --release --build-only
+```
+
+The starter in `examples/basic/main.cpp` is a standalone C++ program. Examples
+use `[[example]]`; executable tools use `[[bin]]` and `ccgo run --bin <name>`.
+Unconfigured examples can be discovered as `examples/<name>.cpp`, `.cc`, `.cxx`,
+or `examples/<name>/main.cpp`, `main.cc`, `main.cxx`.
+These commands build for the local host, with outputs under `target/run/`.
+The platform application in `examples/app/` uses its own Gradle/Xcode tooling.
+
 ## License
 
 MIT License - see [LICENSE](LICENSE) for details.

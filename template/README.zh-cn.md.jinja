@@ -575,6 +575,18 @@ pages_branch = "gh-pages"
 
 ## 10. 示例
 
+模板提供独立 C++ 示例 `examples/basic/main.cpp`。在包含 `CCGO.toml` 的项目目录运行：
+
+```bash
+ccgo run --example basic
+ccgo run --example basic --release --build-only
+ccgo run --example basic -- --help
+```
+
+示例使用 `[[example]]`；可执行工具使用 `[[bin]]` 配置和 `ccgo run --bin <name>`。
+这些命令使用本机工具链。初始示例不链接 SDK，扩展示例时需要接入所需库。
+平台 UI 应用通过各自的构建工具编译。
+
 `examples/` 目录包含各平台的示例项目，展示如何使用本库：
 
 - **Android**: 使用 AAR 的示例 Android 应用
